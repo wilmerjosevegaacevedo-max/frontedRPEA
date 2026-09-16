@@ -1,0 +1,11 @@
+# Frontend - Node
+node_modules/
+
+# Frontend - Build
+dist/
+
+# Frontend - TypeScript build info
+*.tsbuildinfo
+
+# Frontend - env
+.env

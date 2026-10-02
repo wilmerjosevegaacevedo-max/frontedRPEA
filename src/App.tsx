@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, User } from "firebase/auth";
-import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { auth, db, firebaseConfigured, storage } from "./firebase";
 import { ClienteId, Job } from "./types";

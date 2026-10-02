@@ -54,10 +54,7 @@ export default function App() {
       
       where("usuarioId", "==", user.uid),
     );
-    return onSnapshot(jobsQuery, (snapshot) => {
-      const loadedJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job)); loadedJobs.sort((a,b) => (b.creadoEn?.toMillis() || 0) - (a.creadoEn?.toMillis() || 0)); setJobs(loadedJobs);
-    });
-  }, [user]);
+    return onSnapshot(jobsQuery, (snapshot) => { const loadedJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job)); loadedJobs.sort((a,b) => (b.creadoEn?.toMillis() || 0) - (a.creadoEn?.toMillis() || 0)); setJobs(loadedJobs); }, (error) => { alert('Error de Firebase: ' + error.message); }); }, [user]);
 
   const [modoDemo, setModoDemo] = useState(false);
 

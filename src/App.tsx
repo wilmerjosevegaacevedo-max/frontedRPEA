@@ -52,10 +52,10 @@ export default function App() {
     const jobsQuery = query(
       collection(db, "jobs"),
       
-      where("usuarioId", "==", user.uid), orderBy("creadoEn", "desc"),
+      where("usuarioId", "==", user.uid),
     );
     return onSnapshot(jobsQuery, (snapshot) => {
-      setJobs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Job)));
+      const loadedJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job)); loadedJobs.sort((a,b) => (b.creadoEn?.toMillis() || 0) - (a.creadoEn?.toMillis() || 0)); setJobs(loadedJobs);
     });
   }, [user]);
 

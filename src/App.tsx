@@ -52,7 +52,7 @@ export default function App() {
     const jobsQuery = query(
       collection(db, "jobs"),
       
-      orderBy("creadoEn", "desc"),
+      where("usuarioId", "==", user.uid), orderBy("creadoEn", "desc"),
     );
     return onSnapshot(jobsQuery, (snapshot) => {
       setJobs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Job)));

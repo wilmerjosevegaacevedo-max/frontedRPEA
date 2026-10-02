@@ -51,7 +51,7 @@ export default function App() {
     if (!db) return;
     const jobsQuery = query(
       collection(db, "jobs"),
-      where("usuarioId", "==", user.uid),
+      
       orderBy("creadoEn", "desc"),
     );
     return onSnapshot(jobsQuery, (snapshot) => {

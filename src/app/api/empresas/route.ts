@@ -11,18 +11,17 @@ export async function GET() {
   try {
     if (db) {
       const snap = await getDocs(collection(db, "empresas"));
-      if (!snap.empty) {
+      if (snap && !snap.empty) {
         const empresas = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
-        return NextResponse.json({ ok: true, data: empresas, source: "firestore" });
+        return NextResponse.json({ ok: true, data: empresas, source: "firestore" }, { status: 200 });
       }
     }
-    return NextResponse.json({ ok: true, data: EMPRESAS_PREDETERMINADAS, source: "default" });
   } catch (error: any) {
-    return NextResponse.json(
-      { ok: false, error: error.message || "Error al obtener empresas", data: EMPRESAS_PREDETERMINADAS },
-      { status: 500 }
-    );
+    console.warn("Aviso al consultar Firestore (usando fallback local):", error.message);
   }
+
+  // Fallback a empresas predeterminadas para funcionamiento local / offline
+  return NextResponse.json({ ok: true, data: EMPRESAS_PREDETERMINADAS, source: "default" }, { status: 200 });
 }
 
 /**
@@ -59,7 +58,11 @@ export async function POST(req: NextRequest) {
     };
 
     if (db) {
-      await setDoc(doc(collection(db, "empresas"), id), empresaData, { merge: true });
+      try {
+        await setDoc(doc(collection(db, "empresas"), id), empresaData, { merge: true });
+      } catch (dbErr: any) {
+        console.warn("Aviso al escribir en Firestore:", dbErr.message);
+      }
     }
 
     return NextResponse.json(

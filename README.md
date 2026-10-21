@@ -1,68 +1,174 @@
-# RPA LAD-6819 · Orquestador de Nómina
+# RPA LAD-6819 · Orquestador de Descuentos de Nómina
+> **Arquitectura Fullstack Next.js 14 (App Router) + TypeScript + Firebase**  
+> *(100% JavaScript / TypeScript — Eliminación total de dependencias en Python)*
 
-App React + Vite + TypeScript conectada a Firebase (Auth, Firestore, Storage) y a un backend FastAPI para el procesamiento de lotes de nómina.
+Sistema centralizado de liquidación, validación paramétrica y dispersión de deducciones de nómina (Seguro de Vida, Gastos Médicos Mayores GMM y Costos Administrativos) para empresas aliadas corporativas (**Continental Gold**, **Compañía de Financiamiento CDF**, **DXC Technology**, entre otras).
 
-## Qué se actualizó
+---
 
-- **Pantalla de login rediseñada** (`src/components/LoginScreen.tsx`): panel de marca/telemetría a la izquierda, formulario de autenticación a la derecha, selector de cliente (CDF / Continental / DXC), toggle de mostrar/ocultar contraseña y estado de "verificando credenciales" real (conectado a `signInWithEmailAndPassword`, no simulado). El cliente elegido aquí queda preseleccionado en el panel de carga.
-- **Centro de Control rediseñado** (`src/components/Dashboard.tsx` y sus subcomponentes), con datos reales en cada sección:
-  - `KpiSummary.tsx`: lotes registrados, tasa de efectividad, clientes configurados y último lote, todo calculado a partir de los `jobs` reales de Firestore (nada de cifras de ejemplo fijas).
-  - `UploadPanel.tsx`: selector de cliente, zona de arrastrar-y-soltar o clic para elegir archivo, y despacho real del lote (Firestore + Storage + llamada al backend FastAPI), con estado de carga y error reales.
-  - `JobsTable.tsx`: tabla en vivo (Firestore `onSnapshot`) con búsqueda, filtro por estado y por cliente, y botón de reintento real para lotes fallidos.
-  - `JobDrawer.tsx`: panel de detalle del lote seleccionado, con su estado, tamaño, error (si lo hay) y el enlace real de descarga del ZIP desde Firebase Storage.
-  - `DashboardHeader.tsx`: usa el nombre/correo real del usuario autenticado y cierra sesión de verdad; la navegación a otras secciones (Lotes & Auditoría, Reglas de Clientes, Configuración) queda deshabilitada como "Próximamente" porque esas vistas aún no existen.
-  - `SystemStatusBar.tsx`: franja de estado de infraestructura marcada explícitamente como *placeholder* — está pensada para conectarse a un endpoint de métricas real del backend más adelante.
-- Todo el proyecto (login + panel) usa Tailwind vía CDN (declarado en `index.html`); ya no se usa CSS propio (`src/styles.css` se eliminó).
+## 🚀 Cambios Principales de la Entrega (Evolución Arquitectónica)
 
-## Requisitos
+1. **Migración a Fullstack Next.js 14 y TypeScript (Sin Python)**:
+   - Se reemplazó la arquitectura anterior basada en Vite + FastAPI (Python).
+   - Todo el motor de parsing de planillas Excel/CSV, validación de reglas de negocio y cálculo financiero se ejecuta en **TypeScript puro** mediante `xlsx` (SheetJS) en el cliente y servidor Node.js.
+   - Ya no se requiere servidor Python, ni FastAPI, ni Pandas, ni entornos `venv`.
 
-- Node.js 18+
-- Un proyecto de Firebase con Auth (correo/contraseña), Firestore y Storage habilitados.
-- El backend FastAPI corriendo (o accesible) en `VITE_API_URL`.
+2. **Control de Acceso Basado en Roles en el Frontend (RBAC)**:
+   - **ADMIN**: Control total (Crear/editar empresas, ajustar reglas paramétricas, carga masiva, pagos individuales y auditoría).
+   - **SUPERVISOR**: Monitoreo en tiempo real, KPIs gerenciales, auditoría de seguridad y visualización de reglas.
+   - **ANALISTA**: Operación de nómina (Carga masiva de archivos y registro de pagos únicos).
+   - **Selector de Rol en Vivo**: Permite alternar perfiles en la cabecera para facilitar la sustentación ante el evaluador.
 
-## Configuración
+3. **Carga Masiva de Planillas de Nómina**:
+   - Soporte Drag & Drop para formatos `.xlsx`, `.xls` y `.csv`.
+   - Validación automática de columnas requeridas por empresa.
+   - Cálculo en tiempo real de porcentajes (% Vida, % GMM, % Costos, Total y Topes).
+   - Generación y descarga instantánea del reporte liquidado en Excel con hojas de **Resumen Auditoría** y **Detalle Descuentos**.
+   - Asentamiento automático del lote en la base de datos Firestore (`jobs`).
 
-1. Instala dependencias:
-   ```bash
-   npm install
-   ```
-2. Copia `.env.example` a `.env` y completa las credenciales de tu proyecto de Firebase y la URL del backend:
-   ```bash
-   cp .env.example .env
-   ```
-3. Arranca el entorno de desarrollo:
-   ```bash
-   npm run dev
-   ```
-4. Para generar el build de producción:
-   ```bash
-   npm run build
-   npm run preview
-   ```
+4. **Registro de Empresas con Reglas de Negocio Dinámicas**:
+   - Módulo interactivo para registrar nuevas empresas corporativas y gestionar parámetros:
+     - `% Seguro de Vida` (ej: 1.5%)
+     - `% Gastos Médicos Mayores GMM` (ej: 2.0%)
+     - `% Costos Administrativos` (ej: 1.0%)
+     - `Tope Máximo de Descuento ($ COP)` (ej: $500.000)
+     - `Permite Sobregiro` (Interruptor de control estricto vs flexible)
+     - `Columnas Requeridas en la Planilla Excel`
+   - Persistencia directa en la colección `empresas` de Firestore.
 
-## Estructura
+5. **Carga de un Único Pago (Pago Individual)**:
+   - Formulario transaccional para asentar deducciones de un empleado específico.
+   - Simulador y cálculo en vivo según las reglas de la empresa seleccionada.
+   - Verificación de topes máximos y alertas de sobregiro.
+   - Registro en la colección `pagos_individuales` y creación automática del Job correspondiente.
 
+6. **Backend REST API Integrado (Route Handlers en Next.js)**:
+   - Endpoints REST nativos en TypeScript para consulta e integración externa:
+     - `GET /api/health`: Estado del servicio y telemetría.
+     - `GET /api/empresas` & `POST /api/empresas`: Gestión de empresas y reglas.
+     - `GET /api/pagos` & `POST /api/pagos`: Historial y registro de pagos únicos.
+     - `POST /api/nomina/procesar`: Procesamiento de planillas vía API.
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+frontedRPEA/
+├── src/
+│   ├── app/                               # Next.js 14 App Router
+│   │   ├── layout.tsx                     # Layout global y metadatos
+│   │   ├── page.tsx                       # Página raíz: Auth + Dashboard reactivo
+│   │   ├── loading.tsx                    # Skeleton de carga
+│   │   ├── not-found.tsx                  # Error 404 personalizado
+│   │   ├── error.tsx                      # Límite de captura de errores (ErrorBoundary)
+│   │   ├── globals.css                    # Directivas Tailwind y fuentes tipográficas
+│   │   └── api/                           # Backend REST API (Route Handlers)
+│   │       ├── health/route.ts            # GET /api/health
+│   │       ├── empresas/route.ts          # GET & POST /api/empresas
+│   │       ├── pagos/route.ts             # GET & POST /api/pagos
+│   │       └── nomina/procesar/route.ts   # POST /api/nomina/procesar
+│   │
+│   ├── components/                        # Módulos y Vistas por Rol
+│   │   ├── Dashboard.tsx                  # Orquestador del Dashboard principal
+│   │   ├── DashboardHeader.tsx            # Cabecera con selector RBAC y navegación dinámica
+│   │   ├── CargaMasivaModule.tsx          # Módulo de Carga Masiva (Excel/CSV)
+│   │   ├── PagoUnicoModule.tsx            # Módulo de Carga de Pago Único Individual
+│   │   ├── EmpresasModule.tsx             # Módulo de Empresas y Reglas de Negocio
+│   │   ├── AuditoriaRolesModule.tsx       # Matriz de Segregación de Funciones RBAC
+│   │   ├── JobsTable.tsx                  # Monitor en vivo de lotes en Firestore
+│   │   ├── JobDrawer.tsx                  # Panel lateral de detalle y auditoría
+│   │   ├── KpiSummary.tsx                 # Métricas e indicadores clave (KPIs)
+│   │   ├── LoginScreen.tsx                # Pantalla de inicio de sesión institucional
+│   │   └── SystemStatusBar.tsx            # Barra de estado del sistema
+│   │
+│   ├── lib/
+│   │   └── excel-processor.ts             # Motor TypeScript de parsing y cálculo de nómina (SheetJS)
+│   ├── firebase.ts                        # Configuración universal de Firebase (Auth, Firestore, Storage)
+│   ├── types.ts                           # Modelos de datos TypeScript (Empresas, Reglas, Jobs, Roles)
+│   ├── declarations.d.ts                  # Declaraciones de tipos para módulos externos
+│   └── utils/
+│       └── format.ts                      # Utilidades de formato monetario, fechas y bytes
+│
+├── next.config.mjs                        # Configuración de compilación Next.js y Webpack
+├── tailwind.config.ts                     # Configuración del sistema de diseño Tailwind CSS
+├── tsconfig.json                          # Configuración estricta de TypeScript
+└── package.json                           # Dependencias y scripts del proyecto
 ```
-src/
-  App.tsx                     Orquestador: auth, Firestore/Storage, despacho y reintento de lotes
-  types.ts                    Tipos compartidos (Job, ClienteId, clasificación de estados)
-  firebase.ts                 Inicialización de Firebase (Auth, Firestore, Storage)
-  main.tsx                    Punto de entrada de React
-  vite-env.d.ts                Tipado de variables de entorno de Vite
-  utils/format.ts             Formato de bytes, fechas y tiempo relativo
-  components/
-    LoginScreen.tsx           Pantalla de login
-    Dashboard.tsx             Composición del Centro de Control
-    DashboardHeader.tsx       Encabezado con usuario real y cierre de sesión
-    KpiSummary.tsx            Tarjetas KPI calculadas de los jobs reales
-    UploadPanel.tsx           Carga de archivo (drag & drop) y despacho del lote
-    JobsTable.tsx             Tabla en vivo de lotes con filtros/búsqueda
-    JobDrawer.tsx             Detalle y descarga del lote seleccionado
-    SystemStatusBar.tsx       Franja de estado de infraestructura (placeholder)
-index.html                    Shell HTML + Tailwind CDN + fuentes/íconos
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Server & Client Components)
+- **Lenguaje**: [TypeScript 5](https://www.typescriptlang.org/) (100% tipado estricto)
+- **Estilos**: [Tailwind CSS 3](https://tailwindcss.com/)
+- **Procesamiento de Archivos**: [SheetJS (xlsx)](https://docs.sheetjs.com/)
+- **Base de Datos & Auth**: [Firebase](https://firebase.google.com/) (Firestore NoSQL, Authentication, Storage)
+- **Iconografía & Tipografía**: Google Material Symbols Outlined, Inter, Plus Jakarta Sans
+
+---
+
+## ⚡ Instalación y Ejecución Local
+
+### 1. Prerrequisitos
+- Node.js versión **18.17** o superior.
+- Gestor de paquetes `npm`.
+
+### 2. Instalación de dependencias
+```bash
+npm install
 ```
 
-## Notas de seguridad
+### 3. Variables de Entorno (`.env`)
+El proyecto incluye valores predeterminados seguros en `src/firebase.ts` para pruebas inmediatas y modo demostración. Si deseas conectar a tu propio proyecto de Firebase:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+NEXT_PUBLIC_FIREBASE_APP_ID=tu_app_id
+```
 
-- Las reglas de Firestore/Storage deben restringir el acceso a `jobs` por `usuarioId` (la consulta ya filtra `where("usuarioId", "==", user.uid)`, pero eso no reemplaza las reglas del lado del servidor).
-- El token de Firebase (`user.getIdToken()`) se envía al backend como `Bearer` token; el backend debe verificarlo contra Firebase Admin antes de procesar el job.
+### 4. Modo Desarrollo
+```bash
+npm run dev
+```
+La aplicación iniciará en `http://localhost:3000`.
+
+### 5. Compilación y Ejecución en Producción
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 📋 Endpoints de la API REST Backend
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/health` | Verifica la disponibilidad del servicio y versiones del stack. |
+| `GET` | `/api/empresas` | Consulta todas las empresas aliadas y sus reglas de negocio. |
+| `POST` | `/api/empresas` | Registra o actualiza una empresa y sus reglas paramétricas. |
+| `GET` | `/api/pagos` | Lista el historial de pagos únicos individuales registrados. |
+| `POST` | `/api/pagos` | Asienta una transacción de pago único individual y crea el Job. |
+| `POST` | `/api/nomina/procesar` | Procesa un lote masivo de nómina desde JSON aplicando reglas. |
+
+---
+
+## 👥 Matriz de Roles y Permisos (RBAC)
+
+| Funcionalidad | ADMIN | SUPERVISOR | ANALISTA |
+| :--- | :---: | :---: | :---: |
+| **Registrar y Editar Reglas de Empresas** | ✅ Permitido | 👁️ Solo Lectura | ❌ Denegado |
+| **Carga Masiva de Planillas (Excel/CSV)** | ✅ Permitido | ❌ Denegado | ✅ Permitido |
+| **Cargar Pago Único Individual** | ✅ Permitido | ❌ Denegado | ✅ Permitido |
+| **Monitoreo de Lotes y KPIs en Vivo** | ✅ Permitido | ✅ Permitido | 👤 Solo Propios |
+| **Exportar Liquidación en Excel (XLSX)** | ✅ Permitido | ✅ Permitido | ✅ Permitido |
+| **Auditoría de Roles y Seguridad** | ✅ Permitido | ✅ Permitido | ❌ Denegado |
+
+---
+
+## 📄 Licencia y Entrega Académica
+Proyecto desarrollado para la entrega académica institucional de Automatización Robótica de Procesos (RPA LAD-6819). Todos los derechos reservados.

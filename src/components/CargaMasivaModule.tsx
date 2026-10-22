@@ -4,6 +4,8 @@ import { useMemo, useRef, useState } from "react";
 import { Empresa, Job, RolUsuario } from "../types";
 import {
   exportarExcelProcesado,
+  generarArchivoPruebaFile,
+  generarPlantillaExcelEjemplo,
   procesarNominaEnFrontend,
   ResultadoProcesamientoExcel,
 } from "../lib/excel-processor";
@@ -230,11 +232,58 @@ export function CargaMasivaModule({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-on-surface-variant">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-2 text-xs text-on-surface-variant">
             <span className="px-2.5 py-1 rounded-full bg-surface-container flex items-center gap-1 font-mono">
               <span className="material-symbols-outlined text-[14px]">view_column</span>
               Columnas requeridas: {empresaActual?.reglas.columnasRequeridas.join(", ")}
             </span>
+          </div>
+
+          {/* Botones de acción rápida para demostración */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 pt-3 border-t border-surface-container w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => {
+                if (empresaActual) {
+                  const demoFile = generarArchivoPruebaFile(empresaActual);
+                  procesarArchivo(demoFile);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 shadow-sm transition-all"
+            >
+              <span className="material-symbols-outlined text-[16px]">play_circle</span>
+              <span>Cargar Planilla de Demostración en Vivo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (empresaActual) {
+                  generarPlantillaExcelEjemplo(empresaActual);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-semibold text-xs hover:bg-surface-container hover:text-primary transition-all border border-surface-container"
+            >
+              <span className="material-symbols-outlined text-[16px]">file_download</span>
+              <span>Descargar Plantilla ({empresaActual?.codigo}.xlsx)</span>
+            </button>
+
+            {archivo && (
+              <button
+                type="button"
+                onClick={() => {
+                  setArchivo(null);
+                  setResultado(null);
+                  setErrorProcesamiento("");
+                  setMensajeExito("");
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 font-semibold text-xs hover:bg-red-100 transition-all border border-red-200"
+              >
+                <span className="material-symbols-outlined text-[16px]">restart_alt</span>
+                <span>Limpiar</span>
+              </button>
+            )}
           </div>
         </div>
 

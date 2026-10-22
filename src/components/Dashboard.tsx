@@ -169,7 +169,7 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
 
           {/* SECCIÓN 5: AUDITORÍA Y ROLES */}
           {seccionActiva === "auditoria-roles" && (
-            <AuditoriaRolesModule rolUsuario={rolUsuario} />
+            <AuditoriaRolesModule rolUsuario={rolUsuario} onCambiarRol={setRolUsuario} />
           )}
         </div>
       </main>

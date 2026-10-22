@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 import { Job, grupoEstado } from "../types";
@@ -34,13 +35,43 @@ function useDownloadUrl(path?: string) {
 }
 
 const PASOS = [
-  { key: "creado", label: "Lote creado y archivo subido a Storage", icon: "cloud_done" },
-  { key: "proceso", label: "En procesamiento por el worker de FastAPI", icon: "smart_toy" },
-  { key: "final", label: "Procesamiento finalizado", icon: "task_alt" },
+  { key: "creado", label: "Lote creado y planilla cargada en el sistema", icon: "cloud_done" },
+  { key: "proceso", label: "En procesamiento por motor de cálculo TypeScript (SheetJS)", icon: "speed" },
+  { key: "final", label: "Liquidación y auditoría completada", icon: "task_alt" },
 ] as const;
 
 export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawerProps) {
   const downloadUrl = useDownloadUrl(job?.archivoSalida);
+  const [copiado, setCopiado] = useState(false);
+
+  function copiarFolio() {
+    if (!job) return;
+    navigator.clipboard?.writeText(job.id);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  }
+
+  function descargarReporteLoteExcel() {
+    if (!job) return;
+    const resumen = [
+      { Parametro: "Identificador de Lote", Detalle: job.id },
+      { Parametro: "Empresa / Cliente", Detalle: job.cliente.toUpperCase() },
+      { Parametro: "Archivo Origen", Detalle: job.nombreArchivo },
+      { Parametro: "Tipo de Carga", Detalle: job.tipoCarga || "MASIVA" },
+      { Parametro: "Estado de Auditoría", Detalle: job.estado },
+      { Parametro: "Total Registros Procesados", Detalle: job.totalRegistros ?? 1 },
+      { Parametro: "Registros Exitosos", Detalle: job.registrosExitosos ?? 1 },
+      { Parametro: "Registros Rechazados", Detalle: job.registrosFallidos ?? 0 },
+      { Parametro: "Total Descuentos Liquidado ($)", Detalle: job.totalDescuentos ?? 0 },
+      { Parametro: "Fecha de Creación", Detalle: job.creadoEn?.toDate ? job.creadoEn.toDate().toLocaleString("es-CO") : new Date().toLocaleString("es-CO") },
+      { Parametro: "Operador Responsable", Detalle: job.usuarioEmail || "analista@nomina.com" },
+    ];
+
+    const hoja = XLSX.utils.json_to_sheet(resumen);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, hoja, "Auditoria_Lote");
+    XLSX.writeFile(wb, `Reporte_Auditoria_${job.id}.xlsx`);
+  }
 
   if (!job) {
     return (
@@ -68,6 +99,16 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
             <span className="font-code-sm text-code-sm bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">
               {job.id}
             </span>
+            <button
+              type="button"
+              onClick={copiarFolio}
+              title="Copiar identificador de lote"
+              className="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {copiado ? "done" : "content_copy"}
+              </span>
+            </button>
             <span className="font-label-sm text-label-sm text-on-surface-variant">({job.cliente.toUpperCase()})</span>
           </div>
         </div>
@@ -141,6 +182,15 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
       )}
 
       <div className="flex flex-col gap-space-sm pt-space-sm">
+        <button
+          type="button"
+          onClick={descargarReporteLoteExcel}
+          className="w-full inline-flex items-center justify-center gap-space-xs px-space-md py-2 bg-surface-container-high hover:bg-surface-container text-primary font-semibold text-xs rounded-lg transition-colors border border-surface-container"
+        >
+          <span className="material-symbols-outlined text-[16px]">description</span>
+          <span>Descargar Resumen del Lote (.xlsx)</span>
+        </button>
+
         {job.archivoSalida && (
           <a
             href={downloadUrl ?? undefined}

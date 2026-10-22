@@ -267,3 +267,85 @@ export function exportarExcelProcesado(resultado: ResultadoProcesamientoExcel) {
   const nombreSalida = `Liquidacion_${resultado.empresa.codigo}_${new Date().toISOString().slice(0, 10)}.xlsx`;
   XLSX.writeFile(wb, nombreSalida);
 }
+
+/**
+ * Genera datos de prueba realistas estructurados según las columnas obligatorias de cada empresa
+ */
+export function generarDatosPruebaPorEmpresa(empresa: Empresa): Record<string, any>[] {
+  const codigo = (empresa.codigo || empresa.id).toUpperCase();
+  const c = empresa.reglas.columnasRequeridas;
+  const colDoc = c[0] || "CEDULA";
+  const colNom = c[1] || "NOMBRE";
+  const colSal = c[2] || "SALARIO";
+
+  // Retorna filas con salarios realistas, incluyendo uno que exceda el tope para demostrar el truncamiento
+  return [
+    {
+      [colDoc]: "1037648291",
+      [colNom]: "Carlos Mario Restrepo Vélez",
+      [colSal]: 2800000,
+    },
+    {
+      [colDoc]: "1017234890",
+      [colNom]: "Laura Camila Gómez Arango",
+      [colSal]: 3400000,
+    },
+    {
+      [colDoc]: "71982341",
+      [colNom]: "Mateo Henao Jaramillo",
+      [colSal]: 1950000,
+    },
+    {
+      [colDoc]: "1035982143",
+      [colNom]: "Sofía Marcela Duque Londoño",
+      [colSal]: 4200000,
+    },
+    {
+      [colDoc]: "98721345",
+      [colNom]: "Andrés Felipe Bedoya Zapata",
+      [colSal]: 12500000, // Alto ingreso para probar tope máximo de la empresa
+    },
+    {
+      [colDoc]: "1028371920",
+      [colNom]: "Valentina Ríos Castaño",
+      [colSal]: 2600000,
+    },
+    {
+      [colDoc]: "70192834",
+      [colNom]: "Esteban Osorio Murillo",
+      [colSal]: 3100000,
+    },
+  ];
+}
+
+/**
+ * Descarga directamente un archivo Excel de plantilla modelo para la empresa seleccionada
+ */
+export function generarPlantillaExcelEjemplo(empresa: Empresa) {
+  const datos = generarDatosPruebaPorEmpresa(empresa);
+  const hoja = XLSX.utils.json_to_sheet(datos);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, hoja, `Nomina_${empresa.codigo}`);
+
+  const nombreArchivo = `Plantilla_Ejemplo_${empresa.codigo}.xlsx`;
+  XLSX.writeFile(wb, nombreArchivo);
+}
+
+/**
+ * Crea un objeto File en memoria con datos de prueba listo para ser procesado inmediatamente sin requerir subida externa
+ */
+export function generarArchivoPruebaFile(empresa: Empresa): File {
+  const datos = generarDatosPruebaPorEmpresa(empresa);
+  const hoja = XLSX.utils.json_to_sheet(datos);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, hoja, `Nomina_${empresa.codigo}`);
+
+  const arrayBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([arrayBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  return new File([blob], `Nomina_Demostracion_${empresa.codigo}.xlsx`, {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+}

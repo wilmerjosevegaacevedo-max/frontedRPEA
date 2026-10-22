@@ -2,7 +2,13 @@
 
 import { RolUsuario, ROLES_CONFIG } from "../types";
 
-export function AuditoriaRolesModule({ rolUsuario }: { rolUsuario: RolUsuario }) {
+export function AuditoriaRolesModule({
+  rolUsuario,
+  onCambiarRol,
+}: {
+  rolUsuario: RolUsuario;
+  onCambiarRol?: (rol: RolUsuario) => void;
+}) {
   const matrizPermisos = [
     {
       funcionalidad: "Registrar Empresa & Configurar Reglas de Negocio",
@@ -102,9 +108,20 @@ export function AuditoriaRolesModule({ rolUsuario }: { rolUsuario: RolUsuario })
                 <p className="text-xs text-on-surface-variant leading-relaxed">{cfg.descripcion}</p>
               </div>
 
-              <div className="pt-2 border-t border-surface-container text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
-                <span className="material-symbols-outlined text-[14px]">shield</span>
-                <span>Nivel de Acceso: {rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}</span>
+              <div className="pt-2 border-t border-surface-container flex items-center justify-between gap-2">
+                <div className="text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
+                  <span className="material-symbols-outlined text-[14px]">shield</span>
+                  <span>{rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}</span>
+                </div>
+                {onCambiarRol && !esElMio && (
+                  <button
+                    type="button"
+                    onClick={() => onCambiarRol(rol)}
+                    className="px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-white text-on-surface text-xs font-semibold transition-all border border-surface-container"
+                  >
+                    Activar Rol
+                  </button>
+                )}
               </div>
             </div>
           );

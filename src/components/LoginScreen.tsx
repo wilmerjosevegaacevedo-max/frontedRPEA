@@ -75,7 +75,7 @@ export function LoginScreen({
                 </div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/10 backdrop-blur-md text-tertiary-fixed font-code-sm text-code-sm">
                   <span className="material-symbols-outlined text-[14px]">shield</span>
-                  <span>Firebase Auth • FastAPI</span>
+                  <span>Firebase Auth • Next.js 14</span>
                 </div>
               </div>
 
@@ -238,8 +238,22 @@ export function LoginScreen({
                   </label>
                   <div className="flex items-center gap-1 font-code-sm text-code-sm text-on-surface-variant">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span>FastAPI Token Ready</span>
+                    <span>Next.js 14 Token Ready</span>
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onEmailChange("admin.rpa@blacksmith.com.co");
+                      onPasswordChange("Admin*2026");
+                    }}
+                    className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">auto_fix_high</span>
+                    <span>Autocompletar Credenciales de Demostración</span>
+                  </button>
                 </div>
 
                 <button

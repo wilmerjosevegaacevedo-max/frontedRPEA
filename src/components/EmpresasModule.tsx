@@ -47,6 +47,26 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setMensajeError("");
   }
 
+  async function restaurarPredeterminadas() {
+    if (!esAdmin) return;
+    setGuardando(true);
+    try {
+      if (db) {
+        for (const emp of EMPRESAS_PREDETERMINADAS) {
+          await setDoc(doc(collection(db, "empresas"), emp.id), emp, { merge: true });
+        }
+      }
+      onActualizarEmpresas(EMPRESAS_PREDETERMINADAS);
+      setEmpresaSeleccionada(EMPRESAS_PREDETERMINADAS[0]);
+      setModoEdicion(false);
+      setMensajeExito("Empresas predeterminadas (Continental, CDF, DXC) restauradas con éxito.");
+    } catch (err: any) {
+      setMensajeError(`Error al restaurar: ${err.message}`);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
   function editarEmpresa(emp: Empresa) {
     setEmpresaSeleccionada(emp);
     setNombre(emp.nombre);
@@ -142,14 +162,26 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
         </div>
 
         {esAdmin && (
-          <button
-            type="button"
-            onClick={iniciarNuevaEmpresa}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary/90 transition-all shadow-sm shrink-0"
-          >
-            <span className="material-symbols-outlined text-[18px]">add_business</span>
-            Registrar Nueva Empresa
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={restaurarPredeterminadas}
+              disabled={guardando}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container-high text-on-surface hover:text-primary font-semibold text-xs border border-surface-container transition-all"
+              title="Restaurar empresas base: Continental, CDF y DXC"
+            >
+              <span className="material-symbols-outlined text-[16px]">restore</span>
+              Restaurar Predeterminadas
+            </button>
+            <button
+              type="button"
+              onClick={iniciarNuevaEmpresa}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary/90 transition-all shadow-sm shrink-0"
+            >
+              <span className="material-symbols-outlined text-[18px]">add_business</span>
+              Registrar Nueva Empresa
+            </button>
+          </div>
         )}
       </div>
 

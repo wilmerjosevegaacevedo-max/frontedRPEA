@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import * as XLSX from "xlsx";
 import { Empresa, PagoIndividual, RolUsuario } from "../types";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
@@ -158,6 +159,41 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
     }
   }
 
+  function autocompletarEjemplo() {
+    setDocumento("1037648291");
+    setEmpleadoNombre("Santiago Morales Duque");
+    setSalarioBase(3200000);
+    setConcepto("Total");
+    setObservacion("Deducción extraordinaria autorizada por colaborador");
+    setMensajeError("");
+    setMensajeExito("");
+  }
+
+  function exportarHistorialExcel() {
+    if (historialPagos.length === 0) return;
+    const datosExportar = historialPagos.map((p) => {
+      const emp = empresas.find((e) => e.id === p.empresaId);
+      return {
+        "Folio Transacción": p.id,
+        "Cédula / Documento": p.documento,
+        "Empleado": p.empleadoNombre,
+        "Empresa": emp?.nombre || p.empresaId,
+        "Código": emp?.codigo || p.empresaId.toUpperCase(),
+        "Concepto": p.concepto,
+        "Salario Base ($)": p.salarioBase,
+        "Descuento Liquidado ($)": p.descuentoCalculado,
+        "Fecha de Registro": p.fecha,
+        "Estado": p.estado,
+        "Observación": p.observacion || "Sin observación",
+      };
+    });
+
+    const hoja = XLSX.utils.json_to_sheet(datosExportar);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, hoja, "Pagos_Individuales");
+    XLSX.writeFile(wb, `Historial_Pagos_Unicos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
   return (
     <div className="flex flex-col gap-space-lg w-full">
       {/* Encabezado */}
@@ -199,9 +235,19 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
             <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
               Datos del Descuento
             </span>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary">
-              Rol: {rolUsuario}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={autocompletarEjemplo}
+                className="px-2.5 py-1 rounded-md bg-surface-container-high text-primary hover:bg-primary/10 font-semibold text-xs flex items-center gap-1 transition-all border border-surface-container"
+              >
+                <span className="material-symbols-outlined text-[14px]">bolt</span>
+                <span>Llenar con Ejemplo</span>
+              </button>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary">
+                Rol: {rolUsuario}
+              </span>
+            </div>
           </div>
 
           <form onSubmit={registrarPago} className="flex flex-col gap-space-md">
@@ -332,14 +378,24 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
 
         {/* Historial de Pagos Únicos */}
         <div className="lg:col-span-7 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
-          <div className="flex items-center justify-between pb-space-sm border-b border-surface-container">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-surface-container">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">receipt_long</span>
               <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
                 Historial de Pagos Individuales ({historialPagos.length})
               </span>
             </div>
-            <span className="text-xs text-on-surface-variant font-code-sm">Colección: pagos_individuales</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={exportarHistorialExcel}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-high text-on-surface hover:text-primary hover:bg-surface-container font-semibold text-xs border border-surface-container transition-all"
+              >
+                <span className="material-symbols-outlined text-[15px]">download</span>
+                <span>Exportar Historial (.xlsx)</span>
+              </button>
+              <span className="text-xs text-on-surface-variant font-code-sm hidden md:inline">pagos_individuales</span>
+            </div>
           </div>
 
           <div className="overflow-x-auto">

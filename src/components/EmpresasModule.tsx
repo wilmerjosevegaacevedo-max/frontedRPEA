@@ -52,8 +52,12 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setGuardando(true);
     try {
       if (db) {
-        for (const emp of EMPRESAS_PREDETERMINADAS) {
-          await setDoc(doc(collection(db, "empresas"), emp.id), emp, { merge: true });
+        try {
+          for (const emp of EMPRESAS_PREDETERMINADAS) {
+            await setDoc(doc(collection(db, "empresas"), emp.id), emp, { merge: true });
+          }
+        } catch (dbErr: any) {
+          console.warn("Aviso Firestore al restaurar empresas (modo local activo):", dbErr?.message);
         }
       }
       onActualizarEmpresas(EMPRESAS_PREDETERMINADAS);
@@ -123,7 +127,11 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
 
     try {
       if (db) {
-        await setDoc(doc(collection(db, "empresas"), id), empresaData, { merge: true });
+        try {
+          await setDoc(doc(collection(db, "empresas"), id), empresaData, { merge: true });
+        } catch (dbErr: any) {
+          console.warn("Aviso Firestore al guardar empresa (modo local activo):", dbErr?.message);
+        }
       }
 
       const existe = empresas.some((e) => e.id === id);

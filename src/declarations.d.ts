@@ -14,6 +14,7 @@ declare module "firebase/auth" {
   export function getAuth(app?: any): any;
   export function onAuthStateChanged(auth: any, callback: (user: User | null) => void): () => void;
   export function signInWithEmailAndPassword(auth: any, email: string, pass: string): Promise<any>;
+  export function signInAnonymously(auth: any): Promise<any>;
 }
 
 declare module "firebase/firestore" {

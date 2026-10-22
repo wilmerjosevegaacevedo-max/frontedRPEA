@@ -96,10 +96,14 @@ export function CargaMasivaModule({
 
     try {
       if (db) {
-        await setDoc(doc(collection(db, "jobs"), jobId), {
-          ...nuevoJob,
-          creadoEn: serverTimestamp(),
-        });
+        try {
+          await setDoc(doc(collection(db, "jobs"), jobId), {
+            ...nuevoJob,
+            creadoEn: serverTimestamp(),
+          });
+        } catch (dbErr: any) {
+          console.warn("Aviso al persistir lote en Firestore (modo local/demo activo):", dbErr?.message);
+        }
       }
 
       onLoteCreado(nuevoJob);
@@ -107,7 +111,7 @@ export function CargaMasivaModule({
         `¡Lote masivo ${jobId} procesado y liquidado con éxito! Se contabilizaron ${resultado.filasValidas} registros válidos por un gran total de $${resultado.granTotalDescuentos.toLocaleString("es-CO")} COP.`
       );
     } catch (err: any) {
-      setErrorProcesamiento(`Error al guardar lote en Firestore: ${err.message}`);
+      setErrorProcesamiento(`Error al procesar lote: ${err.message}`);
     } finally {
       setGuardandoLote(false);
     }

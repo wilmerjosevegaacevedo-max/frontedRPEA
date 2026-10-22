@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithEmailAndPassword, User } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, User } from "firebase/auth";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { ClienteId, Job } from "../types";
@@ -137,9 +137,16 @@ export default function HomePage() {
     }
   }
 
-  function entrarModoDemo() {
+  async function entrarModoDemo() {
+    if (auth) {
+      try {
+        await signInAnonymously(auth);
+      } catch (e: any) {
+        console.warn("Aviso Auth anónimo en Firebase (usando sesión mock local):", e?.message);
+      }
+    }
     setUser({
-      uid: "usr-demo-academico",
+      uid: auth?.currentUser?.uid || "usr-demo-academico",
       email: email || "admin.academico@rpa-nomina.edu.co",
       displayName: "Administrador / Analista RPA",
     } as User);

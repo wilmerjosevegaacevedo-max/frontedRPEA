@@ -117,27 +117,31 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
 
     try {
       if (db) {
-        // Registrar en pagos_individuales
-        await setDoc(doc(collection(db, "pagos_individuales"), nuevoId), {
-          ...nuevoPago,
-          creadoEn: serverTimestamp(),
-        });
+        try {
+          // Registrar en pagos_individuales
+          await setDoc(doc(collection(db, "pagos_individuales"), nuevoId), {
+            ...nuevoPago,
+            creadoEn: serverTimestamp(),
+          });
 
-        // Registrar también en jobs para que aparezca en el monitor unificado
-        await setDoc(doc(collection(db, "jobs"), nuevoId), {
-          id: nuevoId,
-          cliente: empresaId,
-          nombreArchivo: `Pago_Individual_${documento}.json`,
-          tipoCarga: "UNICA",
-          totalRegistros: 1,
-          totalDescuentos: calculoEnVivo.descuento,
-          registrosExitosos: 1,
-          registrosFallidos: 0,
-          usuarioId: user.uid,
-          usuarioEmail: user.email || "operador@nomina.com",
-          estado: "EXITOSO",
-          creadoEn: serverTimestamp(),
-        });
+          // Registrar también en jobs para que aparezca en el monitor unificado
+          await setDoc(doc(collection(db, "jobs"), nuevoId), {
+            id: nuevoId,
+            cliente: empresaId,
+            nombreArchivo: `Pago_Individual_${documento}.json`,
+            tipoCarga: "UNICA",
+            totalRegistros: 1,
+            totalDescuentos: calculoEnVivo.descuento,
+            registrosExitosos: 1,
+            registrosFallidos: 0,
+            usuarioId: user.uid,
+            usuarioEmail: user.email || "operador@nomina.com",
+            estado: "EXITOSO",
+            creadoEn: serverTimestamp(),
+          });
+        } catch (dbErr: any) {
+          console.warn("Aviso al guardar pago en Firestore (modo local/demo activo):", dbErr?.message);
+        }
       }
 
       setHistorialPagos((prev) => [nuevoPago, ...prev]);

@@ -1,22 +1,58 @@
-# Frontend - Node
+# =======================================================
+# Monorepo RPA LAD-6819 — Git Ignore Rules
+# =======================================================
+
+# -------------------------------------------------------
+# Frontend (Next.js & Node.js)
+# -------------------------------------------------------
+frontend/node_modules/
 node_modules/
-
-# Frontend - Build
-dist/
+frontend/.next/
 .next/
+frontend/out/
 out/
-
-# Frontend - TypeScript build info
+frontend/dist/
+dist/
+frontend/.vercel/
+.vercel/
 *.tsbuildinfo
 
-# Frontend - env
+# Frontend Environment Variables & Secrets
+frontend/.env
+frontend/.env*.local
 .env
 .env*.local
 
-# OS
+# -------------------------------------------------------
+# Backend (Python & RPA Engine)
+# -------------------------------------------------------
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+backend/__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+backend/.pytest_cache/
+.pytest_cache/
+backend/logs/*.log
+logs/*.log
+*.log
+
+# Backend Secrets & Configs
+backend/.env
+backend/firebase-key.json
+firebase-key.json
+backend/.azure/
+.azure/
+backend/files/temp/
+backend/files/salidas/
+
+# -------------------------------------------------------
+# Operating System & Temporary Files
+# -------------------------------------------------------
 .DS_Store
 Thumbs.db
-
-# Word lock files
 ~$*.docx
-.vercel
+~$*.xlsx

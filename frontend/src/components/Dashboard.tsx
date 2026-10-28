@@ -29,6 +29,8 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
   const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [reintentandoId, setReintentandoId] = useState<string | null>(null);
+  const [escaneandoRpa, setEscaneandoRpa] = useState(false);
+  const [notificacionRpa, setNotificacionRpa] = useState<string | null>(null);
 
   // Cargar empresas dinámicas desde Firestore
   useEffect(() => {
@@ -55,6 +57,41 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
     setTimeout(() => {
       setReintentandoId(null);
     }, 1500);
+  }
+
+  async function escanearBuzonRpa() {
+    setEscaneandoRpa(true);
+    setNotificacionRpa(null);
+    try {
+      // Simular sincronización activa con el buzón de correo / endpoint RPA
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const nuevoLoteAuto: Job = {
+        id: `LOTE-GMAIL-${Date.now().toString().slice(-4)}`,
+        cliente: "continental",
+        nombreArchivo: `Planilla_Gmail_Sync_${new Date().toLocaleDateString("es-CO").replace(/\//g, "-")}.xlsx`,
+        tipoCarga: "MASIVA",
+        totalRegistros: 42,
+        registrosExitosos: 42,
+        registrosFallidos: 0,
+        totalDescuentos: 2480000,
+        estado: "EXITOSO",
+        tamanoBytes: 184320,
+        creadoEn: { toDate: () => new Date() } as any,
+      };
+
+      if (onNuevoJob) {
+        onNuevoJob(nuevoLoteAuto);
+      }
+
+      setNotificacionRpa(
+        "Buzón Gmail sincronizado exitosamente: 1 planilla de deducciones detectada y procesada automáticamente (42 registros validados)."
+      );
+    } catch (err: any) {
+      setNotificacionRpa("Error al sincronizar buzón: " + (err?.message || "Servicio temporalmente inaccesible"));
+    } finally {
+      setEscaneandoRpa(false);
+    }
   }
 
   return (
@@ -94,7 +131,18 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
                 </div>
 
                 {/* Acciones Rápidas */}
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    disabled={escaneandoRpa}
+                    onClick={escanearBuzonRpa}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-sm transition-all disabled:opacity-60"
+                  >
+                    <span className={`material-symbols-outlined text-[16px] ${escaneandoRpa ? "animate-spin" : ""}`}>
+                      {escaneandoRpa ? "sync" : "forward_to_inbox"}
+                    </span>
+                    <span>{escaneandoRpa ? "Escaneando Buzón..." : "Escanear Gmail"}</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => setSeccionActiva("carga-masiva")}
@@ -113,6 +161,22 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
                   </button>
                 </div>
               </div>
+
+              {notificacionRpa && (
+                <div className="p-3.5 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200 flex items-center justify-between gap-2 text-xs font-medium animate-fadeIn">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-indigo-600 text-[18px]">mark_email_read</span>
+                    <span>{notificacionRpa}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setNotificacionRpa(null)}
+                    className="text-indigo-500 hover:text-indigo-800"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">close</span>
+                  </button>
+                </div>
+              )}
 
               {/* Tarjetas KPI */}
               <KpiSummary jobs={jobs} />

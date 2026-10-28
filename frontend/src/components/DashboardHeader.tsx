@@ -51,7 +51,7 @@ export function DashboardHeader({
     },
     {
       id: "pago-unico",
-      label: "Cargar Pago Único",
+      label: "Descuento Individual",
       icon: "payments",
       roles: ["ADMIN", "ANALISTA"],
     },

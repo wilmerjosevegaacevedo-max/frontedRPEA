@@ -25,7 +25,7 @@ export function AuditoriaRolesModule({
       analista: true,
     },
     {
-      funcionalidad: "Cargar un Único Pago (Pago Individual)",
+      funcionalidad: "Cargar Descuento Individual",
       descripcion: "Asentar deducciones unitarias con verificación paramétrica de sobregiro y tope.",
       admin: true,
       supervisor: false,

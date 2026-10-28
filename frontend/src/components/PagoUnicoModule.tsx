@@ -195,7 +195,7 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
     const hoja = XLSX.utils.json_to_sheet(datosExportar);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, hoja, "Pagos_Individuales");
-    XLSX.writeFile(wb, `Historial_Pagos_Unicos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    XLSX.writeFile(wb, `Historial_Descuentos_Individuales_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   return (
@@ -375,18 +375,18 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
               <span className={`material-symbols-outlined text-[18px] ${procesando ? "animate-spin" : ""}`}>
                 {procesando ? "sync" : "send"}
               </span>
-              <span>{procesando ? "Registrando Pago..." : "Cargar y Asentar Pago Único"}</span>
+              <span>{procesando ? "Registrando Descuento..." : "Cargar y Asentar Descuento Individual"}</span>
             </button>
           </form>
         </div>
 
-        {/* Historial de Pagos Únicos */}
+        {/* Historial de Descuentos Individuales */}
         <div className="lg:col-span-7 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-surface-container">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">receipt_long</span>
               <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
-                Historial de Pagos Individuales ({historialPagos.length})
+                Historial de Descuentos Individuales ({historialPagos.length})
               </span>
             </div>
             <div className="flex items-center gap-2">

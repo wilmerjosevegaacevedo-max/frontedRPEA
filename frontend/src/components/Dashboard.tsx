@@ -109,7 +109,7 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 shadow-sm transition-all"
                   >
                     <span className="material-symbols-outlined text-[16px]">payments</span>
-                    Pago Único
+                    Descuento Individual
                   </button>
                 </div>
               </div>

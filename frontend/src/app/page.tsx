@@ -204,13 +204,11 @@ export default function HomePage() {
           showPassword={showPassword}
           rememberDevice={rememberDevice}
           isSigningIn={isSigningIn}
-          cliente={cliente}
           error={authError}
           onEmailChange={setEmail}
           onPasswordChange={setPassword}
           onToggleShowPassword={() => setShowPassword((v) => !v)}
           onRememberDeviceChange={setRememberDevice}
-          onClienteChange={setCliente}
           onSubmit={iniciarSesion}
           onSeleccionarCredencialRapida={handleSeleccionarCredencialRapida}
         />

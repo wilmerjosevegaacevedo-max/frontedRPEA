@@ -59,7 +59,7 @@ export function DashboardHeader({
       id: "empresas-reglas",
       label: "Empresas & Reglas",
       icon: "domain",
-      roles: ["ADMIN", "SUPERVISOR"],
+      roles: ["ADMIN"],
     },
     {
       id: "auditoria-roles",

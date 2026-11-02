@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "firebase/auth";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { db } from "../firebase";
@@ -20,11 +20,21 @@ type DashboardProps = {
   jobs: Job[];
   onSignOut: () => void;
   onNuevoJob?: (job: Job) => void;
+  rolInicial?: RolUsuario;
+  empresaAsignadaInicial?: string;
 };
 
-export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps) {
-  // Rol de usuario (por defecto ADMIN para pruebas completas, configurable en la cabecera)
-  const [rolUsuario, setRolUsuario] = useState<RolUsuario>("ADMIN");
+export function Dashboard({
+  user,
+  jobs,
+  onSignOut,
+  onNuevoJob,
+  rolInicial = "ADMIN",
+  empresaAsignadaInicial = "TODAS",
+}: DashboardProps) {
+  // Rol de usuario autenticado
+  const [rolUsuario, setRolUsuario] = useState<RolUsuario>(rolInicial);
+  const [empresaAsignada, setEmpresaAsignada] = useState<string>(empresaAsignadaInicial);
   const [seccionActiva, setSeccionActiva] = useState<SeccionNavegacion>("centro-de-control");
   const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -50,7 +60,23 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
     return () => unsub();
   }, []);
 
-  const selectedJob = jobs.find((job) => job.id === selectedJobId) ?? null;
+  // Filtrar empresas visibles según la empresa asignada a la credencial
+  const empresasVisibles = useMemo(() => {
+    if (rolUsuario === "ADMIN" || empresaAsignada === "TODAS") {
+      return empresas;
+    }
+    return empresas.filter((e) => e.id === empresaAsignada);
+  }, [empresas, rolUsuario, empresaAsignada]);
+
+  // Filtrar lotes de nómina según la empresa asignada
+  const jobsVisibles = useMemo(() => {
+    if (rolUsuario === "ADMIN" || rolUsuario === "SUPERVISOR" || empresaAsignada === "TODAS") {
+      return jobs;
+    }
+    return jobs.filter((j) => j.cliente === empresaAsignada);
+  }, [jobs, rolUsuario, empresaAsignada]);
+
+  const selectedJob = jobsVisibles.find((job) => job.id === selectedJobId) ?? null;
 
   function reintentarLote(jobId: string) {
     setReintentandoId(jobId);
@@ -179,12 +205,12 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
               )}
 
               {/* Tarjetas KPI */}
-              <KpiSummary jobs={jobs} />
+              <KpiSummary jobs={jobsVisibles} />
 
               {/* Tabla de Lotes y Panel Lateral */}
               <section className="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
                 <JobsTable
-                  jobs={jobs}
+                  jobs={jobsVisibles}
                   onSelectJob={(jobId) => setSelectedJobId(jobId)}
                   onReintentar={reintentarLote}
                   reintentandoId={reintentandoId}
@@ -204,7 +230,7 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
           {/* SECCIÓN 2: CARGA MASIVA */}
           {seccionActiva === "carga-masiva" && (
             <CargaMasivaModule
-              empresas={empresas}
+              empresas={empresasVisibles}
               user={user}
               rolUsuario={rolUsuario}
               onLoteCreado={(nuevoJob) => {
@@ -216,7 +242,7 @@ export function Dashboard({ user, jobs, onSignOut, onNuevoJob }: DashboardProps)
           {/* SECCIÓN 3: PAGO ÚNICO */}
           {seccionActiva === "pago-unico" && (
             <PagoUnicoModule
-              empresas={empresas}
+              empresas={empresasVisibles}
               user={user}
               rolUsuario={rolUsuario}
             />

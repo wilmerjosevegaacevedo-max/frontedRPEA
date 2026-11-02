@@ -1,4 +1,4 @@
-import { CLIENTES, ClienteId } from "../types";
+import { CLIENTES, ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa } from "../types";
 
 type LoginScreenProps = {
   email: string;
@@ -14,6 +14,7 @@ type LoginScreenProps = {
   onRememberDeviceChange: (value: boolean) => void;
   onClienteChange: (value: ClienteId) => void;
   onSubmit: (event: React.FormEvent) => void;
+  onSeleccionarCredencialRapida?: (cred: CredencialEmpresa) => void;
 };
 
 export function LoginScreen({
@@ -30,6 +31,7 @@ export function LoginScreen({
   onRememberDeviceChange,
   onClienteChange,
   onSubmit,
+  onSeleccionarCredencialRapida,
 }: LoginScreenProps) {
   return (
     <main className="w-full min-h-screen bg-background flex items-center justify-center">
@@ -242,18 +244,55 @@ export function LoginScreen({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onEmailChange("admin.rpa@blacksmith.com.co");
-                      onPasswordChange("Admin*2026");
-                    }}
-                    className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
-                  >
-                    <span className="material-symbols-outlined text-[14px]">auto_fix_high</span>
-                    <span>Autocompletar Credenciales de Demostración</span>
-                  </button>
+                {/* Credenciales Rápidas por Empresa y Rol */}
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-surface-container">
+                  <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                    Acceso Rápido por Entidad / Rol (1 Clic)
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {CREDENCIALES_SISTEMA.map((c) => (
+                      <button
+                        key={c.email}
+                        type="button"
+                        onClick={() => {
+                          if (onSeleccionarCredencialRapida) {
+                            onSeleccionarCredencialRapida(c);
+                          } else {
+                            onEmailChange(c.email);
+                            onPasswordChange(c.passwordDefault);
+                            if (c.empresaId !== "TODAS") {
+                              onClienteChange(c.empresaId as ClienteId);
+                            }
+                          }
+                        }}
+                        className={`p-2 rounded-lg text-left border flex flex-col justify-between transition-all ${
+                          email === c.email
+                            ? "bg-primary/10 border-primary shadow-sm"
+                            : "bg-surface-container-low border-surface-container hover:bg-surface-container"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-bold text-[11px] text-on-surface truncate">
+                            {c.empresaId === "TODAS" ? (c.rol === "ADMIN" ? "Admin Master" : "Auditor") : c.empresaId.toUpperCase()}
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold px-1 rounded ${
+                              c.rol === "ADMIN"
+                                ? "bg-red-100 text-red-800"
+                                : c.rol === "SUPERVISOR"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-emerald-100 text-emerald-800"
+                            }`}
+                          >
+                            {c.rol}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-on-surface-variant truncate font-mono mt-1">
+                          {c.email.split("@")[0]}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <button

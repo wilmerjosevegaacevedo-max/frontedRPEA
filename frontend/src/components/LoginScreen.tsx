@@ -275,13 +275,12 @@ export function LoginScreen({
                               : c.empresaId.toUpperCase()}
                           </span>
                           <span
-                            className={`text-[9px] font-bold px-1 rounded ${
-                              c.rol === "ADMIN"
-                                ? "bg-red-100 text-red-800"
-                                : c.rol === "SUPERVISOR"
+                            className={`text-[9px] font-bold px-1 rounded ${c.rol === "ADMIN"
+                              ? "bg-red-100 text-red-800"
+                              : c.rol === "SUPERVISOR"
                                 ? "bg-blue-100 text-blue-800"
                                 : "bg-emerald-100 text-emerald-800"
-                            }`}
+                              }`}
                           >
                             {c.rol}
                           </span>

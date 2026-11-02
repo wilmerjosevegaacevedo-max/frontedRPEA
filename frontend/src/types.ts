@@ -32,9 +32,9 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
     descripcion: "Control total: Único autorizado para registrar empresas y configurar reglas de negocio."
   },
   {
-    email: "operador@continentalgold.com",
+    email: "nomina@continentalgold.com",
     passwordDefault: "Cont*2026",
-    nombre: "Operador Nómina Continental Gold",
+    nombre: "Analista Nómina Continental Gold",
     rol: "ANALISTA",
     empresaId: "continental",
     descripcion: "Gestión exclusiva de planillas y descuentos individuales de Continental Gold."
@@ -48,9 +48,9 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
     descripcion: "Gestión exclusiva de planillas y deducciones de Compañía de Financiamiento CDF."
   },
   {
-    email: "analista@dxc.com",
+    email: "nomina@dxc.com",
     passwordDefault: "Dxc*2026",
-    nombre: "Especialista Nómina DXC Technology",
+    nombre: "Analista Nómina DXC Technology",
     rol: "ANALISTA",
     empresaId: "dxc",
     descripcion: "Gestión exclusiva de planillas y deducciones de DXC Technology Colombia."

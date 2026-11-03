@@ -58,12 +58,79 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
   {
     email: "auditoria@rpa-nomina.com",
     passwordDefault: "Audit*2026",
-    nombre: "Auditor Central de Procesos",
+    nombre: "Auditor Central (Supervisión)",
     rol: "SUPERVISOR",
     empresaId: "TODAS",
     descripcion: "Monitoreo integral, auditoría y trazabilidad en solo lectura."
   }
 ];
+
+export function resolverPerfilUsuario(email?: string | null): CredencialEmpresa {
+  const emailNorm = (email || "").trim().toLowerCase();
+  const match = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
+  if (match) return match;
+
+  if (emailNorm.includes("admin")) {
+    return {
+      email: emailNorm,
+      passwordDefault: "Admin*2026",
+      nombre: "Administrador del Sistema",
+      rol: "ADMIN",
+      empresaId: "TODAS",
+      descripcion: "Control total: Único con acceso a crear empresas y editar reglas."
+    };
+  }
+  if (emailNorm.includes("audit") || emailNorm.includes("supervisor")) {
+    return {
+      email: emailNorm,
+      passwordDefault: "Audit*2026",
+      nombre: "Auditor Central de Supervisión",
+      rol: "SUPERVISOR",
+      empresaId: "TODAS",
+      descripcion: "Supervisión y auditoría en tiempo real (solo lectura)."
+    };
+  }
+  if (emailNorm.includes("cdf")) {
+    return {
+      email: emailNorm,
+      passwordDefault: "Cdf*2026",
+      nombre: "Analista Nómina Compañía CDF",
+      rol: "ANALISTA",
+      empresaId: "cdf",
+      descripcion: "Gestión exclusiva de Compañía de Financiamiento CDF."
+    };
+  }
+  if (emailNorm.includes("dxc")) {
+    return {
+      email: emailNorm,
+      passwordDefault: "Dxc*2026",
+      nombre: "Analista Nómina DXC Technology",
+      rol: "ANALISTA",
+      empresaId: "dxc",
+      descripcion: "Gestión exclusiva de DXC Technology Colombia."
+    };
+  }
+  if (emailNorm.includes("continental") || emailNorm.includes("gold")) {
+    return {
+      email: emailNorm,
+      passwordDefault: "Cont*2026",
+      nombre: "Analista Nómina Continental Gold",
+      rol: "ANALISTA",
+      empresaId: "continental",
+      descripcion: "Gestión exclusiva de Continental Gold."
+    };
+  }
+
+  // Mínimo privilegio por defecto: rol ANALISTA delimitado
+  return {
+    email: emailNorm || "analista@empresa.com",
+    passwordDefault: "",
+    nombre: "Analista de Nómina",
+    rol: "ANALISTA",
+    empresaId: "continental",
+    descripcion: "Acceso operativo delimitado a su empresa."
+  };
+}
 
 export const ROLES_CONFIG: Record<
   RolUsuario,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { Empresa, PagoIndividual, RolUsuario } from "../types";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -11,11 +11,20 @@ type PagoUnicoModuleProps = {
   empresas: Empresa[];
   user: User;
   rolUsuario: RolUsuario;
+  empresaAsignada?: string;
   onPagoRegistrado?: (pago: PagoIndividual) => void;
 };
 
-export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }: PagoUnicoModuleProps) {
-  const [empresaId, setEmpresaId] = useState<string>(empresas[0]?.id || "continental");
+export function PagoUnicoModule({
+  empresas,
+  user,
+  rolUsuario,
+  empresaAsignada,
+  onPagoRegistrado,
+}: PagoUnicoModuleProps) {
+  const esDelimitado = Boolean(empresaAsignada && empresaAsignada !== "TODAS");
+  const idInicial = esDelimitado ? empresaAsignada! : (empresas[0]?.id || "continental");
+  const [empresaId, setEmpresaId] = useState<string>(idInicial);
   const [documento, setDocumento] = useState("");
   const [empleadoNombre, setEmpleadoNombre] = useState("");
   const [salarioBase, setSalarioBase] = useState<number | "">("");
@@ -28,7 +37,16 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
 
   // Filtros de búsqueda en historial
   const [busqueda, setBusqueda] = useState("");
-  const [filtroEmpresa, setFiltroEmpresa] = useState("TODAS");
+  const [filtroEmpresa, setFiltroEmpresa] = useState(esDelimitado ? empresaAsignada! : "TODAS");
+
+  useEffect(() => {
+    if (esDelimitado && empresaAsignada) {
+      setEmpresaId(empresaAsignada);
+      setFiltroEmpresa(empresaAsignada);
+    } else if (empresas.length > 0 && !empresas.some((e) => e.id === empresaId)) {
+      setEmpresaId(empresas[0].id);
+    }
+  }, [esDelimitado, empresaAsignada, empresas, empresaId]);
 
   // Estado para visualización / impresión de comprobante oficial
   const [comprobanteActivo, setComprobanteActivo] = useState<PagoIndividual | null>(null);
@@ -99,9 +117,13 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
     };
   }, [salarioBase, empresaActual, concepto]);
 
-  // Historial filtrado en tiempo real
+  // Historial filtrado en tiempo real respetando aislamiento multi-tenant
   const historialFiltrado = useMemo(() => {
     return historialPagos.filter((p) => {
+      // Si el analista está delimitado a una empresa, rechazar transacciones de otras empresas
+      if (esDelimitado && p.empresaId.toLowerCase() !== empresaAsignada!.toLowerCase()) {
+        return false;
+      }
       const matchEmpresa = filtroEmpresa === "TODAS" || p.empresaId === filtroEmpresa;
       const q = busqueda.trim().toLowerCase();
       const matchTexto =
@@ -111,7 +133,7 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
         (p.id || "").toLowerCase().includes(q);
       return matchEmpresa && matchTexto;
     });
-  }, [historialPagos, busqueda, filtroEmpresa]);
+  }, [historialPagos, busqueda, filtroEmpresa, esDelimitado, empresaAsignada]);
 
   async function registrarPago(e: React.FormEvent) {
     e.preventDefault();
@@ -296,18 +318,27 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
           <form onSubmit={registrarPago} className="flex flex-col gap-space-md">
             {/* Empresa Aliada */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-on-surface-variant uppercase">Empresa Aliada</label>
-              <select
-                value={empresaId}
-                onChange={(e) => setEmpresaId(e.target.value)}
-                className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm font-medium"
-              >
-                {empresas.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.nombre} ({emp.codigo})
-                  </option>
-                ))}
-              </select>
+              <label className="text-xs font-bold text-on-surface-variant uppercase">
+                {esDelimitado ? "Empresa Asignada" : "Empresa Aliada"}
+              </label>
+              {esDelimitado ? (
+                <div className="p-2.5 rounded-lg border border-emerald-300 bg-emerald-50 text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-emerald-600">domain_verification</span>
+                  <span>{empresaActual?.nombre || empresaAsignada?.toUpperCase()} ({empresaActual?.codigo})</span>
+                </div>
+              ) : (
+                <select
+                  value={empresaId}
+                  onChange={(e) => setEmpresaId(e.target.value)}
+                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm font-medium"
+                >
+                  {empresas.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.nombre} ({emp.codigo})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Documento y Nombre */}
@@ -482,20 +513,27 @@ export function PagoUnicoModule({ empresas, user, rolUsuario, onPagoRegistrado }
               )}
             </div>
 
-            <div className="sm:col-span-5 flex items-center gap-1.5">
-              <select
-                value={filtroEmpresa}
-                onChange={(e) => setFiltroEmpresa(e.target.value)}
-                className="w-full bg-white px-2.5 py-1.5 rounded border border-surface-container-highest text-xs text-on-surface font-medium"
-              >
-                <option value="TODAS">Todas las empresas</option>
-                {empresas.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {esDelimitado ? (
+              <div className="sm:col-span-5 flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-bold">
+                <span className="material-symbols-outlined text-[15px] text-emerald-600">domain_verification</span>
+                <span>Empresa: {empresaAsignada?.toUpperCase()}</span>
+              </div>
+            ) : (
+              <div className="sm:col-span-5 flex items-center gap-1.5">
+                <select
+                  value={filtroEmpresa}
+                  onChange={(e) => setFiltroEmpresa(e.target.value)}
+                  className="w-full bg-white px-2.5 py-1.5 rounded border border-surface-container-highest text-xs text-on-surface font-medium"
+                >
+                  <option value="TODAS">Todas las empresas</option>
+                  {empresas.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Tabla de Resultados */}

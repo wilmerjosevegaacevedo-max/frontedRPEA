@@ -4,10 +4,8 @@ import { RolUsuario, ROLES_CONFIG } from "../types";
 
 export function AuditoriaRolesModule({
   rolUsuario,
-  onCambiarRol,
 }: {
   rolUsuario: RolUsuario;
-  onCambiarRol?: (rol: RolUsuario) => void;
 }) {
   const matrizPermisos = [
     {
@@ -113,15 +111,9 @@ export function AuditoriaRolesModule({
                   <span className="material-symbols-outlined text-[14px]">shield</span>
                   <span>{rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}</span>
                 </div>
-                {onCambiarRol && !esElMio && (
-                  <button
-                    type="button"
-                    onClick={() => onCambiarRol(rol)}
-                    className="px-2.5 py-1 rounded-md bg-surface-container-high hover:bg-primary hover:text-white text-on-surface text-xs font-semibold transition-all border border-surface-container"
-                  >
-                    Activar Rol
-                  </button>
-                )}
+                <span className="text-[10px] font-mono text-on-surface-variant uppercase">
+                  {esElMio ? "Rol Activo" : "Bloqueado"}
+                </span>
               </div>
             </div>
           );

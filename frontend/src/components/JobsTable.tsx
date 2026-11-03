@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CLIENTES, Job, grupoEstado } from "../types";
+import { CLIENTES, Job, grupoEstado, RolUsuario } from "../types";
 import { formatRelativeTime } from "../utils/format";
 
 type FiltroEstado = "todos" | "proceso" | "exito" | "fallo";
@@ -9,6 +9,8 @@ type JobsTableProps = {
   onSelectJob: (jobId: string) => void;
   onReintentar: (jobId: string) => void;
   reintentandoId: string | null;
+  empresaAsignada?: string;
+  rolUsuario?: RolUsuario;
 };
 
 function badgeEstado(job: Job) {
@@ -44,10 +46,18 @@ function badgeEstado(job: Job) {
   );
 }
 
-export function JobsTable({ jobs, onSelectJob, onReintentar, reintentandoId }: JobsTableProps) {
+export function JobsTable({
+  jobs,
+  onSelectJob,
+  onReintentar,
+  reintentandoId,
+  empresaAsignada,
+}: JobsTableProps) {
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>("todos");
   const [filtroCliente, setFiltroCliente] = useState("");
   const [busqueda, setBusqueda] = useState("");
+
+  const esDelimitado = Boolean(empresaAsignada && empresaAsignada !== "TODAS");
 
   const conteos = useMemo(
     () => ({
@@ -62,8 +72,12 @@ export function JobsTable({ jobs, onSelectJob, onReintentar, reintentandoId }: J
   const jobsFiltrados = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
     return jobs.filter((job) => {
+      // Si el analista está delimitado a una empresa, rechazar lotes ajenos
+      if (esDelimitado && job.cliente.toLowerCase() !== empresaAsignada!.toLowerCase()) {
+        return false;
+      }
       if (filtroEstado !== "todos" && grupoEstado(job.estado) !== filtroEstado) return false;
-      if (filtroCliente && job.cliente.toLowerCase() !== filtroCliente.toLowerCase()) return false;
+      if (!esDelimitado && filtroCliente && job.cliente.toLowerCase() !== filtroCliente.toLowerCase()) return false;
       if (
         termino &&
         !job.id.toLowerCase().includes(termino) &&
@@ -74,7 +88,7 @@ export function JobsTable({ jobs, onSelectJob, onReintentar, reintentandoId }: J
       }
       return true;
     });
-  }, [jobs, filtroEstado, filtroCliente, busqueda]);
+  }, [jobs, filtroEstado, filtroCliente, busqueda, esDelimitado, empresaAsignada]);
 
   return (
     <div className="xl:col-span-8 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
@@ -142,19 +156,26 @@ export function JobsTable({ jobs, onSelectJob, onReintentar, reintentandoId }: J
             onChange={(event) => setBusqueda(event.target.value)}
           />
         </div>
-        <select
-          aria-label="Filtrar por Cliente"
-          className="w-full sm:w-48 px-3 py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container-lowest"
-          value={filtroCliente}
-          onChange={(event) => setFiltroCliente(event.target.value)}
-        >
-          <option value="">Cliente: Todos</option>
-          {CLIENTES.map((c) => (
-            <option key={c.id} value={c.id}>
-              Cliente: {c.label}
-            </option>
-          ))}
-        </select>
+        {esDelimitado ? (
+          <div className="w-full sm:w-auto px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg text-xs font-bold flex items-center gap-1.5 shrink-0">
+            <span className="material-symbols-outlined text-[16px] text-emerald-600">apartment</span>
+            <span>Empresa: {empresaAsignada?.toUpperCase()}</span>
+          </div>
+        ) : (
+          <select
+            aria-label="Filtrar por Cliente"
+            className="w-full sm:w-48 px-3 py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container-lowest"
+            value={filtroCliente}
+            onChange={(event) => setFiltroCliente(event.target.value)}
+          >
+            <option value="">Cliente: Todos</option>
+            {CLIENTES.map((c) => (
+              <option key={c.id} value={c.id}>
+                Cliente: {c.label}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="w-full overflow-x-auto">

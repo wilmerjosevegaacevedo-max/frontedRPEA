@@ -13,7 +13,8 @@ export type SeccionNavegacion =
 type DashboardHeaderProps = {
   user: User;
   rolUsuario: RolUsuario;
-  onCambiarRol: (nuevoRol: RolUsuario) => void;
+  empresaAsignada?: string;
+  nombrePerfil?: string;
   seccionActiva: SeccionNavegacion;
   onCambiarSeccion: (seccion: SeccionNavegacion) => void;
   onSignOut: () => void;
@@ -28,7 +29,8 @@ function iniciales(user: User): string {
 export function DashboardHeader({
   user,
   rolUsuario,
-  onCambiarRol,
+  empresaAsignada,
+  nombrePerfil,
   seccionActiva,
   onCambiarSeccion,
   onSignOut,
@@ -111,24 +113,21 @@ export function DashboardHeader({
           })}
         </nav>
 
-        {/* Selector de Rol en Vivo + Usuario */}
+        {/* Perfil de Usuario y Rol Autenticado (Inmutable) */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* Selector de Roles para Demostración */}
-          <div className="flex items-center gap-1.5 bg-surface-container-low px-2 py-1 rounded-lg border border-surface-container">
-            <span className="text-[10px] uppercase font-bold text-on-surface-variant hidden sm:inline">
-              Rol:
-            </span>
-            <select
-              value={rolUsuario}
-              onChange={(e) => onCambiarRol(e.target.value as RolUsuario)}
-              className="text-xs font-bold rounded bg-white px-2 py-1 border border-surface-container-highest cursor-pointer text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="ADMIN">ADMIN (Control Total)</option>
-              <option value="SUPERVISOR">SUPERVISOR (Auditoría)</option>
-              <option value="ANALISTA">ANALISTA (Operación)</option>
-            </select>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${roleCfg.badgeBg}`}>
-              {roleCfg.label}
+          {/* Badge de Seguridad y Rol Fijo */}
+          <div className="flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1 rounded-lg border border-surface-container">
+            <span className={`px-2.5 py-1 rounded text-xs font-bold border flex items-center gap-1.5 ${roleCfg.badgeBg}`}>
+              <span className="material-symbols-outlined text-[14px]">
+                {rolUsuario === "ADMIN" ? "security" : rolUsuario === "SUPERVISOR" ? "policy" : "badge"}
+              </span>
+              <span>
+                {rolUsuario === "ADMIN"
+                  ? "Administrador Master"
+                  : rolUsuario === "SUPERVISOR"
+                    ? "Auditor Central"
+                    : `Analista • ${empresaAsignada && empresaAsignada !== "TODAS" ? empresaAsignada.toUpperCase() : "Nómina"}`}
+              </span>
             </span>
           </div>
 
@@ -137,7 +136,7 @@ export function DashboardHeader({
           {/* Avatar del Usuario y Salir */}
           <div className="flex items-center gap-2">
             <div
-              title={user.email || "Usuario"}
+              title={`${nombrePerfil || user.email} (${roleCfg.label})`}
               className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs"
             >
               {iniciales(user)}
@@ -145,7 +144,7 @@ export function DashboardHeader({
             <button
               type="button"
               onClick={onSignOut}
-              title="Cerrar Sesión"
+              title="Cerrar Sesión Segura"
               className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-red-50 transition-colors"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>

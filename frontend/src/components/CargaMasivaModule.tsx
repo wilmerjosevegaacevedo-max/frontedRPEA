@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Empresa, Job, RolUsuario } from "../types";
 import {
   exportarExcelProcesado,
@@ -17,6 +17,7 @@ type CargaMasivaModuleProps = {
   empresas: Empresa[];
   user: User;
   rolUsuario: RolUsuario;
+  empresaAsignada?: string;
   onLoteCreado: (nuevoJob: Job) => void;
 };
 
@@ -24,9 +25,20 @@ export function CargaMasivaModule({
   empresas,
   user,
   rolUsuario,
+  empresaAsignada,
   onLoteCreado,
 }: CargaMasivaModuleProps) {
-  const [empresaId, setEmpresaId] = useState<string>(empresas[0]?.id || "continental");
+  const esDelimitado = Boolean(empresaAsignada && empresaAsignada !== "TODAS");
+  const idInicial = esDelimitado ? empresaAsignada! : (empresas[0]?.id || "continental");
+  const [empresaId, setEmpresaId] = useState<string>(idInicial);
+
+  useEffect(() => {
+    if (esDelimitado && empresaAsignada) {
+      setEmpresaId(empresaAsignada);
+    } else if (empresas.length > 0 && !empresas.some((e) => e.id === empresaId)) {
+      setEmpresaId(empresas[0].id);
+    }
+  }, [empresas, empresaAsignada, esDelimitado, empresaId]);
   const [archivo, setArchivo] = useState<File | null>(null);
   const [analizando, setAnalizando] = useState(false);
   const [guardandoLote, setGuardandoLote] = useState(false);
@@ -150,22 +162,31 @@ export function CargaMasivaModule({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-on-surface-variant uppercase">Empresa:</span>
-          <select
-            value={empresaId}
-            onChange={(e) => {
-              setEmpresaId(e.target.value);
-              setResultado(null);
-              setArchivo(null);
-            }}
-            className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-semibold text-primary"
-          >
-            {empresas.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.nombre} ({emp.codigo})
-              </option>
-            ))}
-          </select>
+          <span className="text-xs font-semibold text-on-surface-variant uppercase">
+            {esDelimitado ? "Empresa Asignada:" : "Empresa:"}
+          </span>
+          {esDelimitado ? (
+            <div className="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-emerald-600">domain_verification</span>
+              <span>{empresaActual?.nombre || empresaAsignada?.toUpperCase()} ({empresaActual?.codigo})</span>
+            </div>
+          ) : (
+            <select
+              value={empresaId}
+              onChange={(e) => {
+                setEmpresaId(e.target.value);
+                setResultado(null);
+                setArchivo(null);
+              }}
+              className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-semibold text-primary"
+            >
+              {empresas.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.nombre} ({emp.codigo})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 

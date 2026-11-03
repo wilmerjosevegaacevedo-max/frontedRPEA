@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, User } from "firebase/auth";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa, Job, RolUsuario } from "../types";
+import { ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa, Job, resolverPerfilUsuario, RolUsuario } from "../types";
 import { LoginScreen } from "../components/LoginScreen";
 import { Dashboard } from "../components/Dashboard";
 
@@ -65,12 +65,15 @@ export default function HomePage() {
   const [rolUsuarioActivo, setRolUsuarioActivo] = useState<RolUsuario>("ADMIN");
   const [empresaAsignadaActiva, setEmpresaAsignadaActiva] = useState<string>("TODAS");
 
-  // Escuchar estado de autenticación en Firebase
+  // Escuchar estado de autenticación en Firebase y resolver rol estricto
   useEffect(() => {
     if (!auth) return;
     return onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
+        const perfil = resolverPerfilUsuario(firebaseUser.email);
+        setRolUsuarioActivo(perfil.rol);
+        setEmpresaAsignadaActiva(perfil.empresaId);
       }
     });
   }, []);
@@ -113,28 +116,20 @@ export default function HomePage() {
     setAuthError("");
     setIsSigningIn(true);
 
-    // Buscar si corresponde a una credencial configurada del sistema
-    const credEncontrada = CREDENCIALES_SISTEMA.find(
-      (c) => c.email.toLowerCase() === email.trim().toLowerCase()
-    );
+    const perfil = resolverPerfilUsuario(email);
 
     try {
       if (!auth) {
-        setUser({ uid: "demo-usr-01", email: email.trim() } as User);
-        if (credEncontrada) {
-          setRolUsuarioActivo(credEncontrada.rol);
-          setEmpresaAsignadaActiva(credEncontrada.empresaId);
-        }
+        setUser({ uid: "demo-usr-01", email: email.trim(), displayName: perfil.nombre } as User);
+        setRolUsuarioActivo(perfil.rol);
+        setEmpresaAsignadaActiva(perfil.empresaId);
         setModoDemo(true);
         return;
       }
 
-      await signInWithEmailAndPassword(auth, email, password);
-
-      if (credEncontrada) {
-        setRolUsuarioActivo(credEncontrada.rol);
-        setEmpresaAsignadaActiva(credEncontrada.empresaId);
-      }
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      setRolUsuarioActivo(perfil.rol);
+      setEmpresaAsignadaActiva(perfil.empresaId);
 
       if (typeof window !== "undefined") {
         if (rememberDevice) {
@@ -145,6 +140,9 @@ export default function HomePage() {
       }
     } catch (err: any) {
       // Si el email es una credencial predefinida del sistema, permitir acceso en modo local con sus permisos
+      const credEncontrada = CREDENCIALES_SISTEMA.find(
+        (c) => c.email.toLowerCase() === email.trim().toLowerCase()
+      );
       if (credEncontrada && password === credEncontrada.passwordDefault) {
         setUser({
           uid: `usr-${credEncontrada.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`,
@@ -158,7 +156,7 @@ export default function HomePage() {
       }
 
       setAuthError(
-        "Credenciales no válidas. Puedes seleccionar uno de los accesos rápidos por rol/empresa de abajo."
+        "Credenciales no válidas. Por favor verifica tu correo y contraseña asignada."
       );
     } finally {
       setIsSigningIn(false);
@@ -183,11 +181,15 @@ export default function HomePage() {
         console.warn("Aviso Auth anónimo en Firebase (usando sesión mock local):", e?.message);
       }
     }
+    const emailDemo = email || "admin.rpa@blacksmith.com.co";
+    const perfil = resolverPerfilUsuario(emailDemo);
     setUser({
       uid: auth?.currentUser?.uid || "usr-demo-academico",
-      email: email || "admin.academico@rpa-nomina.edu.co",
-      displayName: "Administrador / Analista RPA",
+      email: emailDemo,
+      displayName: perfil.nombre,
     } as User);
+    setRolUsuarioActivo(perfil.rol);
+    setEmpresaAsignadaActiva(perfil.empresaId);
     setModoDemo(true);
   }
 

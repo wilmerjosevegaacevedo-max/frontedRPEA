@@ -169,7 +169,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
           </p>
         </div>
 
-        {esAdmin && (
+        {esAdmin ? (
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
@@ -189,6 +189,11 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               <span className="material-symbols-outlined text-[18px]">add_business</span>
               Registrar Nueva Empresa
             </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold shrink-0">
+            <span className="material-symbols-outlined text-blue-600 text-[18px]">verified_user</span>
+            <span>Modo Auditoría: Acceso exclusivo de solo lectura</span>
           </div>
         )}
       </div>

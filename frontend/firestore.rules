@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Colección de Empresas y Reglas Paramétricas
+    match /empresas/{empresaId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 2. Colección de Lotes de Nómina (Jobs)
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if false;
+    }
+
+    // 3. Colección de Pagos Individuales
+    match /pagos/{pagoId} {
+      allow read, write: if true;
+    }
+
+    // 4. Colección de Auditoría y Bitácora RPA
+    match /ejecuciones_rpa/{ejecucionId} {
+      allow read, write: if true;
+    }
+
+    // 5. Diagnóstico del Sistema y Healthcheck
+    match /sistema_diagnostico/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

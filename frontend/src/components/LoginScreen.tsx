@@ -35,110 +35,106 @@ export function LoginScreen({
   const [mostrarAyudaEvaluacion, setMostrarAyudaEvaluacion] = useState(false);
 
   return (
-    <main className="w-full min-h-screen bg-[#080c14] flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
-      {/* Luces y Neones de Fondo (Dark Obsidian & Neon Glow) */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-violet-600/10 blur-[130px] pointer-events-none" />
-
-      <div className="flex flex-col w-full max-w-4xl relative z-10">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden bg-[#0d131f]/95 border border-slate-800 shadow-[0_0_60px_-15px_rgba(16,185,129,0.18)] backdrop-blur-xl">
+    <main className="w-full min-h-screen bg-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col w-full max-w-4xl relative">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-xl">
           
-          {/* Panel Izquierdo: Identidad Dark Obsidian */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-[#0a0f1d] via-[#0f172a] to-[#1a1033] p-8 md:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
+          {/* Panel Izquierdo: Azul Marino Corporativo Institucional */}
+          <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-white p-8 md:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
             <div className="flex flex-col gap-6">
-              {/* Logo con brillo Neón */}
+              {/* Logo y Nombre Institucional */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.25)]">
-                  <span className="material-symbols-outlined text-[26px] text-emerald-400">account_balance_wallet</span>
+                <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
+                  <span className="material-symbols-outlined text-[24px]">account_balance_wallet</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
                     RPA LAD-6819
                   </span>
                   <span className="text-lg font-bold tracking-tight text-white">
-                    Orquestador Nómina
+                    Orquestador de Nómina
                   </span>
                 </div>
               </div>
 
-              {/* Título Principal */}
+              {/* Título y Misión */}
               <div className="flex flex-col gap-2 mt-2">
-                <h2 className="text-xl md:text-2xl font-extrabold text-white leading-snug">
+                <h2 className="text-xl md:text-2xl font-bold text-white leading-snug">
                   Control & Conciliación de Descuentos
                 </h2>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Infraestructura centralizada para liquidación paramétrica, validación de layouts y dispersión transaccional segura.
+                  Sistema centralizado para la validación de archivos, aplicación de reglas de negocio por cliente y auditoría de transacciones en tiempo real.
                 </p>
               </div>
 
-              {/* Pilares con Acabado Neón */}
+              {/* Pilares Corporativos */}
               <div className="flex flex-col gap-3.5 pt-2">
                 <div className="flex items-start gap-3 text-xs">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="material-symbols-outlined text-emerald-400 text-[16px]">verified</span>
+                  <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
+                    <span className="material-symbols-outlined text-[16px]">verified</span>
                   </div>
                   <div>
                     <span className="font-semibold block text-white text-[13px]">Reglas Paramétricas por Entidad</span>
-                    <span className="text-slate-400 text-[11px]">Validación automática de topes, porcentajes y políticas corporativas.</span>
+                    <span className="text-slate-400 text-[11px]">Validación automática de topes, porcentajes y políticas vigentes.</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 text-xs">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="material-symbols-outlined text-emerald-400 text-[16px]">dataset</span>
+                  <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
+                    <span className="material-symbols-outlined text-[16px]">dataset</span>
                   </div>
                   <div>
-                    <span className="font-semibold block text-white text-[13px]">Ingesta de Lotes & Descuentos Únicos</span>
-                    <span className="text-slate-400 text-[11px]">Procesamiento instantáneo con bitácora de novedades y reportes XLSX.</span>
+                    <span className="font-semibold block text-white text-[13px]">Ingesta de Lotes & Pagos Únicos</span>
+                    <span className="text-slate-400 text-[11px]">Procesamiento instantáneo con emisión de reportes conciliados.</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 text-xs">
-                  <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="material-symbols-outlined text-violet-400 text-[16px]">shield</span>
+                  <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
+                    <span className="material-symbols-outlined text-[16px]">shield</span>
                   </div>
                   <div>
-                    <span className="font-semibold block text-white text-[13px]">Segregación Estricta Multi-Entidad</span>
-                    <span className="text-slate-400 text-[11px]">Aislamiento de información por empresa con auditoría inmutable.</span>
+                    <span className="font-semibold block text-white text-[13px]">Aislamiento y Seguridad RBAC</span>
+                    <span className="text-slate-400 text-[11px]">Segregación estricta de datos por empresa con bitácora inmutable.</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Pie de Panel */}
+            {/* Pie de Panel Izquierdo */}
             <div className="pt-6 flex items-center justify-between text-[11px] text-slate-400 font-mono border-t border-slate-800 mt-6">
-              <span>Portal Operativo v2.4</span>
-              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Sistema Seguro
+              <span>Portal Corporativo v2.4</span>
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>Servidor en Línea</span>
               </span>
             </div>
           </div>
 
-          {/* Panel Derecho: Formulario de Autenticación */}
-          <div className="lg:col-span-7 p-8 md:p-10 flex flex-col justify-between bg-[#0d131f]">
+          {/* Panel Derecho: Formulario Corporativo Limpio */}
+          <div className="lg:col-span-7 p-8 md:p-10 flex flex-col justify-between bg-white">
             <div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold uppercase">
-                    Acceso Seguro
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold uppercase tracking-wider border border-blue-100">
+                    Acceso Autorizado
                   </span>
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
                   Iniciar Sesión
                 </h1>
-                <p className="text-xs text-slate-400">
-                  Ingresa tu cuenta institucional. El sistema asignará automáticamente tu rol y empresa autorizada.
+                <p className="text-xs text-slate-500">
+                  Ingresa tu correo institucional asignado. El sistema validará tu rol y empresa de forma automática.
                 </p>
               </div>
 
               <form className="mt-6 flex flex-col gap-4" onSubmit={onSubmit}>
                 {/* Correo Institucional */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider" htmlFor="email-input">
+                  <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider" htmlFor="email-input">
                     Correo Institucional
                   </label>
-                  <div className="relative flex items-center rounded-xl bg-[#131b2c] border border-slate-700/80 focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400/30 transition-all">
+                  <div className="relative flex items-center rounded-xl bg-slate-50 border border-slate-300 focus-within:border-blue-700 focus-within:bg-white focus-within:ring-1 focus-within:ring-blue-700/20 transition-all">
                     <span className="material-symbols-outlined absolute left-3.5 text-slate-400 text-[19px]">
                       alternate_email
                     </span>
@@ -149,17 +145,17 @@ export function LoginScreen({
                       value={email}
                       onChange={(event) => onEmailChange(event.target.value)}
                       placeholder="analista@empresa.com"
-                      className="w-full pl-10 pr-4 py-3 bg-transparent text-white text-sm placeholder:text-slate-500 outline-none font-medium"
+                      className="w-full pl-10 pr-4 py-3 bg-transparent text-slate-900 text-sm placeholder:text-slate-400 outline-none font-medium"
                     />
                   </div>
                 </div>
 
-                {/* Contraseña de Acceso */}
+                {/* Contraseña */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider" htmlFor="password-input">
+                  <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider" htmlFor="password-input">
                     Contraseña
                   </label>
-                  <div className="relative flex items-center rounded-xl bg-[#131b2c] border border-slate-700/80 focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400/30 transition-all">
+                  <div className="relative flex items-center rounded-xl bg-slate-50 border border-slate-300 focus-within:border-blue-700 focus-within:bg-white focus-within:ring-1 focus-within:ring-blue-700/20 transition-all">
                     <span className="material-symbols-outlined absolute left-3.5 text-slate-400 text-[19px]">
                       lock
                     </span>
@@ -170,13 +166,13 @@ export function LoginScreen({
                       value={password}
                       onChange={(event) => onPasswordChange(event.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full pl-10 pr-10 py-3 bg-transparent text-white text-sm placeholder:text-slate-500 outline-none"
+                      className="w-full pl-10 pr-10 py-3 bg-transparent text-slate-900 text-sm placeholder:text-slate-400 outline-none"
                     />
                     <button
                       type="button"
                       title="Mostrar u ocultar contraseña"
                       onClick={onToggleShowPassword}
-                      className="absolute right-3.5 text-slate-400 hover:text-white focus:outline-none"
+                      className="absolute right-3.5 text-slate-400 hover:text-slate-700 focus:outline-none"
                     >
                       <span className="material-symbols-outlined text-[19px]">
                         {showPassword ? "visibility_off" : "visibility"}
@@ -192,44 +188,44 @@ export function LoginScreen({
                       type="checkbox"
                       checked={rememberDevice}
                       onChange={(event) => onRememberDeviceChange(event.target.checked)}
-                      className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer accent-emerald-500"
+                      className="w-4 h-4 rounded border-slate-300 text-blue-700 focus:ring-0 cursor-pointer accent-blue-700"
                     />
-                    <span className="text-xs text-slate-400 select-none">
-                      Recordar estación de trabajo
+                    <span className="text-xs text-slate-600 select-none">
+                      Recordar estación de trabajo segura
                     </span>
                   </label>
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-lg bg-red-500/10 text-red-300 border border-red-500/30 text-xs font-medium flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-red-400">error</span>
+                  <div className="p-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-xs font-medium flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px] text-red-600">error</span>
                     <span>{error}</span>
                   </div>
                 )}
 
-                {/* Botón Principal Neón */}
+                {/* Botón Principal Azul Corporativo */}
                 <button
                   type="submit"
                   disabled={isSigningIn}
-                  className="mt-2 w-full py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="mt-2 w-full py-3 px-6 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <span className={`material-symbols-outlined text-[18px] ${isSigningIn ? "animate-spin" : ""}`}>
                     {isSigningIn ? "sync" : "login"}
                   </span>
-                  <span>{isSigningIn ? "Validando credenciales..." : "Ingresar a la Plataforma"}</span>
+                  <span>{isSigningIn ? "Validando credenciales..." : "Acceder al Orquestador"}</span>
                 </button>
               </form>
 
-              {/* Selector Rápido de Perfiles (Demostración) */}
-              <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col gap-2">
+              {/* Selector Rápido de Perfiles (Discreto) */}
+              <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={() => setMostrarAyudaEvaluacion((v) => !v)}
-                  className="text-xs text-slate-400 hover:text-emerald-400 font-medium flex items-center justify-between w-full p-1.5 rounded hover:bg-slate-800/40 transition-colors"
+                  className="text-xs text-slate-500 hover:text-blue-700 font-medium flex items-center justify-between w-full p-1.5 rounded hover:bg-slate-50 transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[15px] text-emerald-400">key</span>
-                    <span>Accesos rápidos de demostración</span>
+                    <span className="material-symbols-outlined text-[15px] text-blue-600">key</span>
+                    <span>Perfiles de Demostración</span>
                   </span>
                   <span className="material-symbols-outlined text-[16px]">
                     {mostrarAyudaEvaluacion ? "expand_less" : "expand_more"}
@@ -237,7 +233,7 @@ export function LoginScreen({
                 </button>
 
                 {mostrarAyudaEvaluacion && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-2 bg-[#131b2c] rounded-xl border border-slate-800 text-xs animate-fadeIn">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 text-xs animate-fadeIn">
                     {CREDENCIALES_SISTEMA.map((c) => {
                       const etiqueta =
                         c.rol === "ADMIN"
@@ -260,27 +256,27 @@ export function LoginScreen({
                           }}
                           className={`p-2 rounded-lg text-left border flex flex-col justify-between transition-all ${
                             email === c.email
-                              ? "bg-emerald-500/15 border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
-                              : "bg-[#0d131f] border-slate-800 hover:border-slate-700 hover:bg-slate-800/60"
+                              ? "bg-blue-50 border-blue-400 text-blue-900 shadow-xs"
+                              : "bg-white border-slate-200 hover:bg-slate-100"
                           }`}
                         >
                           <div className="flex items-center justify-between w-full">
-                            <span className="font-bold text-[11px] text-white truncate">
+                            <span className="font-bold text-[11px] text-slate-800 truncate">
                               {etiqueta}
                             </span>
                             <span
                               className={`text-[9px] font-bold px-1 rounded ${
                                 c.rol === "ADMIN"
-                                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                  ? "bg-red-50 text-red-700 border border-red-200"
                                   : c.rol === "SUPERVISOR"
-                                  ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                  : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                  ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               }`}
                             >
                               {c.rol}
                             </span>
                           </div>
-                          <span className="text-[10px] text-slate-400 truncate font-mono mt-1">
+                          <span className="text-[10px] text-slate-500 truncate font-mono mt-1">
                             {c.email.split("@")[0]}
                           </span>
                         </button>
@@ -291,9 +287,9 @@ export function LoginScreen({
               </div>
             </div>
 
-            {/* Aviso de Confidencialidad */}
-            <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
-              <span className="material-symbols-outlined text-[14px] text-emerald-500">lock</span>
+            {/* Aviso de Seguridad */}
+            <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+              <span className="material-symbols-outlined text-[14px]">lock</span>
               <span>Acceso protegido bajo políticas de seguridad y confidencialidad corporativa</span>
             </div>
           </div>

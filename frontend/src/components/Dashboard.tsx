@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { User } from "firebase/auth";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { Empresa, EMPRESAS_PREDETERMINADAS, Job, resolverPerfilUsuario, RolUsuario } from "../types";
 import { DashboardHeader, SeccionNavegacion } from "./DashboardHeader";
@@ -130,7 +130,7 @@ export function Dashboard({
   }
 
   return (
-    <div className="w-full min-h-screen bg-background flex flex-col">
+    <div className="w-full min-h-screen bg-slate-50 flex flex-col">
       <DashboardHeader
         user={user}
         rolUsuario={rolUsuario}
@@ -145,57 +145,55 @@ export function Dashboard({
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-6">
           {/* SECCIÓN 1: CENTRO DE CONTROL */}
           {seccionActiva === "centro-de-control" && (
-            <div className="flex flex-col gap-space-lg">
-              {/* Encabezado Principal */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+            <div className="flex flex-col gap-6">
+              {/* Encabezado Principal Sobrio */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
                 <div className="flex flex-col gap-1">
-                  <h1 className="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">
+                  <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
                     Centro de Control de Descuentos de Nómina
                   </h1>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                  <p className="text-xs md:text-sm text-slate-500">
                     {rolUsuario === "ANALISTA"
-                      ? `Panel Operativo Exclusivo: Monitoreando únicamente registros y deducciones de ${empresasVisibles[0]?.nombre || empresaAsignada.toUpperCase()}.`
+                      ? `Gestión operativa de nómina: Monitoreando registros de ${empresasVisibles[0]?.nombre || empresaAsignada.toUpperCase()}.`
                       : rolUsuario === "SUPERVISOR"
-                        ? "Panel de Auditoría y Supervisión Central: Monitoreo integral en solo lectura de todas las empresas."
-                        : "Consola de Administración Central: Control total de empresas, reglas de negocio y supervisión de lotes."}
+                        ? "Supervisión y auditoría central: Monitoreo integral en modo solo lectura de todas las empresas."
+                        : "Consola de administración: Control total de empresas clientes, reglas de negocio y lotes de nómina."}
                   </p>
                 </div>
 
-                {/* Acciones Rápidas Delimitadas por Rol */}
-                <div className="flex flex-wrap items-center gap-2 shrink-0">
-                  {/* Escaneo de Buzón solo permitido para Administrador y Supervisor */}
+                {/* Acciones del Encabezado */}
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                   {(rolUsuario === "ADMIN" || rolUsuario === "SUPERVISOR") && (
                     <button
                       type="button"
                       disabled={escaneandoRpa}
                       onClick={escanearBuzonRpa}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-sm transition-all disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 text-white font-medium text-xs hover:bg-slate-900 shadow-xs transition-all disabled:opacity-60"
                     >
                       <span className={`material-symbols-outlined text-[16px] ${escaneandoRpa ? "animate-spin" : ""}`}>
                         {escaneandoRpa ? "sync" : "forward_to_inbox"}
                       </span>
-                      <span>{escaneandoRpa ? "Escaneando Buzón..." : "Escanear Gmail"}</span>
+                      <span>{escaneandoRpa ? "Sincronizando..." : "Sincronizar Gmail"}</span>
                     </button>
                   )}
 
-                  {/* Operaciones de Carga solo permitidas para Administrador y Analistas */}
                   {(rolUsuario === "ADMIN" || rolUsuario === "ANALISTA") && (
                     <>
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("carga-masiva")}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-on-primary font-semibold text-xs hover:bg-primary/90 shadow-sm transition-all"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-xs transition-all"
                       >
-                        <span className="material-symbols-outlined text-[16px]">cloud_upload</span>
-                        Carga Masiva
+                        <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                        <span>Nueva Planilla</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("pago-unico")}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 shadow-sm transition-all"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 shadow-xs transition-all"
                       >
-                        <span className="material-symbols-outlined text-[16px]">payments</span>
-                        Descuento Individual
+                        <span className="material-symbols-outlined text-[16px] text-emerald-600">payments</span>
+                        <span>Descuento Individual</span>
                       </button>
                     </>
                   )}
@@ -203,7 +201,7 @@ export function Dashboard({
               </div>
 
               {notificacionRpa && (
-                <div className="p-3.5 rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200 flex items-center justify-between gap-2 text-xs font-medium animate-fadeIn">
+                <div className="p-3.5 rounded-xl bg-indigo-50 text-indigo-900 border border-indigo-200 flex items-center justify-between gap-2 text-xs font-medium animate-fadeIn">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-indigo-600 text-[18px]">mark_email_read</span>
                     <span>{notificacionRpa}</span>
@@ -222,7 +220,7 @@ export function Dashboard({
               <KpiSummary jobs={jobsVisibles} />
 
               {/* Tabla de Lotes y Panel Lateral */}
-              <section className="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
+              <section className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
                 <JobsTable
                   jobs={jobsVisibles}
                   empresaAsignada={empresaAsignada}
@@ -282,21 +280,22 @@ export function Dashboard({
         </div>
       </main>
 
-      <footer className="w-full bg-surface-container-lowest py-4 border-t border-surface-container mt-auto">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-on-surface-variant font-body-xs text-body-xs">
+      {/* Pie de Página Profesional y Sobrio */}
+      <footer className="w-full bg-white py-4 border-t border-slate-200 mt-auto">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-xs">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 bg-primary text-white font-code-sm text-code-sm rounded font-bold">
-              NEXT.JS 14
-            </span>
-            <span className="font-body-xs text-body-xs text-on-surface-variant flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
-              Motor TypeScript Client-Side • Sin Python
-            </span>
+            <span className="font-semibold text-slate-700">RPA LAD-6819</span>
+            <span>•</span>
+            <span>Orquestador de Descuentos de Nómina</span>
           </div>
-          <span className="flex items-center gap-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-            Operando 100% en Navegador y Firebase
-          </span>
+          <div className="flex items-center gap-3 text-[11px] text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+              <span className="text-slate-600 font-medium">Servicios Operacionales Activos</span>
+            </span>
+            <span>•</span>
+            <span>v2.4.0 Enterprise</span>
+          </div>
         </div>
       </footer>
     </div>

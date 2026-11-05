@@ -257,9 +257,7 @@ export function PagoUnicoModule({
             <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
               Descuento Individual de Nómina
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-              Transacción Inmediata
-            </span>
+            
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Registra y liquida deducciones directas para un empleado específico, con validación de topes y emisión de comprobante oficial.
@@ -309,9 +307,7 @@ export function PagoUnicoModule({
                 <span className="material-symbols-outlined text-[14px]">bolt</span>
                 <span>Llenar con Ejemplo</span>
               </button>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary">
-                Rol: {rolUsuario}
-              </span>
+              
             </div>
           </div>
 

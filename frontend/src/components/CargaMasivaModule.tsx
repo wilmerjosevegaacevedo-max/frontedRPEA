@@ -152,12 +152,10 @@ export function CargaMasivaModule({
             <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
               Carga Masiva de Planillas de Nómina
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-              Procesamiento TypeScript 100% Client-Side
-            </span>
+            
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Validación de formato, cálculo automático de conceptos según reglas de empresa y generación instantánea de resultados sin intermediación de servidores externos.
+            Ingesta, validación de estructura y liquidación automática de planillas según los parámetros configurados para la entidad.
           </p>
         </div>
 

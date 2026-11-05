@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, User } from "firebase/auth";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa, Job, resolverPerfilUsuario, RolUsuario } from "../types";
+import { ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa, Empresa, EMPRESAS_PREDETERMINADAS, Job, resolverPerfilUsuario, RolUsuario } from "../types";
 import { LoginScreen } from "../components/LoginScreen";
 import { Dashboard } from "../components/Dashboard";
 
@@ -64,6 +64,25 @@ export default function HomePage() {
   const [modoDemo, setModoDemo] = useState(false);
   const [rolUsuarioActivo, setRolUsuarioActivo] = useState<RolUsuario>("ADMIN");
   const [empresaAsignadaActiva, setEmpresaAsignadaActiva] = useState<string>("TODAS");
+  const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
+
+  // Sincronizar empresas dinámicas desde Firestore
+  useEffect(() => {
+    if (!db) return;
+    const unsub = onSnapshot(
+      collection(db, "empresas"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const cargadas = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() } as Empresa));
+          setEmpresas(cargadas);
+        }
+      },
+      (error) => {
+        console.warn("Aviso al sincronizar empresas en auth:", error.message);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   // Escuchar estado de autenticación en Firebase y resolver rol estricto
   useEffect(() => {
@@ -71,12 +90,12 @@ export default function HomePage() {
     return onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const perfil = resolverPerfilUsuario(firebaseUser.email);
+        const perfil = resolverPerfilUsuario(firebaseUser.email, empresas);
         setRolUsuarioActivo(perfil.rol);
         setEmpresaAsignadaActiva(perfil.empresaId);
       }
     });
-  }, []);
+  }, [empresas]);
 
   // Cargar email recordado
   useEffect(() => {
@@ -116,7 +135,7 @@ export default function HomePage() {
     setAuthError("");
     setIsSigningIn(true);
 
-    const perfil = resolverPerfilUsuario(email);
+    const perfil = resolverPerfilUsuario(email, empresas);
 
     try {
       if (!auth) {
@@ -139,7 +158,7 @@ export default function HomePage() {
         }
       }
     } catch (err: any) {
-      // Si el email es una credencial predefinida del sistema, permitir acceso en modo local con sus permisos
+      // 1. Si el email es una credencial predefinida del sistema
       const credEncontrada = CREDENCIALES_SISTEMA.find(
         (c) => c.email.toLowerCase() === email.trim().toLowerCase()
       );
@@ -151,6 +170,28 @@ export default function HomePage() {
         } as User);
         setRolUsuarioActivo(credEncontrada.rol);
         setEmpresaAsignadaActiva(credEncontrada.empresaId);
+        if (credEncontrada.empresaId !== "TODAS") {
+          setCliente(credEncontrada.empresaId as ClienteId);
+        }
+        setModoDemo(true);
+        return;
+      }
+
+      // 2. Si coincide con una empresa registrada dinámicamente en Firestore
+      const empresaCoincidente = empresas.find(
+        (e) =>
+          e.emailOperador?.toLowerCase() === email.trim().toLowerCase() &&
+          (e.passwordDefault === password || (!e.passwordDefault && password === `${e.codigo}*2026`))
+      );
+      if (empresaCoincidente) {
+        setUser({
+          uid: `usr-empresa-${empresaCoincidente.id}`,
+          email: email.trim(),
+          displayName: `Analista Nómina ${empresaCoincidente.nombre}`,
+        } as User);
+        setRolUsuarioActivo("ANALISTA");
+        setEmpresaAsignadaActiva(empresaCoincidente.id);
+        setCliente(empresaCoincidente.id as ClienteId);
         setModoDemo(true);
         return;
       }

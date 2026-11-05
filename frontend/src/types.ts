@@ -65,10 +65,26 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
   }
 ];
 
-export function resolverPerfilUsuario(email?: string | null): CredencialEmpresa {
+export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[]): CredencialEmpresa {
   const emailNorm = (email || "").trim().toLowerCase();
   const match = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
   if (match) return match;
+
+  if (empresas && empresas.length > 0) {
+    const empMatch = empresas.find(
+      (e) => e.emailOperador && e.emailOperador.toLowerCase() === emailNorm
+    );
+    if (empMatch) {
+      return {
+        email: emailNorm,
+        passwordDefault: empMatch.passwordDefault || `${empMatch.codigo}*2026`,
+        nombre: `Analista Nómina ${empMatch.nombre}`,
+        rol: "ANALISTA",
+        empresaId: empMatch.id,
+        descripcion: `Gestión exclusiva de planillas y descuentos de ${empMatch.nombre}.`,
+      };
+    }
+  }
 
   if (emailNorm.includes("admin")) {
     return {
@@ -173,6 +189,8 @@ export interface Empresa {
   nombre: string;
   nit: string;
   codigo: string;
+  emailOperador?: string; // Correo institucional asignado para login
+  passwordDefault?: string; // Clave de acceso asignada para el analista
   reglas: ReglasNegocio;
   creadoEn?: Timestamp;
 }
@@ -183,6 +201,8 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
     nombre: "Continental Gold",
     nit: "900.123.456-7",
     codigo: "CONT",
+    emailOperador: "nomina@continentalgold.com",
+    passwordDefault: "Cont*2026",
     reglas: {
       porcentajeVida: 1.5,
       porcentajeGmm: 2.5,
@@ -197,6 +217,8 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
     nombre: "Compañía de Financiamiento CDF",
     nit: "800.987.654-1",
     codigo: "CDF",
+    emailOperador: "nomina@cdf-financiera.com",
+    passwordDefault: "Cdf*2026",
     reglas: {
       porcentajeVida: 1.8,
       porcentajeGmm: 2.0,
@@ -211,6 +233,8 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
     nombre: "DXC Technology Colombia",
     nit: "860.555.444-9",
     codigo: "DXC",
+    emailOperador: "nomina@dxc.com",
+    passwordDefault: "Dxc*2026",
     reglas: {
       porcentajeVida: 2.0,
       porcentajeGmm: 3.0,

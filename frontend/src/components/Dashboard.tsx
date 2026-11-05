@@ -29,14 +29,20 @@ export function Dashboard({
   jobs,
   onSignOut,
   onNuevoJob,
+  rolInicial,
+  empresaAsignadaInicial,
 }: DashboardProps) {
-  // Perfil inmutable y delimitado estrictamente según el correo autenticado
-  const perfil = useMemo(() => resolverPerfilUsuario(user.email), [user.email]);
-  const rolUsuario: RolUsuario = perfil.rol;
-  const empresaAsignada: string = perfil.empresaId;
+  const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
+
+  // Perfil delimitado estrictamente según el correo autenticado y empresas registradas
+  const perfil = useMemo(() => resolverPerfilUsuario(user.email, empresas), [user.email, empresas]);
+  const rolUsuario: RolUsuario = rolInicial || perfil.rol;
+  const empresaAsignada: string =
+    empresaAsignadaInicial && empresaAsignadaInicial !== "TODAS"
+      ? empresaAsignadaInicial
+      : perfil.empresaId;
 
   const [seccionActiva, setSeccionActiva] = useState<SeccionNavegacion>("centro-de-control");
-  const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [reintentandoId, setReintentandoId] = useState<string | null>(null);
   const [escaneandoRpa, setEscaneandoRpa] = useState(false);

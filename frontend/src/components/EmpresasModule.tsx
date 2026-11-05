@@ -22,6 +22,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
   const [nombre, setNombre] = useState("");
   const [nit, setNit] = useState("");
   const [codigo, setCodigo] = useState("");
+  const [emailOperador, setEmailOperador] = useState("");
+  const [passwordDefault, setPasswordDefault] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [porcentajeVida, setPorcentajeVida] = useState(1.5);
   const [porcentajeGmm, setPorcentajeGmm] = useState(2.0);
   const [porcentajeCostos, setPorcentajeCostos] = useState(1.0);
@@ -36,6 +39,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setNombre("");
     setNit("");
     setCodigo("");
+    setEmailOperador("");
+    setPasswordDefault("");
+    setMostrarPassword(false);
     setPorcentajeVida(1.5);
     setPorcentajeGmm(2.0);
     setPorcentajeCostos(1.0);
@@ -76,6 +82,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setNombre(emp.nombre);
     setNit(emp.nit);
     setCodigo(emp.codigo);
+    setEmailOperador(emp.emailOperador || `nomina@${emp.codigo.toLowerCase()}.com`);
+    setPasswordDefault(emp.passwordDefault || `${emp.codigo.charAt(0).toUpperCase() + emp.codigo.slice(1).toLowerCase()}*2026`);
+    setMostrarPassword(false);
     setPorcentajeVida(emp.reglas.porcentajeVida);
     setPorcentajeGmm(emp.reglas.porcentajeGmm);
     setPorcentajeCostos(emp.reglas.porcentajeCostos);
@@ -109,12 +118,21 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
       .filter(Boolean);
 
     const id = empresaSeleccionada ? empresaSeleccionada.id : codigo.trim().toLowerCase();
+    const codigoClean = codigo.trim().toUpperCase();
+
+    const correoFinal =
+      emailOperador.trim() || `nomina@${codigoClean.toLowerCase()}.com`;
+    const passwordFinal =
+      passwordDefault.trim() ||
+      `${codigoClean.charAt(0).toUpperCase() + codigoClean.slice(1).toLowerCase()}*2026`;
 
     const empresaData: Empresa = {
       id,
       nombre: nombre.trim(),
       nit: nit.trim(),
-      codigo: codigo.trim().toUpperCase(),
+      codigo: codigoClean,
+      emailOperador: correoFinal,
+      passwordDefault: passwordFinal,
       reglas: {
         porcentajeVida: Number(porcentajeVida),
         porcentajeGmm: Number(porcentajeGmm),
@@ -328,6 +346,70 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                 />
               </div>
 
+              {/* Credenciales de Acceso para el Analista de la Empresa */}
+              <div className="p-space-md rounded-xl bg-slate-900/90 border border-cyan-500/30 flex flex-col gap-3 shadow-[0_0_15px_rgba(6,182,212,0.08)]">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    <span className="material-symbols-outlined text-[16px]">vpn_key</span>
+                    Credenciales de Acceso para el Analista (Frontend)
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
+                    ROL: ANALISTA ({codigo || "AUTO"})
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Define el correo institucional y la clave con la cual el analista de esta empresa iniciará sesión en el sistema.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-slate-300 uppercase">
+                      Correo Institucional del Analista
+                    </label>
+                    <div className="relative">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">
+                        alternate_email
+                      </span>
+                      <input
+                        type="email"
+                        placeholder={`nomina@${codigo ? codigo.toLowerCase() : "empresa"}.com`}
+                        value={emailOperador}
+                        onChange={(e) => setEmailOperador(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm font-mono outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-slate-300 uppercase">
+                      Clave de Acceso Asignada
+                    </label>
+                    <div className="relative">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">
+                        lock
+                      </span>
+                      <input
+                        type={mostrarPassword ? "text" : "password"}
+                        placeholder={codigo ? `${codigo.charAt(0).toUpperCase() + codigo.slice(1).toLowerCase()}*2026` : "Clave*2026"}
+                        value={passwordDefault}
+                        onChange={(e) => setPasswordDefault(e.target.value)}
+                        className="w-full pl-9 pr-10 py-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm font-mono outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setMostrarPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-300 transition-colors"
+                        title={mostrarPassword ? "Ocultar clave" : "Ver clave"}
+                      >
+                        <span className="material-symbols-outlined text-[18px]">
+                          {mostrarPassword ? "visibility_off" : "visibility"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Parámetros de Descuento (Reglas de Negocio) */}
               <div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-md border border-surface-container">
                 <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
@@ -481,6 +563,39 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     Modificar Parámetros
                   </button>
                 )}
+              </div>
+
+              {/* Credenciales de Acceso Asignadas a esta Empresa */}
+              <div className="p-space-md rounded-xl bg-slate-900/80 border border-cyan-500/30 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    <span className="material-symbols-outlined text-[16px]">badge</span>
+                    Credenciales Asignadas para el Analista
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
+                    ROL: ANALISTA ({empresaSeleccionada.codigo})
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                    <span className="material-symbols-outlined text-slate-400 text-[18px]">mail</span>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Correo de Acceso</span>
+                      <span className="font-mono text-white truncate font-medium">
+                        {empresaSeleccionada.emailOperador || `nomina@${empresaSeleccionada.codigo.toLowerCase()}.com`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                    <span className="material-symbols-outlined text-slate-400 text-[18px]">key</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Clave Asignada</span>
+                      <span className="font-mono text-cyan-300 font-bold tracking-wider">
+                        {empresaSeleccionada.passwordDefault || `${empresaSeleccionada.codigo.charAt(0).toUpperCase() + empresaSeleccionada.codigo.slice(1).toLowerCase()}*2026`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">

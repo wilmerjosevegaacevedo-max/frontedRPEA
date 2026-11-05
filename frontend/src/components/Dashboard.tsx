@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { User } from "firebase/auth";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Empresa, EMPRESAS_PREDETERMINADAS, Job, resolverPerfilUsuario, RolUsuario } from "../types";
 import { DashboardHeader, SeccionNavegacion } from "./DashboardHeader";
@@ -114,6 +114,20 @@ export function Dashboard({
         tamanoBytes: 184320,
         creadoEn: { toDate: () => new Date() } as any,
       };
+
+      if (db) {
+        try {
+          await setDoc(doc(collection(db, "jobs"), nuevoLoteAuto.id), {
+            ...nuevoLoteAuto,
+            usuarioId: user.uid,
+            usuarioEmail: user.email || "operador@tdea.edu.co",
+            creadoEn: serverTimestamp(),
+            actualizadoEn: serverTimestamp(),
+          });
+        } catch (dbErr: any) {
+          console.warn("Aviso al guardar lote sincronizado en Firestore:", dbErr?.message);
+        }
+      }
 
       if (onNuevoJob) {
         onNuevoJob(nuevoLoteAuto);

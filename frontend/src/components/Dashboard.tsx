@@ -150,21 +150,14 @@ export function Dashboard({
           {seccionActiva === "centro-de-control" && (
             <div className="flex flex-col gap-6 animate-fadeIn">
               {/* Banner de Bienvenida y Acciones Rápidas HUD */}
-              <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-slate-900/70 backdrop-blur-xl border border-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="flex flex-col gap-1 relative z-10">
-                  <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2 font-mono">
-                    <span>Centro de Control</span>
-                    <span className="text-cyan-400">•</span>
-                    <span className="text-cyan-400 text-sm font-normal">Orquestación RPA</span>
+              <div className="relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/70 backdrop-blur-xl border border-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center gap-3 relative z-10">
+                  <h1 className="text-xl font-bold text-white tracking-tight font-mono">
+                    Centro de Control
                   </h1>
-                  <p className="text-xs md:text-sm text-slate-400">
-                    Monitoreo de deducciones, reglas de negocio y conciliación algorítmica para{" "}
-                    <strong className="text-cyan-300 font-semibold font-mono">
-                      {empresaAsignada === "TODAS" ? "todas las entidades" : empresaAsignada.toUpperCase()}
-                    </strong>.
-                  </p>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+                    {empresaAsignada === "TODAS" ? "TODAS LAS ENTIDADES" : empresaAsignada.toUpperCase()}
+                  </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 relative z-10">

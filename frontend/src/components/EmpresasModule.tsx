@@ -175,7 +175,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               type="button"
               onClick={restaurarPredeterminadas}
               disabled={guardando}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container-high text-on-surface hover:text-primary font-semibold text-xs border border-surface-container transition-all"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               title="Restaurar empresas base: Continental, CDF y DXC"
             >
               <span className="material-symbols-outlined text-[16px]">restore</span>
@@ -184,7 +184,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
             <button
               type="button"
               onClick={iniciarNuevaEmpresa}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary/90 transition-all shadow-sm shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white font-bold text-xs shadow-[0_3px_12px_rgba(30,64,175,0.35)] hover:shadow-[0_5px_16px_rgba(30,64,175,0.45)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0"
             >
               <span className="material-symbols-outlined text-[18px]">add_business</span>
               Registrar Nueva Empresa
@@ -440,14 +440,14 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                 <button
                   type="button"
                   onClick={() => setModoEdicion(false)}
-                  className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-semibold hover:bg-surface-container"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs transition-all duration-200"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={guardando}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary/90 shadow-sm disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white text-xs font-bold shadow-[0_3px_12px_rgba(30,64,175,0.35)] hover:shadow-[0_5px_16px_rgba(30,64,175,0.45)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50"
                 >
                   <span className={`material-symbols-outlined text-[18px] ${guardando ? "animate-spin" : ""}`}>
                     {guardando ? "sync" : "save"}
@@ -475,7 +475,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   <button
                     type="button"
                     onClick={() => editarEmpresa(empresaSeleccionada)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-container text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                   >
                     <span className="material-symbols-outlined text-[16px]">tune</span>
                     Modificar Parámetros

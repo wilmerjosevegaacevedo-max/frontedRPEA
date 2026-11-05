@@ -203,13 +203,13 @@ export function LoginScreen({
                   </div>
                 )}
 
-                {/* Botón Principal Azul Corporativo */}
+                {/* Botón Principal Elegante con Profundidad y Brillo */}
                 <button
                   type="submit"
                   disabled={isSigningIn}
-                  className="mt-2 w-full py-3 px-6 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="mt-2 w-full py-3.5 px-6 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-[0_4px_14px_rgba(30,64,175,0.38)] hover:shadow-[0_6px_20px_rgba(30,64,175,0.45)] border border-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  <span className={`material-symbols-outlined text-[18px] ${isSigningIn ? "animate-spin" : ""}`}>
+                  <span className={`material-symbols-outlined text-[19px] ${isSigningIn ? "animate-spin" : ""}`}>
                     {isSigningIn ? "sync" : "login"}
                   </span>
                   <span>{isSigningIn ? "Validando credenciales..." : "Acceder al Orquestador"}</span>
@@ -254,7 +254,7 @@ export function LoginScreen({
                               onPasswordChange(c.passwordDefault);
                             }
                           }}
-                          className={`p-2 rounded-lg text-left border flex flex-col justify-between transition-all ${
+                          className={`p-2.5 rounded-xl text-left border flex flex-col justify-between shadow-2xs hover:shadow-xs hover:-translate-y-0.5 transition-all duration-200 ${
                             email === c.email
                               ? "bg-blue-50 border-blue-400 text-blue-900 shadow-xs"
                               : "bg-white border-slate-200 hover:bg-slate-100"

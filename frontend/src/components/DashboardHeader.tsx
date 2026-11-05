@@ -102,8 +102,8 @@ export function DashboardHeader({
                 onClick={() => onCambiarSeccion(item.id)}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   activo
-                    ? "bg-white text-blue-700 shadow-xs border border-slate-200/70"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+                    ? "bg-white text-blue-800 shadow-[0_1px_4px_rgba(0,0,0,0.08)] border border-slate-200 font-bold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold"
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -145,7 +145,7 @@ export function DashboardHeader({
               type="button"
               onClick={onSignOut}
               title="Cerrar Sesión Segura"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-200"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>
             </button>

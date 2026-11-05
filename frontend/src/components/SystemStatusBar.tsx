@@ -91,7 +91,7 @@ export function SystemStatusBar() {
           type="button"
           onClick={ejecutarDiagnostico}
           disabled={cargando}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container text-primary font-semibold text-xs border border-surface-container transition-all shadow-sm disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50"
         >
           <span className={`material-symbols-outlined text-[16px] ${cargando ? "animate-spin" : ""}`}>
             {cargando ? "sync" : "refresh"}

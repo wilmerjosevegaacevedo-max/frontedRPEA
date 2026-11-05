@@ -185,7 +185,7 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
         <button
           type="button"
           onClick={descargarReporteLoteExcel}
-          className="w-full inline-flex items-center justify-center gap-space-xs px-space-md py-2 bg-surface-container-high hover:bg-surface-container text-primary font-semibold text-xs rounded-lg transition-colors border border-surface-container"
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs rounded-xl border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
         >
           <span className="material-symbols-outlined text-[16px]">description</span>
           <span>Descargar Resumen del Lote (.xlsx)</span>
@@ -206,7 +206,7 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
         )}
         {grupo === "fallo" && (
           <button
-            className="w-full inline-flex items-center justify-center gap-space-xs px-space-md py-2 bg-primary/10 text-primary hover:bg-primary/20 font-label-md text-label-md rounded-lg transition-colors disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-b from-amber-50 to-amber-100/70 hover:from-amber-100 hover:to-amber-200/70 text-amber-900 font-bold text-xs rounded-xl border border-amber-300 hover:border-amber-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
             type="button"
             disabled={reintentando}
             onClick={() => onReintentar(job.id)}

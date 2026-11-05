@@ -275,7 +275,7 @@ export function PagoUnicoModule({
             <button
               type="button"
               onClick={() => setComprobanteActivo(historialPagos[0])}
-              className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 text-white rounded text-xs font-semibold hover:bg-emerald-700 transition-colors shadow-sm shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-lg text-xs font-bold shadow-[0_2px_8px_rgba(16,185,129,0.3)] border border-emerald-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0"
             >
               <span className="material-symbols-outlined text-[15px]">receipt_long</span>
               Ver Comprobante Oficial
@@ -302,7 +302,7 @@ export function PagoUnicoModule({
               <button
                 type="button"
                 onClick={autocompletarEjemplo}
-                className="px-2.5 py-1 rounded-md bg-surface-container-high text-primary hover:bg-primary/10 font-semibold text-xs flex items-center gap-1 transition-all border border-surface-container"
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs flex items-center gap-1.5 border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 <span className="material-symbols-outlined text-[14px]">bolt</span>
                 <span>Llenar con Ejemplo</span>
@@ -460,7 +460,7 @@ export function PagoUnicoModule({
             <button
               type="submit"
               disabled={procesando || !salarioBase}
-              className="inline-flex items-center justify-center gap-2 p-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary/90 transition-all shadow-md disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white font-bold text-sm shadow-[0_4px_14px_rgba(30,64,175,0.38)] hover:shadow-[0_6px_20px_rgba(30,64,175,0.48)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none"
             >
               <span className={`material-symbols-outlined text-[18px] ${procesando ? "animate-spin" : ""}`}>
                 {procesando ? "sync" : "send"}
@@ -483,7 +483,7 @@ export function PagoUnicoModule({
               <button
                 type="button"
                 onClick={exportarHistorialExcel}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-container-high text-on-surface hover:text-primary hover:bg-surface-container font-semibold text-xs border border-surface-container transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 <span className="material-symbols-outlined text-[15px]">download</span>
                 <span>Exportar (.xlsx)</span>
@@ -578,7 +578,7 @@ export function PagoUnicoModule({
                             type="button"
                             onClick={() => setComprobanteActivo(p)}
                             title="Ver e Imprimir Comprobante Oficial"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container hover:bg-primary hover:text-white text-primary text-xs font-semibold transition-all border border-surface-container-highest"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-b from-white to-slate-50 hover:from-blue-50 hover:to-blue-100 text-blue-700 hover:text-blue-900 text-xs font-bold transition-all border border-slate-200 hover:border-blue-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 duration-150"
                           >
                             <span className="material-symbols-outlined text-[14px]">receipt_long</span>
                             <span>Comprobante</span>
@@ -695,14 +695,14 @@ export function PagoUnicoModule({
                 <button
                   type="button"
                   onClick={() => setComprobanteActivo(null)}
-                  className="px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs transition-all"
                 >
                   Cerrar
                 </button>
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-bold shadow-md transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white text-xs font-bold shadow-[0_3px_12px_rgba(30,64,175,0.35)] hover:shadow-[0_5px_16px_rgba(30,64,175,0.45)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                 >
                   <span className="material-symbols-outlined text-[16px]">print</span>
                   <span>Imprimir / Guardar en PDF</span>

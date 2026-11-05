@@ -245,7 +245,7 @@ export function JobsTable({
                             event.preventDefault();
                             onSelectJob(job.id);
                           }}
-                          className="inline-flex items-center gap-1 px-space-sm py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-label-sm font-label-sm transition-colors"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-b from-emerald-50 to-emerald-100 text-emerald-800 hover:from-emerald-100 hover:to-emerald-200 rounded-md text-xs font-bold border border-emerald-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
                         >
                           <span className="material-symbols-outlined text-[14px]">download</span>
                           <span>Ver ZIP</span>
@@ -256,7 +256,7 @@ export function JobsTable({
                           type="button"
                           disabled={reintentandoId === job.id}
                           onClick={() => onReintentar(job.id)}
-                          className="inline-flex items-center gap-1 px-space-sm py-1 bg-red-100 text-error hover:bg-red-200 rounded text-label-sm font-label-sm transition-colors disabled:opacity-60"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-b from-red-50 to-red-100 text-red-800 hover:from-red-100 hover:to-red-200 rounded-md text-xs font-bold border border-red-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 disabled:opacity-60"
                         >
                           <span className={`material-symbols-outlined text-[14px] ${reintentandoId === job.id ? "animate-spin" : ""}`}>
                             {reintentandoId === job.id ? "sync" : "replay"}

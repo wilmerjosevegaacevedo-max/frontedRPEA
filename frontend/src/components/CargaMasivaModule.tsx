@@ -198,7 +198,7 @@ export function CargaMasivaModule({
             <button
               type="button"
               onClick={() => exportarExcelProcesado(resultado)}
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5 hover:bg-emerald-700 shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-[0_2px_8px_rgba(16,185,129,0.3)] border border-emerald-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               <span className="material-symbols-outlined text-[16px]">download</span>
               Descargar Planilla Liquidada
@@ -350,7 +350,7 @@ export function CargaMasivaModule({
                 type="button"
                 onClick={confirmarYEncolar}
                 disabled={guardandoLote}
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-on-primary font-semibold text-sm hover:bg-primary/90 transition-all shadow-md disabled:opacity-50"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-sm shadow-[0_3px_12px_rgba(30,64,175,0.3)] hover:shadow-[0_5px_18px_rgba(30,64,175,0.4)] border border-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:transform-none"
               >
                 <span className={`material-symbols-outlined text-[18px] ${guardandoLote ? "animate-spin" : ""}`}>
                   {guardandoLote ? "sync" : "verified"}
@@ -361,7 +361,7 @@ export function CargaMasivaModule({
               <button
                 type="button"
                 onClick={() => exportarExcelProcesado(resultado)}
-                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-surface-container-high text-primary font-semibold text-xs hover:bg-surface-container transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 font-bold text-xs border border-slate-300 hover:border-blue-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 <span className="material-symbols-outlined text-[16px]">file_download</span>
                 <span>Exportar Planilla Excel Calculada</span>

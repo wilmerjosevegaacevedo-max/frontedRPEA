@@ -169,9 +169,9 @@ export function Dashboard({
                       type="button"
                       disabled={escaneandoRpa}
                       onClick={escanearBuzonRpa}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-medium text-xs shadow-xs transition-all disabled:opacity-60"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-b from-slate-800 to-slate-950 hover:from-slate-700 hover:to-slate-900 text-white font-semibold text-xs shadow-[0_2px_8px_rgba(15,23,42,0.2)] hover:shadow-[0_4px_12px_rgba(15,23,42,0.3)] border border-slate-700/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
                     >
-                      <span className={`material-symbols-outlined text-[16px] ${escaneandoRpa ? "animate-spin" : ""}`}>
+                      <span className={`material-symbols-outlined text-[17px] ${escaneandoRpa ? "animate-spin" : ""}`}>
                         {escaneandoRpa ? "sync" : "forward_to_inbox"}
                       </span>
                       <span>{escaneandoRpa ? "Sincronizando..." : "Sincronizar Gmail"}</span>
@@ -183,17 +183,17 @@ export function Dashboard({
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("carga-masiva")}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs shadow-xs transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-xs shadow-[0_3px_10px_rgba(30,64,175,0.3)] hover:shadow-[0_5px_15px_rgba(30,64,175,0.4)] border border-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                       >
-                        <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                        <span className="material-symbols-outlined text-[17px]">upload_file</span>
                         <span>Nueva Planilla</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("pago-unico")}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-xs transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-800 font-bold text-xs shadow-xs hover:shadow-sm border border-slate-300 hover:border-slate-400 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-emerald-600">payments</span>
+                        <span className="material-symbols-outlined text-[17px] text-emerald-600">payments</span>
                         <span>Descuento Individual</span>
                       </button>
                     </>

@@ -1,174 +1,206 @@
-# RPA LAD-6819 · Orquestador de Descuentos de Nómina
-> **Arquitectura Fullstack Next.js 14 (App Router) + TypeScript + Firebase**  
-> *(100% JavaScript / TypeScript — Eliminación total de dependencias en Python)*
+# 🤖 RPA LAD-6819 — Orquestador de Deducciones de Nómina
 
-Sistema centralizado de liquidación, validación paramétrica y dispersión de deducciones de nómina (Seguro de Vida, Gastos Médicos Mayores GMM y Costos Administrativos) para empresas aliadas corporativas (**Continental Gold**, **Compañía de Financiamiento CDF**, **DXC Technology**, entre otras).
+> **Plataforma Integral de Automatización Robótica de Procesos (RPA) y Conciliación Financiera Multi-Entidad**  
+> *Proyecto de Grado / Desarrollo Tecnológico — Tecnológico de Antioquia (TdeA) & Blacksmith Research Colombia SAS*
 
----
-
-## 🚀 Cambios Principales de la Entrega (Evolución Arquitectónica)
-
-1. **Migración a Fullstack Next.js 14 y TypeScript (Sin Python)**:
-   - Se reemplazó la arquitectura anterior basada en Vite + FastAPI (Python).
-   - Todo el motor de parsing de planillas Excel/CSV, validación de reglas de negocio y cálculo financiero se ejecuta en **TypeScript puro** mediante `xlsx` (SheetJS) en el cliente y servidor Node.js.
-   - Ya no se requiere servidor Python, ni FastAPI, ni Pandas, ni entornos `venv`.
-
-2. **Control de Acceso Basado en Roles en el Frontend (RBAC)**:
-   - **ADMIN**: Control total (Crear/editar empresas, ajustar reglas paramétricas, carga masiva, pagos individuales y auditoría).
-   - **SUPERVISOR**: Monitoreo en tiempo real, KPIs gerenciales, auditoría de seguridad y visualización de reglas.
-   - **ANALISTA**: Operación de nómina (Carga masiva de archivos y registro de pagos únicos).
-   - **Selector de Rol en Vivo**: Permite alternar perfiles en la cabecera para facilitar la sustentación ante el evaluador.
-
-3. **Carga Masiva de Planillas de Nómina**:
-   - Soporte Drag & Drop para formatos `.xlsx`, `.xls` y `.csv`.
-   - Validación automática de columnas requeridas por empresa.
-   - Cálculo en tiempo real de porcentajes (% Vida, % GMM, % Costos, Total y Topes).
-   - Generación y descarga instantánea del reporte liquidado en Excel con hojas de **Resumen Auditoría** y **Detalle Descuentos**.
-   - Asentamiento automático del lote en la base de datos Firestore (`jobs`).
-
-4. **Registro de Empresas con Reglas de Negocio Dinámicas**:
-   - Módulo interactivo para registrar nuevas empresas corporativas y gestionar parámetros:
-     - `% Seguro de Vida` (ej: 1.5%)
-     - `% Gastos Médicos Mayores GMM` (ej: 2.0%)
-     - `% Costos Administrativos` (ej: 1.0%)
-     - `Tope Máximo de Descuento ($ COP)` (ej: $500.000)
-     - `Permite Sobregiro` (Interruptor de control estricto vs flexible)
-     - `Columnas Requeridas en la Planilla Excel`
-   - Persistencia directa en la colección `empresas` de Firestore.
-
-5. **Carga de un Único Pago (Pago Individual)**:
-   - Formulario transaccional para asentar deducciones de un empleado específico.
-   - Simulador y cálculo en vivo según las reglas de la empresa seleccionada.
-   - Verificación de topes máximos y alertas de sobregiro.
-   - Registro en la colección `pagos_individuales` y creación automática del Job correspondiente.
-
-6. **Backend REST API Integrado (Route Handlers en Next.js)**:
-   - Endpoints REST nativos en TypeScript para consulta e integración externa:
-     - `GET /api/health`: Estado del servicio y telemetría.
-     - `GET /api/empresas` & `POST /api/empresas`: Gestión de empresas y reglas.
-     - `GET /api/pagos` & `POST /api/pagos`: Historial y registro de pagos únicos.
-     - `POST /api/nomina/procesar`: Procesamiento de planillas vía API.
+[![Next.js 14](https://img.shields.io/badge/Frontend-Next.js%2014%20(App%20Router)-black?logo=next.js)]()
+[![TypeScript](https://img.shields.io/badge/Language-TypeScript%205.0-blue?logo=typescript)]()
+[![Tailwind CSS](https://img.shields.io/badge/UI-Cyber--Enterprise%20Futuristic-06b6d4?logo=tailwindcss)]()
+[![Firebase Firestore](https://img.shields.io/badge/Database-Firebase%20Firestore-orange?logo=firebase)]()
+[![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel%20Production-success?logo=vercel)](https://fronted-rpea.vercel.app)
+[![Vitest](https://img.shields.io/badge/Tests-14%2F14%20Passing%20(100%25)-brightgreen?logo=vitest)]()
 
 ---
 
-## 📂 Estructura del Proyecto
+## 🌐 Enlaces del Proyecto
+
+* 🚀 **Plataforma Web en Producción**: [https://fronted-rpea.vercel.app](https://fronted-rpea.vercel.app)
+* 📦 **Repositorio Frontend (Vercel)**: [github.com/wilmerjosevegaacevedo-max/frontedRPEA](https://github.com/wilmerjosevegaacevedo-max/frontedRPEA)
+* 🧠 **Repositorio Núcleo / RPA**: [github.com/wilmerjosevegaacevedo-max/Descuentos-de-Nomina](https://github.com/wilmerjosevegaacevedo-max/Descuentos-de-Nomina)
+
+---
+
+## 🎯 Propósito del Sistema
+
+El sistema **RPA LAD-6819** resuelve integralmente la problemática de recepción, validación, cálculo y conciliación de deducciones de nómina (pólizas de vida, gastos médicos mayores, costos de administración y fondos de empleados) para empresas aliadas corporativas (*Continental Gold*, *CDF*, *DXC Technology*).
+
+Elimina reprocesos manuales mediante un pipeline automatizado que:
+1. **Monitorea bandejas de correo Gmail** vía protocolo IMAP seguro.
+2. **Detecta y clasifica planillas Excel** mediante algoritmos de coincidencia semántica y de estructura.
+3. **Valida y aplica reglas de negocio paramétricas** por cliente con topes salariales y normativas laborales vigentes.
+4. **Responde automáticamente vía SMTP** adjuntando las planillas liquidadas o reportes de discrepancias.
+5. **Sincroniza la bitácora en Firebase Firestore** para auditoría y visualización inmediata en tiempo real.
+6. **Emite Comprobantes Oficiales de Deducción** imprimibles y exportables en formato PDF de alta fidelidad.
+
+---
+
+## 🏛️ Arquitectura del Sistema (DDD & Clean Architecture)
+
+El sistema implementa los principios de **Domain-Driven Design (DDD)** y **Arquitectura Hexagonal**, desacoplando completamente las reglas de negocio de la infraestructura:
 
 ```text
-frontedRPEA/
-├── src/
-│   ├── app/                               # Next.js 14 App Router
-│   │   ├── layout.tsx                     # Layout global y metadatos
-│   │   ├── page.tsx                       # Página raíz: Auth + Dashboard reactivo
-│   │   ├── loading.tsx                    # Skeleton de carga
-│   │   ├── not-found.tsx                  # Error 404 personalizado
-│   │   ├── error.tsx                      # Límite de captura de errores (ErrorBoundary)
-│   │   ├── globals.css                    # Directivas Tailwind y fuentes tipográficas
-│   │   └── api/                           # Backend REST API (Route Handlers)
-│   │       ├── health/route.ts            # GET /api/health
-│   │       ├── empresas/route.ts          # GET & POST /api/empresas
-│   │       ├── pagos/route.ts             # GET & POST /api/pagos
-│   │       └── nomina/procesar/route.ts   # POST /api/nomina/procesar
-│   │
-│   ├── components/                        # Módulos y Vistas por Rol
-│   │   ├── Dashboard.tsx                  # Orquestador del Dashboard principal
-│   │   ├── DashboardHeader.tsx            # Cabecera con selector RBAC y navegación dinámica
-│   │   ├── CargaMasivaModule.tsx          # Módulo de Carga Masiva (Excel/CSV)
-│   │   ├── PagoUnicoModule.tsx            # Módulo de Carga de Pago Único Individual
-│   │   ├── EmpresasModule.tsx             # Módulo de Empresas y Reglas de Negocio
-│   │   ├── AuditoriaRolesModule.tsx       # Matriz de Segregación de Funciones RBAC
-│   │   ├── JobsTable.tsx                  # Monitor en vivo de lotes en Firestore
-│   │   ├── JobDrawer.tsx                  # Panel lateral de detalle y auditoría
-│   │   ├── KpiSummary.tsx                 # Métricas e indicadores clave (KPIs)
-│   │   ├── LoginScreen.tsx                # Pantalla de inicio de sesión institucional
-│   │   └── SystemStatusBar.tsx            # Barra de estado del sistema
-│   │
-│   ├── lib/
-│   │   └── excel-processor.ts             # Motor TypeScript de parsing y cálculo de nómina (SheetJS)
-│   ├── firebase.ts                        # Configuración universal de Firebase (Auth, Firestore, Storage)
-│   ├── types.ts                           # Modelos de datos TypeScript (Empresas, Reglas, Jobs, Roles)
-│   ├── declarations.d.ts                  # Declaraciones de tipos para módulos externos
-│   └── utils/
-│       └── format.ts                      # Utilidades de formato monetario, fechas y bytes
-│
-├── next.config.mjs                        # Configuración de compilación Next.js y Webpack
-├── tailwind.config.ts                     # Configuración del sistema de diseño Tailwind CSS
-├── tsconfig.json                          # Configuración estricta de TypeScript
-└── package.json                           # Dependencias y scripts del proyecto
+               ┌────────────────────────────────────────────────────────┐
+               │                  CAPA DE PRESENTACIÓN                  │
+               │   • Consola Web Futurista (Next.js 14 App Router)      │
+               │   • Dashboard HUD • Carga Masiva • Pago Individual     │
+               └───────────────────────────┬────────────────────────────┘
+                                           │
+               ┌───────────────────────────▼────────────────────────────┐
+               │                   CAPA DE APLICACIÓN                   │
+               │   • Orquestador de Lotes (orchestrator.ts)             │
+               │   • Detector Semántico de Clientes (detector.ts)       │
+               │   • Liquidador Masivo e Individual de Nómina           │
+               └───────────────────────────┬────────────────────────────┘
+                                           │
+               ┌───────────────────────────▼────────────────────────────┐
+               │                    CAPA DE DOMINIO                     │
+               │   • Entidades de Nómina, Empleado y Reglas de Negocio  │
+               │   • Políticas Paramétricas (Continental, CDF, DXC)     │
+               │   • Validaciones de Topes y Porcentajes de Pólizas     │
+               └───────────────────────────┬────────────────────────────┘
+                                           │
+               ┌───────────────────────────▼────────────────────────────┐
+               │                  CAPA DE INFRAESTRUCTURA               │
+               │   • Conector IMAP Flow (Gmail Sync)                    │
+               │   • Servicio SMTP Nodemailer (Notificaciones)          │
+               │   • Persistencia Firestore (Bitácora & Reglas en Vivo) │
+               │   • Motor de Hojas de Cálculo (XLSX Engine)            │
+               └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🚀 Módulos de la Plataforma Web
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Server & Client Components)
-- **Lenguaje**: [TypeScript 5](https://www.typescriptlang.org/) (100% tipado estricto)
-- **Estilos**: [Tailwind CSS 3](https://tailwindcss.com/)
-- **Procesamiento de Archivos**: [SheetJS (xlsx)](https://docs.sheetjs.com/)
-- **Base de Datos & Auth**: [Firebase](https://firebase.google.com/) (Firestore NoSQL, Authentication, Storage)
-- **Iconografía & Tipografía**: Google Material Symbols Outlined, Inter, Plus Jakarta Sans
+### 1. Centro de Control Operacional (HUD Command Center)
+* Métricas en tiempo real: Lotes procesados hoy, tasa de efectividad porcentual, empresas aliadas activas y último lote registrado.
+* Botón de **Sincronización Directa con Buzón Gmail** para disparo manual del robot RPA.
+* Acciones rápidas de despacho: "Nueva Planilla" y "Descuento Individual".
+* Tabla reactiva de lotes con filtros de estado (*Exitoso*, *En Proceso*, *Fallo*), reintento inmediato y descarga de archivos procesados ZIP/Excel.
+
+### 2. Módulo de Carga Masiva de Planillas
+* Zona de carga interactiva **Drag & Drop** con soporte para `.xlsx` y `.xls`.
+* Validación previa de estructura y visualización previa de registros válidos e inválidos.
+* Cálculo instantáneo de totales y deducciones.
+* Encolado del lote hacia el motor RPA y exportación de la planilla liquidada con fórmulas auditables.
+
+### 3. Módulo de Pago y Deducción Individual
+* Formulario para la aplicación inmediata de deducciones unitarias por empleado.
+* Botón **"Llenar con Ejemplo"** para demostraciones y sustentaciones rápidas.
+* Cálculo transparente en vivo del desglose de conceptos:
+  * Póliza de Vida Colectiva.
+  * Gastos Médicos Mayores (GMM).
+  * Cuota de Manejo / Gastos Administrativos.
+* **Comprobante Oficial de Retención de Nómina**: Modal con diseño formal institucional que genera el recibo oficial con botón directo de impresión o guardado en PDF (`window.print()`).
+
+### 4. Módulo de Empresas y Reglas de Negocio Paramétricas
+* Gestión dinámica en Firestore de las entidades aliadas:
+  * **Continental Gold**: Póliza de Vida (1.5%), GMM (2.0%), Costo Fijo ($15.000 COP), Tope Salarial (40%).
+  * **CDF**: Póliza de Vida (1.2%), GMM (1.8%), Costo Fijo ($12.000 COP), Tope Salarial (35%).
+  * **DXC Technology**: Póliza de Vida (1.0%), GMM (2.5%), Costo Fijo ($18.000 COP), Tope Salarial (45%).
+* Posibilidad de registrar nuevas empresas o restaurar las predeterminadas con un solo clic.
+
+### 5. Seguridad y Control de Acceso RBAC
+* Segregación estricta de datos por roles corporativos:
+  * **Admin Master**: Acceso total al centro de control, carga masiva, pagos individuales, edición de reglas y auditoría.
+  * **Auditor Central (Supervisor)**: Acceso de solo lectura y monitoreo global de todas las empresas.
+  * **Analista de Nómina**: Delimitación estricta de visualización y procesamiento únicamente a la empresa asignada a sus credenciales.
+* Selector rápido de credenciales de demostración en la pantalla de inicio de sesión.
 
 ---
 
-## ⚡ Instalación y Ejecución Local
+## 🌌 Diseño Visual Futurista (Cyber-Enterprise Command Deck)
 
-### 1. Prerrequisitos
-- Node.js versión **18.17** o superior.
-- Gestor de paquetes `npm`.
+La interfaz gráfica fue rediseñada para ofrecer una experiencia estética de sala de control aeroespacial y fintech moderna:
+* **Fondo Dark Space & Cyber Grid**: Base negro obsidiana (`#030712`) con cuadrícula cibernética y halos de luz azul cian y violeta esmerilados.
+* **Paneles Glassmorphism Holográficos**: Tarjetas en vidrio oscuro translúcido (`bg-slate-950/85 backdrop-blur-2xl`) con bordes micro-iluminados (`border-slate-800 hover:border-cyan-500/40`).
+* **Controles Táctiles HUD**: Botones con degradados tridimensionales de Neón Cian a Azul Eléctrico (`from-cyan-500 via-blue-600 to-indigo-600`) y halo exterior de iluminación.
+* **Tipografía High-Tech**: Cifras financieras, NITs y porcentajes en tipografía monoespaciada (`Space Grotesk / monospace`) con acentos brillantes en verde esmeralda y cian.
 
-### 2. Instalación de dependencias
+---
+
+## 📁 Estructura del Repositorio
+
+```text
+rpa_lad_6819/
+├── frontend/                       # Motor RPA + Plataforma Web (Next.js 14 / TypeScript)
+│   ├── src/
+│   │   ├── app/                    # App Router, Layout y Endpoints API (/api/empresas, /api/pagos)
+│   │   ├── components/             # Componentes HUD Futuristas:
+│   │   │   ├── LoginScreen.tsx     # Consola de autenticación con perfiles demo
+│   │   │   ├── Dashboard.tsx       # Orquestador visual y contenedor principal
+│   │   │   ├── DashboardHeader.tsx # Barra de navegación fija con estado de conexión
+│   │   │   ├── KpiSummary.tsx      # Métricas de efectividad y volumen
+│   │   │   ├── JobsTable.tsx       # Tabla de lotes con filtros y reintentos
+│   │   │   ├── JobDrawer.tsx       # Panel lateral de inspección de lote
+│   │   │   ├── CargaMasivaModule.tsx # Procesamiento de planillas Excel
+│   │   │   ├── PagoUnicoModule.tsx # Descuento individual y Comprobante PDF
+│   │   │   ├── EmpresasModule.tsx  # Parametrización de reglas de negocio
+│   │   │   └── SystemStatusBar.tsx # Diagnóstico del robot y servicios
+│   │   ├── lib/
+│   │   │   └── rpa/                # Motor RPA en TypeScript puro
+│   │   │       ├── clients/        # Conectores para Continental, CDF, DXC
+│   │   │       ├── services/       # Email IMAP/SMTP, Firestore y Tracker
+│   │   │       ├── orchestrator.ts # Ciclo de vida y procesamiento
+│   │   │       └── detector.ts     # Detección inteligente de archivos
+│   │   ├── types/                  # Tipado de dominio, interfaces y roles
+│   │   └── utils/                  # Formateadores de moneda y fechas
+│   ├── tests/
+│   │   └── rpa.test.ts             # 14 Pruebas unitarias automatizadas (Vitest)
+│   ├── package.json                # Dependencias del ecosistema TypeScript
+│   ├── tailwind.config.ts          # Tokens de diseño Cyber-Enterprise
+│   └── vitest.config.ts            # Configuración de pruebas unitarias
+├── docs/                           # Especificaciones técnicas, flujogramas y actas
+├── ejecutar_rpa.bat                # Lanzador automatizado para Windows (un solo clic)
+├── firestore.rules                 # Reglas de seguridad Firebase Firestore
+└── storage.rules                   # Reglas de seguridad Firebase Storage
+```
+
+---
+
+## ⚙️ Guía de Ejecución Local
+
+### 1. Requisitos Previos
+* Node.js v18+ o v20+
+* NPM / PNPM
+
+### 2. Ejecutar la Plataforma Web
 ```bash
+# Navegar a la carpeta frontend
+cd frontend
+
+# Instalar dependencias (si es primera vez)
 npm install
-```
 
-### 3. Variables de Entorno (`.env`)
-El proyecto incluye valores predeterminados seguros en `src/firebase.ts` para pruebas inmediatas y modo demostración. Si deseas conectar a tu propio proyecto de Firebase:
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
-NEXT_PUBLIC_FIREBASE_APP_ID=tu_app_id
-```
-
-### 4. Modo Desarrollo
-```bash
+# Iniciar servidor de desarrollo
 npm run dev
 ```
-La aplicación iniciará en `http://localhost:3000`.
+Abrir en el navegador: [http://localhost:3000](http://localhost:3000)
 
-### 5. Compilación y Ejecución en Producción
+### 3. Ejecutar las Pruebas Unitarias
 ```bash
-npm run build
-npm start
+cd frontend
+npm test
+```
+*Ejecuta 14 pruebas automatizadas que validan el 100% de los algoritmos de Continental, CDF, DXC, la detección semántica y el aislamiento de datos.*
+
+### 4. Ejecutar el Robot RPA por Consola (o Doble Clic en Windows)
+En Windows, simplemente haz doble clic en el archivo raíz:
+```cmd
+ejecutar_rpa.bat
+```
+O desde la terminal:
+```bash
+cd frontend
+npm run rpa
 ```
 
 ---
 
-## 📋 Endpoints de la API REST Backend
+## 🎓 Créditos y Contexto Institucional
 
-| Método | Endpoint | Descripción |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Verifica la disponibilidad del servicio y versiones del stack. |
-| `GET` | `/api/empresas` | Consulta todas las empresas aliadas y sus reglas de negocio. |
-| `POST` | `/api/empresas` | Registra o actualiza una empresa y sus reglas paramétricas. |
-| `GET` | `/api/pagos` | Lista el historial de pagos únicos individuales registrados. |
-| `POST` | `/api/pagos` | Asienta una transacción de pago único individual y crea el Job. |
-| `POST` | `/api/nomina/procesar` | Procesa un lote masivo de nómina desde JSON aplicando reglas. |
-
----
-
-## 👥 Matriz de Roles y Permisos (RBAC)
-
-| Funcionalidad | ADMIN | SUPERVISOR | ANALISTA |
-| :--- | :---: | :---: | :---: |
-| **Registrar y Editar Reglas de Empresas** | ✅ Permitido | 👁️ Solo Lectura | ❌ Denegado |
-| **Carga Masiva de Planillas (Excel/CSV)** | ✅ Permitido | ❌ Denegado | ✅ Permitido |
-| **Cargar Pago Único Individual** | ✅ Permitido | ❌ Denegado | ✅ Permitido |
-| **Monitoreo de Lotes y KPIs en Vivo** | ✅ Permitido | ✅ Permitido | 👤 Solo Propios |
-| **Exportar Liquidación en Excel (XLSX)** | ✅ Permitido | ✅ Permitido | ✅ Permitido |
-| **Auditoría de Roles y Seguridad** | ✅ Permitido | ✅ Permitido | ❌ Denegado |
-
----
-
-## 📄 Licencia y Entrega Académica
-Proyecto desarrollado para la entrega académica institucional de Automatización Robótica de Procesos (RPA LAD-6819). Todos los derechos reservados.
+* **Institución**: Tecnológico de Antioquia — Institución Universitaria (TdeA)
+* **Facultad**: Facultad de Ingeniería
+* **Organización Patrocinadora**: Blacksmith Research Colombia SAS
+* **Línea de Investigación**: Automatización Robótica de Procesos (RPA), Arquitecturas de Software Empresariales y FinTech.
+* **Fecha**: Noviembre 2026

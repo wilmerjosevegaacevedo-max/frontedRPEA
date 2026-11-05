@@ -102,9 +102,49 @@ export function Dashboard({
 
   async function escanearBuzonRpa() {
     setEscaneandoRpa(true);
-    setNotificacionRpa(null);
+    setNotificacionRpa("Enviando orden de ejecución al Robot RPA...");
     try {
-      // 1. Intentar conectar directamente con el Backend RPA local si está activo en el puerto 4000
+      // 1. Si db está activo, enviar orden en tiempo real a la cola de Firestore 'rpa_comandos'
+      if (db) {
+        const cmdId = `CMD-${Date.now()}`;
+        const cmdRef = doc(collection(db, "rpa_comandos"), cmdId);
+        await setDoc(cmdRef, {
+          comando: "ESCANEAR_GMAIL",
+          estado: "PENDIENTE",
+          creadoEn: serverTimestamp(),
+          usuarioEmail: user.email || "operador@tdea.edu.co",
+        });
+
+        // Esperar hasta 22 segundos a que el Robot procese la orden y responda
+        const respuestaPromise = new Promise<any>((resolve) => {
+          const unsub = onSnapshot(cmdRef as any, (snap: any) => {
+            if (snap && typeof snap.exists === "function" ? snap.exists() : snap?.exists) {
+              const data = snap.data();
+              if (data?.estado === "COMPLETADO" || data?.estado === "FALLIDO") {
+                unsub();
+                resolve(data);
+              }
+            }
+          });
+        });
+
+        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 20000));
+
+        const respuesta: any = await Promise.race([respuestaPromise, timeoutPromise]);
+
+        if (respuesta && respuesta.estado === "COMPLETADO") {
+          const r = respuesta.resultado;
+          setNotificacionRpa(
+            `¡Robot RPA ejecutado con éxito! Se procesaron ${r?.procesados || 0} correo(s) (${r?.exitosos || 0} exitosos) y fueron movidos a la carpeta 'Procesados'.`
+          );
+          return;
+        } else if (respuesta && respuesta.estado === "FALLIDO") {
+          setNotificacionRpa(`Robot reportó un aviso: ${respuesta.error || "Error en ciclo RPA"}`);
+          return;
+        }
+      }
+
+      // 2. Si no hubo respuesta en tiempo real, intentar llamada REST directa al puerto 4000
       try {
         const resp = await fetch("http://localhost:4000/api/rpa/scan", {
           method: "POST",
@@ -119,49 +159,15 @@ export function Dashboard({
           return;
         }
       } catch {
-        // Backend local no está escuchando en puerto 4000
+        // Backend no responde directamente por HTTP
       }
 
-      // 2. Si no hay backend local respondiendo, explicar al usuario cómo procesar correos reales
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const nuevoLoteAuto: Job = {
-        id: `LOTE-GMAIL-${Date.now().toString().slice(-4)}`,
-        cliente: "continental",
-        nombreArchivo: `Planilla_Gmail_Sync_${new Date().toLocaleDateString("es-CO").replace(/\//g, "-")}.xlsx`,
-        tipoCarga: "MASIVA",
-        totalRegistros: 42,
-        registrosExitosos: 42,
-        registrosFallidos: 0,
-        totalDescuentos: 2480000,
-        estado: "EXITOSO",
-        tamanoBytes: 184320,
-        creadoEn: { toDate: () => new Date() } as any,
-      };
-
-      if (db) {
-        try {
-          await setDoc(doc(collection(db, "jobs"), nuevoLoteAuto.id), {
-            ...nuevoLoteAuto,
-            usuarioId: user.uid,
-            usuarioEmail: user.email || "operador@tdea.edu.co",
-            creadoEn: serverTimestamp(),
-            actualizadoEn: serverTimestamp(),
-          });
-        } catch (dbErr: any) {
-          console.warn("Aviso al guardar lote sincronizado en Firestore:", dbErr?.message);
-        }
-      }
-
-      if (onNuevoJob) {
-        onNuevoJob(nuevoLoteAuto);
-      }
-
+      // 3. Si el motor local no está activo en este momento, avisar claramente al usuario
       setNotificacionRpa(
-        "Sincronización web completada. Recuerda: Para descargar y mover los correos reales de tu Gmail, ejecuta en tu equipo el archivo 'ejecutar_rpa.bat' o inicia el backend con 'ejecutar_backend.bat'."
+        "Orden encolada en la nube. Para procesar tu Gmail en tiempo real desde el botón, asegúrate de tener ejecutando 'ejecutar_backend.bat' o haz doble clic en 'ejecutar_rpa.bat' en tu computador."
       );
     } catch (err: any) {
-      setNotificacionRpa("Error al sincronizar buzón: " + (err?.message || "Servicio temporalmente inaccesible"));
+      setNotificacionRpa("Error al activar robot: " + (err?.message || "Servicio temporalmente inaccesible"));
     } finally {
       setEscaneandoRpa(false);
     }

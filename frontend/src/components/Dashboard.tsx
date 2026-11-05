@@ -130,7 +130,7 @@ export function Dashboard({
   }
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 flex flex-col">
+    <div className="w-full min-h-screen bg-[#080c14] text-slate-100 flex flex-col">
       <DashboardHeader
         user={user}
         rolUsuario={rolUsuario}
@@ -146,13 +146,14 @@ export function Dashboard({
           {/* SECCIÓN 1: CENTRO DE CONTROL */}
           {seccionActiva === "centro-de-control" && (
             <div className="flex flex-col gap-6">
-              {/* Encabezado Principal Sobrio */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+              {/* Encabezado Principal Dark Obsidian */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-[#0d131f] border border-slate-800 shadow-[0_0_35px_-10px_rgba(16,185,129,0.12)]">
                 <div className="flex flex-col gap-1">
-                  <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-                    Centro de Control de Descuentos de Nómina
+                  <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                    <span>Centro de Control de Descuentos</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shadow-[0_0_8px_#34d399]" />
                   </h1>
-                  <p className="text-xs md:text-sm text-slate-500">
+                  <p className="text-xs md:text-sm text-slate-400">
                     {rolUsuario === "ANALISTA"
                       ? `Gestión operativa de nómina: Monitoreando registros de ${empresasVisibles[0]?.nombre || empresaAsignada.toUpperCase()}.`
                       : rolUsuario === "SUPERVISOR"
@@ -168,7 +169,7 @@ export function Dashboard({
                       type="button"
                       disabled={escaneandoRpa}
                       onClick={escanearBuzonRpa}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 text-white font-medium text-xs hover:bg-slate-900 shadow-xs transition-all disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-xs shadow-[0_0_15px_rgba(139,92,246,0.35)] transition-all disabled:opacity-60"
                     >
                       <span className={`material-symbols-outlined text-[16px] ${escaneandoRpa ? "animate-spin" : ""}`}>
                         {escaneandoRpa ? "sync" : "forward_to_inbox"}
@@ -182,17 +183,17 @@ export function Dashboard({
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("carga-masiva")}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-xs transition-all"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold text-xs shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all"
                       >
-                        <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                        <span className="material-symbols-outlined text-[16px] font-bold">upload_file</span>
                         <span>Nueva Planilla</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("pago-unico")}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 shadow-xs transition-all"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#131b2c] border border-slate-700/80 hover:border-slate-600 text-slate-200 font-semibold text-xs shadow-xs transition-all"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-emerald-600">payments</span>
+                        <span className="material-symbols-outlined text-[16px] text-emerald-400">payments</span>
                         <span>Descuento Individual</span>
                       </button>
                     </>
@@ -201,15 +202,15 @@ export function Dashboard({
               </div>
 
               {notificacionRpa && (
-                <div className="p-3.5 rounded-xl bg-indigo-50 text-indigo-900 border border-indigo-200 flex items-center justify-between gap-2 text-xs font-medium animate-fadeIn">
+                <div className="p-3.5 rounded-xl bg-violet-500/10 text-violet-200 border border-violet-500/30 flex items-center justify-between gap-2 text-xs font-medium animate-fadeIn">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-indigo-600 text-[18px]">mark_email_read</span>
+                    <span className="material-symbols-outlined text-violet-400 text-[18px]">mark_email_read</span>
                     <span>{notificacionRpa}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setNotificacionRpa(null)}
-                    className="text-indigo-500 hover:text-indigo-800"
+                    className="text-violet-400 hover:text-white"
                   >
                     <span className="material-symbols-outlined text-[16px]">close</span>
                   </button>
@@ -281,17 +282,17 @@ export function Dashboard({
       </main>
 
       {/* Pie de Página Profesional y Sobrio */}
-      <footer className="w-full bg-white py-4 border-t border-slate-200 mt-auto">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-xs">
+      <footer className="w-full bg-[#090d16] py-4 border-t border-slate-800 mt-auto">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-400 text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700">RPA LAD-6819</span>
+            <span className="font-bold text-white">RPA LAD-6819</span>
             <span>•</span>
             <span>Orquestador de Descuentos de Nómina</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
+          <div className="flex items-center gap-3 text-[11px] text-slate-500">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-              <span className="text-slate-600 font-medium">Servicios Operacionales Activos</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shadow-[0_0_6px_#34d399]" />
+              <span className="text-slate-300 font-medium">Servicios Operacionales Activos</span>
             </span>
             <span>•</span>
             <span>v2.4.0 Enterprise</span>

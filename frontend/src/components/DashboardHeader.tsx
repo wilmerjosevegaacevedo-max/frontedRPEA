@@ -74,25 +74,26 @@ export function DashboardHeader({
   const pestañasVisibles = opcionesNavegacion.filter((item) => item.roles.includes(rolUsuario));
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-md shadow-sm border-b border-surface-container">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-[#090d16]/95 backdrop-blur-md shadow-lg border-b border-slate-800">
       <div className="h-16 w-full px-4 lg:px-8 flex items-center justify-between gap-4">
-        {/* Marca / Logotipo */}
+        {/* Marca / Logotipo con Brillo Neón */}
         <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => onCambiarSeccion("centro-de-control")}>
-          <div className="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-sm">
-            <span className="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-slate-950 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.35)]">
+            <span className="material-symbols-outlined text-[20px] font-bold">account_balance_wallet</span>
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">
-              RPA LAD-6819
+            <span className="text-white font-bold tracking-tight text-sm md:text-base flex items-center gap-1.5">
+              <span>RPA LAD-6819</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </span>
-            <span className="text-[11px] text-on-surface-variant font-medium">
-              Orquestador de Descuentos de Nómina
+            <span className="text-[11px] text-slate-400 font-medium">
+              Orquestador de Descuentos
             </span>
           </div>
         </div>
 
         {/* Pestañas de Navegación por Rol */}
-        <nav className="hidden lg:flex items-center gap-1 bg-surface-container p-1 rounded-xl">
+        <nav className="hidden lg:flex items-center gap-1 bg-[#131b2c] p-1 rounded-xl border border-slate-800/80">
           {pestañasVisibles.map((item) => {
             const activo = seccionActiva === item.id;
             return (
@@ -102,8 +103,8 @@ export function DashboardHeader({
                 onClick={() => onCambiarSeccion(item.id)}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   activo
-                    ? "bg-white text-primary shadow-sm"
-                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -113,17 +114,17 @@ export function DashboardHeader({
           })}
         </nav>
 
-        {/* Perfil de Usuario y Rol Autenticado (Inmutable) */}
+        {/* Perfil de Usuario y Rol Autenticado */}
         <div className="flex items-center gap-3 shrink-0">
           {/* Badge de Seguridad y Rol Fijo */}
-          <div className="flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1 rounded-lg border border-surface-container">
-            <span className={`px-2.5 py-1 rounded text-xs font-bold border flex items-center gap-1.5 ${roleCfg.badgeBg}`}>
+          <div className="flex items-center gap-1.5 bg-[#131b2c] px-2.5 py-1 rounded-lg border border-slate-800">
+            <span className={`px-2 py-0.5 rounded text-xs font-bold border flex items-center gap-1.5 ${roleCfg.badgeBg}`}>
               <span className="material-symbols-outlined text-[14px]">
                 {rolUsuario === "ADMIN" ? "security" : rolUsuario === "SUPERVISOR" ? "policy" : "badge"}
               </span>
               <span>
                 {rolUsuario === "ADMIN"
-                  ? "Administrador Master"
+                  ? "Admin Master"
                   : rolUsuario === "SUPERVISOR"
                     ? "Auditor Central"
                     : `Analista • ${empresaAsignada && empresaAsignada !== "TODAS" ? empresaAsignada.toUpperCase() : "Nómina"}`}
@@ -131,13 +132,13 @@ export function DashboardHeader({
             </span>
           </div>
 
-          <div className="h-6 w-px bg-surface-container hidden sm:block" />
+          <div className="h-6 w-px bg-slate-800 hidden sm:block" />
 
           {/* Avatar del Usuario y Salir */}
           <div className="flex items-center gap-2">
             <div
               title={`${nombrePerfil || user.email} (${roleCfg.label})`}
-              className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs"
+              className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs"
             >
               {iniciales(user)}
             </div>
@@ -145,7 +146,7 @@ export function DashboardHeader({
               type="button"
               onClick={onSignOut}
               title="Cerrar Sesión Segura"
-              className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-red-50 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>
             </button>
@@ -154,7 +155,7 @@ export function DashboardHeader({
       </div>
 
       {/* Menú móvil de navegación */}
-      <div className="flex lg:hidden overflow-x-auto px-4 py-1.5 bg-surface-container-low border-t border-surface-container gap-1 scrollbar-none">
+      <div className="flex lg:hidden overflow-x-auto px-4 py-1.5 bg-[#0f172a] border-t border-slate-800 gap-1 scrollbar-none">
         {pestañasVisibles.map((item) => {
           const activo = seccionActiva === item.id;
           return (
@@ -163,7 +164,9 @@ export function DashboardHeader({
               type="button"
               onClick={() => onCambiarSeccion(item.id)}
               className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
-                activo ? "bg-primary text-on-primary" : "text-on-surface-variant"
+                activo
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="material-symbols-outlined text-[14px]">{item.icon}</span>

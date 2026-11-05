@@ -104,8 +104,26 @@ export function Dashboard({
     setEscaneandoRpa(true);
     setNotificacionRpa(null);
     try {
-      // Simular sincronización activa con el buzón de correo / endpoint RPA
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // 1. Intentar conectar directamente con el Backend RPA local si está activo en el puerto 4000
+      try {
+        const resp = await fetch("http://localhost:4000/api/rpa/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          const proc = data.resultado?.procesados || 0;
+          setNotificacionRpa(
+            `Robot local ejecutado con éxito: ${proc} correo(s) procesados y movidos de la bandeja de entrada.`
+          );
+          return;
+        }
+      } catch {
+        // Backend local no está escuchando en puerto 4000
+      }
+
+      // 2. Si no hay backend local respondiendo, explicar al usuario cómo procesar correos reales
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const nuevoLoteAuto: Job = {
         id: `LOTE-GMAIL-${Date.now().toString().slice(-4)}`,
@@ -140,7 +158,7 @@ export function Dashboard({
       }
 
       setNotificacionRpa(
-        "Buzón Gmail sincronizado exitosamente: 1 planilla de deducciones detectada y procesada automáticamente (42 registros validados)."
+        "Sincronización web completada. Recuerda: Para descargar y mover los correos reales de tu Gmail, ejecuta en tu equipo el archivo 'ejecutar_rpa.bat' o inicia el backend con 'ejecutar_backend.bat'."
       );
     } catch (err: any) {
       setNotificacionRpa("Error al sincronizar buzón: " + (err?.message || "Servicio temporalmente inaccesible"));

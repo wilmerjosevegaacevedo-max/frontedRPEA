@@ -176,7 +176,7 @@ export function CargaMasivaModule({
                 setResultado(null);
                 setArchivo(null);
               }}
-              className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-semibold text-primary"
+              className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-cyan-300 font-mono text-sm font-semibold outline-none focus:border-cyan-400"
             >
               {empresas.map((emp) => (
                 <option key={emp.id} value={emp.id}>
@@ -241,7 +241,7 @@ export function CargaMasivaModule({
             }}
           />
 
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+          <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)]">
             <span className="material-symbols-outlined text-[32px]">table_view</span>
           </div>
 
@@ -350,7 +350,7 @@ export function CargaMasivaModule({
                 type="button"
                 onClick={confirmarYEncolar}
                 disabled={guardandoLote}
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-sm shadow-[0_3px_12px_rgba(30,64,175,0.3)] hover:shadow-[0_5px_18px_rgba(30,64,175,0.4)] border border-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:transform-none"
+                className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(6,182,212,0.45)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:transform-none"
               >
                 <span className={`material-symbols-outlined text-[18px] ${guardandoLote ? "animate-spin" : ""}`}>
                   {guardandoLote ? "sync" : "verified"}
@@ -436,7 +436,7 @@ export function CargaMasivaModule({
                     type="button"
                     onClick={() => setFiltroTabla("todos")}
                     className={`px-2.5 py-1 rounded font-semibold ${
-                      filtroTabla === "todos" ? "bg-white text-primary shadow-sm" : "text-on-surface-variant"
+                      filtroTabla === "todos" ? "bg-cyan-950/90 text-cyan-300 border border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.25)]" : "text-slate-400 hover:text-slate-200"
                     }`}
                   >
                     Todos ({resultado.registros.length})
@@ -445,7 +445,7 @@ export function CargaMasivaModule({
                     type="button"
                     onClick={() => setFiltroTabla("validos")}
                     className={`px-2.5 py-1 rounded font-semibold ${
-                      filtroTabla === "validos" ? "bg-white text-emerald-800 shadow-sm" : "text-on-surface-variant"
+                      filtroTabla === "validos" ? "bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.25)]" : "text-slate-400 hover:text-slate-200"
                     }`}
                   >
                     Válidos ({resultado.filasValidas})
@@ -454,7 +454,7 @@ export function CargaMasivaModule({
                     type="button"
                     onClick={() => setFiltroTabla("invalidos")}
                     className={`px-2.5 py-1 rounded font-semibold ${
-                      filtroTabla === "invalidos" ? "bg-white text-red-800 shadow-sm" : "text-on-surface-variant"
+                      filtroTabla === "invalidos" ? "bg-red-950/90 text-red-300 border border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.25)]" : "text-slate-400 hover:text-slate-200"
                     }`}
                   >
                     Inválidos ({resultado.filasInvalidas})
@@ -466,7 +466,7 @@ export function CargaMasivaModule({
                   placeholder="Buscar cédula o nombre..."
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  className="p-1.5 rounded-lg border border-surface-container-highest bg-white text-xs w-48"
+                  className="p-2 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-xs w-48 outline-none focus:border-cyan-400 font-mono"
                 />
               </div>
             </div>

@@ -74,25 +74,29 @@ export function DashboardHeader({
   const pestañasVisibles = opcionesNavegacion.filter((item) => item.roles.includes(rolUsuario));
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-200">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-slate-950/85 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.5)] border-b border-slate-800/80">
       <div className="h-16 w-full px-4 lg:px-8 flex items-center justify-between gap-4">
-        {/* Marca / Logotipo Corporativo */}
-        <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => onCambiarSeccion("centro-de-control")}>
-          <div className="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center shadow-xs">
-            <span className="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+        {/* Marca / Logotipo Corporativo HUD */}
+        <div 
+          className="flex items-center gap-3 shrink-0 cursor-pointer group" 
+          onClick={() => onCambiarSeccion("centro-de-control")}
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)] border border-cyan-300/40 group-hover:shadow-[0_0_22px_rgba(6,182,212,0.6)] transition-all">
+            <span className="material-symbols-outlined text-[22px]">smart_toy</span>
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-slate-900 font-bold tracking-tight text-sm md:text-base">
+            <span className="text-white font-bold tracking-tight text-sm md:text-base flex items-center gap-1.5 font-mono">
               RPA LAD-6819
+              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] animate-pulse" />
             </span>
-            <span className="text-[11px] text-slate-500 font-medium">
+            <span className="text-[11px] text-cyan-400/80 font-mono tracking-wide">
               Orquestador de Descuentos
             </span>
           </div>
         </div>
 
         {/* Pestañas de Navegación por Rol */}
-        <nav className="hidden lg:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+        <nav className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
           {pestañasVisibles.map((item) => {
             const activo = seccionActiva === item.id;
             return (
@@ -100,10 +104,10 @@ export function DashboardHeader({
                 key={item.id}
                 type="button"
                 onClick={() => onCambiarSeccion(item.id)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs transition-all duration-200 ${
                   activo
-                    ? "bg-white text-blue-800 shadow-[0_1px_4px_rgba(0,0,0,0.08)] border border-slate-200 font-bold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold"
+                    ? "bg-gradient-to-r from-cyan-500/20 via-blue-600/20 to-indigo-600/20 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.25)] border border-cyan-500/40 font-bold"
+                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 font-semibold"
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
@@ -116,7 +120,7 @@ export function DashboardHeader({
         {/* Perfil de Usuario y Rol Autenticado */}
         <div className="flex items-center gap-3 shrink-0">
           {/* Badge de Seguridad y Rol Fijo */}
-          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
+          <div className="flex items-center gap-1.5 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
             <span className={`px-2 py-0.5 rounded text-xs font-bold border flex items-center gap-1.5 ${roleCfg.badgeBg}`}>
               <span className="material-symbols-outlined text-[14px]">
                 {rolUsuario === "ADMIN" ? "security" : rolUsuario === "SUPERVISOR" ? "policy" : "badge"}
@@ -131,13 +135,13 @@ export function DashboardHeader({
             </span>
           </div>
 
-          <div className="h-6 w-px bg-slate-200 hidden sm:block" />
+          <div className="h-6 w-px bg-slate-800 hidden sm:block" />
 
           {/* Avatar del Usuario y Salir */}
           <div className="flex items-center gap-2">
             <div
               title={`${nombrePerfil || user.email} (${roleCfg.label})`}
-              className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs"
+              className="w-8 h-8 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-xs shadow-[0_0_10px_rgba(6,182,212,0.2)] font-mono"
             >
               {iniciales(user)}
             </div>
@@ -145,7 +149,7 @@ export function DashboardHeader({
               type="button"
               onClick={onSignOut}
               title="Cerrar Sesión Segura"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-200"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-800/40 transition-all duration-200"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>
             </button>
@@ -154,7 +158,7 @@ export function DashboardHeader({
       </div>
 
       {/* Menú móvil de navegación */}
-      <div className="flex lg:hidden overflow-x-auto px-4 py-1.5 bg-white border-t border-slate-200 gap-1 scrollbar-none">
+      <div className="flex lg:hidden overflow-x-auto px-4 py-1.5 bg-slate-950 border-t border-slate-800/80 gap-1 scrollbar-none">
         {pestañasVisibles.map((item) => {
           const activo = seccionActiva === item.id;
           return (
@@ -162,10 +166,10 @@ export function DashboardHeader({
               key={item.id}
               type="button"
               onClick={() => onCambiarSeccion(item.id)}
-              className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
+              className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 activo
-                  ? "bg-blue-50 text-blue-700 border border-blue-200 font-bold"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 font-bold shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="material-symbols-outlined text-[14px]">{item.icon}</span>

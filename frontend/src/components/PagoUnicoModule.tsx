@@ -302,7 +302,7 @@ export function PagoUnicoModule({
               <button
                 type="button"
                 onClick={autocompletarEjemplo}
-                className="px-3 py-1.5 rounded-lg bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs flex items-center gap-1.5 border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-cyan-500/30 hover:border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.15)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 <span className="material-symbols-outlined text-[14px]">bolt</span>
                 <span>Llenar con Ejemplo</span>
@@ -326,7 +326,7 @@ export function PagoUnicoModule({
                 <select
                   value={empresaId}
                   onChange={(e) => setEmpresaId(e.target.value)}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm font-medium"
+                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white text-sm font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                 >
                   {empresas.map((emp) => (
                     <option key={emp.id} value={emp.id}>
@@ -347,7 +347,7 @@ export function PagoUnicoModule({
                   placeholder="Ej: 1098765432"
                   value={documento}
                   onChange={(e) => setDocumento(e.target.value)}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder:text-slate-500 text-sm font-mono outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -359,7 +359,7 @@ export function PagoUnicoModule({
                   placeholder="Ej: Juan Camilo Pérez"
                   value={empleadoNombre}
                   onChange={(e) => setEmpleadoNombre(e.target.value)}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm"
+                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder:text-slate-500 text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                 />
               </div>
             </div>
@@ -460,7 +460,7 @@ export function PagoUnicoModule({
             <button
               type="submit"
               disabled={procesando || !salarioBase}
-              className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white font-bold text-sm shadow-[0_4px_14px_rgba(30,64,175,0.38)] hover:shadow-[0_6px_20px_rgba(30,64,175,0.48)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(6,182,212,0.45)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none"
             >
               <span className={`material-symbols-outlined text-[18px] ${procesando ? "animate-spin" : ""}`}>
                 {procesando ? "sync" : "send"}
@@ -483,7 +483,7 @@ export function PagoUnicoModule({
               <button
                 type="button"
                 onClick={exportarHistorialExcel}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               >
                 <span className="material-symbols-outlined text-[15px]">download</span>
                 <span>Exportar (.xlsx)</span>
@@ -493,7 +493,7 @@ export function PagoUnicoModule({
 
           {/* Barra de Filtros y Búsqueda */}
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-surface-container-low p-2.5 rounded-lg border border-surface-container">
-            <div className="sm:col-span-7 flex items-center gap-2 bg-white px-3 py-1.5 rounded border border-surface-container-highest">
+            <div className="sm:col-span-7 flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
               <span className="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
               <input
                 type="text"
@@ -519,7 +519,7 @@ export function PagoUnicoModule({
                 <select
                   value={filtroEmpresa}
                   onChange={(e) => setFiltroEmpresa(e.target.value)}
-                  className="w-full bg-white px-2.5 py-1.5 rounded border border-surface-container-highest text-xs text-on-surface font-medium"
+                  className="w-full bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-slate-700/80 text-xs text-white font-medium outline-none"
                 >
                   <option value="TODAS">Todas las empresas</option>
                   {empresas.map((emp) => (
@@ -578,7 +578,7 @@ export function PagoUnicoModule({
                             type="button"
                             onClick={() => setComprobanteActivo(p)}
                             title="Ver e Imprimir Comprobante Oficial"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-b from-white to-slate-50 hover:from-blue-50 hover:to-blue-100 text-blue-700 hover:text-blue-900 text-xs font-bold transition-all border border-slate-200 hover:border-blue-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 duration-150"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 hover:text-white text-xs font-bold transition-all border border-cyan-500/40 hover:border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.2)] hover:-translate-y-0.5 active:translate-y-0 duration-150"
                           >
                             <span className="material-symbols-outlined text-[14px]">receipt_long</span>
                             <span>Comprobante</span>

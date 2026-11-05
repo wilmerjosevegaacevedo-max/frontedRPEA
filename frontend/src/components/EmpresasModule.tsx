@@ -175,7 +175,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               type="button"
               onClick={restaurarPredeterminadas}
               disabled={guardando}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
               title="Restaurar empresas base: Continental, CDF y DXC"
             >
               <span className="material-symbols-outlined text-[16px]">restore</span>
@@ -184,7 +184,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
             <button
               type="button"
               onClick={iniciarNuevaEmpresa}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white font-bold text-xs shadow-[0_3px_12px_rgba(30,64,175,0.35)] hover:shadow-[0_5px_16px_rgba(30,64,175,0.45)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-xs shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0"
             >
               <span className="material-symbols-outlined text-[18px]">add_business</span>
               Registrar Nueva Empresa
@@ -300,7 +300,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     placeholder="Ej: Multinacional de Seguros S.A."
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
-                    className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm"
+                    className="p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -311,7 +311,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     placeholder="Ej: MULTI"
                     value={codigo}
                     onChange={(e) => setCodigo(e.target.value)}
-                    className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm uppercase font-mono"
+                    className="p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 uppercase font-mono"
                   />
                 </div>
               </div>
@@ -324,7 +324,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   placeholder="Ej: 900.876.543-2"
                   value={nit}
                   onChange={(e) => setNit(e.target.value)}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm"
+                  className="p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                 />
               </div>
 
@@ -346,7 +346,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                       required
                       value={porcentajeVida}
                       onChange={(e) => setPorcentajeVida(parseFloat(e.target.value) || 0)}
-                      className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                      className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                     />
                   </div>
 
@@ -360,7 +360,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                       required
                       value={porcentajeGmm}
                       onChange={(e) => setPorcentajeGmm(parseFloat(e.target.value) || 0)}
-                      className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                      className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                     />
                   </div>
 
@@ -374,7 +374,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                       required
                       value={porcentajeCostos}
                       onChange={(e) => setPorcentajeCostos(parseFloat(e.target.value) || 0)}
-                      className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                      className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                     />
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                       required
                       value={topeMaximo}
                       onChange={(e) => setTopeMaximo(parseFloat(e.target.value) || 0)}
-                      className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                      className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                     />
                   </div>
 
@@ -428,7 +428,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     placeholder="CEDULA, NOMBRE, SALARIO"
                     value={columnasStr}
                     onChange={(e) => setColumnasStr(e.target.value)}
-                    className="p-2 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                    className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                   />
                   <span className="text-[11px] text-on-surface-variant">
                     El orquestador verificará la existencia de estas columnas antes de calcular la nómina.
@@ -447,7 +447,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                 <button
                   type="submit"
                   disabled={guardando}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white text-xs font-bold shadow-[0_3px_12px_rgba(30,64,175,0.35)] hover:shadow-[0_5px_16px_rgba(30,64,175,0.45)] border border-blue-400/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50"
                 >
                   <span className={`material-symbols-outlined text-[18px] ${guardando ? "animate-spin" : ""}`}>
                     {guardando ? "sync" : "save"}

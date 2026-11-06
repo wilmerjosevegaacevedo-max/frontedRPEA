@@ -169,15 +169,15 @@ export async function POST(_req: NextRequest) {
     const lock = await client.getMailboxLock("INBOX");
 
     try {
-      // Buscar todos los mensajes que residan actualmente en INBOX
-      const uids = await client.search({ all: true });
+      // Buscar todos los mensajes que residan actualmente en INBOX con sus UIDs reales
+      const uids = await client.search({ all: true }, { uid: true });
 
       if (uids && uids.length > 0) {
         // Tomar los 15 más recientes
         const recientes = uids.slice(-15);
 
         for (const uid of recientes) {
-          const dl = await client.download(String(uid));
+          const dl = await client.download(String(uid), undefined, { uid: true });
           if (!dl || !dl.content) continue;
 
           const parsed = await simpleParser(dl.content);

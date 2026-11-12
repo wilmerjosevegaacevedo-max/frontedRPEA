@@ -81,16 +81,16 @@ export function DashboardHeader({
           className="flex items-center gap-3 shrink-0 cursor-pointer group" 
           onClick={() => onCambiarSeccion("centro-de-control")}
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)] border border-cyan-300/40 group-hover:shadow-[0_0_22px_rgba(6,182,212,0.6)] transition-all">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-500 text-white flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-300/40 group-hover:shadow-[0_0_28px_rgba(16,185,129,0.7)] transition-all">
             <span className="material-symbols-outlined text-[22px]">smart_toy</span>
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-white font-bold tracking-tight text-sm md:text-base flex items-center gap-1.5 font-mono">
               RPA LAD-6819
-              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
             </span>
-            <span className="text-[11px] text-cyan-400/80 font-mono tracking-wide">
-              Orquestador de Descuentos
+            <span className="text-[11px] text-emerald-400 font-mono tracking-wide">
+              Orquestador de Descuentos • Conexión Activa
             </span>
           </div>
         </div>

@@ -48,12 +48,12 @@ export function LoginScreen({
             <div className="flex flex-col gap-6">
               {/* Logo y Nombre */}
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_18px_rgba(6,182,212,0.45)] border border-cyan-300/40">
+                <div className="w-11 h-11 bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-300/50">
                   <span className="material-symbols-outlined text-[24px]">smart_toy</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400 font-mono">
-                    RPA LAD-6819
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 font-mono">
+                    RPA LAD-6819 • REPO PRIVADO ACTIVO
                   </span>
                   <span className="text-base font-bold tracking-tight text-white">
                     Orquestador de Nómina
@@ -190,11 +190,11 @@ export function LoginScreen({
                   </div>
                 )}
 
-                {/* Botón Principal */}
+                {/* Botón Principal (Verificación de Conexión en Esmeralda Neón) */}
                 <button
                   type="submit"
                   disabled={isSigningIn}
-                  className="mt-1 w-full py-3 px-5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.55)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
+                  className="mt-1 w-full py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:via-teal-500 hover:to-cyan-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.45)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] border border-emerald-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
                 >
                   <span className={`material-symbols-outlined text-[18px] ${isSigningIn ? "animate-spin" : ""}`}>
                     {isSigningIn ? "sync" : "login"}

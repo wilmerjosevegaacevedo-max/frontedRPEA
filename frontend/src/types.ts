@@ -199,7 +199,7 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
   {
     id: "continental",
     nombre: "Continental Gold",
-    nit: "900.123.456-7",
+    nit: "900123456",
     codigo: "CONT",
     emailOperador: "nomina@continentalgold.com",
     passwordDefault: "Cont*2026",
@@ -215,7 +215,7 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
   {
     id: "cdf",
     nombre: "Compañía de Financiamiento CDF",
-    nit: "800.987.654-1",
+    nit: "800987654",
     codigo: "CDF",
     emailOperador: "nomina@cdf-financiera.com",
     passwordDefault: "Cdf*2026",
@@ -231,7 +231,7 @@ export const EMPRESAS_PREDETERMINADAS: Empresa[] = [
   {
     id: "dxc",
     nombre: "DXC Technology Colombia",
-    nit: "860.555.444-9",
+    nit: "860555444",
     codigo: "DXC",
     emailOperador: "nomina@dxc.com",
     passwordDefault: "Dxc*2026",

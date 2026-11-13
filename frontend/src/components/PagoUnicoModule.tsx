@@ -340,13 +340,18 @@ export function PagoUnicoModule({
             {/* Documento y Nombre */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface-variant uppercase">Cédula / Documento</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase flex items-center justify-between">
+                  <span>Cédula / Documento</span>
+                  <span className="text-[10px] text-cyan-400 font-mono">(Solo números)</span>
+                </label>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   required
                   placeholder="Ej: 1098765432"
                   value={documento}
-                  onChange={(e) => setDocumento(e.target.value)}
+                  onChange={(e) => setDocumento(e.target.value.replace(/\D/g, ""))}
                   className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder:text-slate-500 text-sm font-mono outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
                 />
               </div>

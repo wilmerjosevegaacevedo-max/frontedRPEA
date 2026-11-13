@@ -80,7 +80,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
   function editarEmpresa(emp: Empresa) {
     setEmpresaSeleccionada(emp);
     setNombre(emp.nombre);
-    setNit(emp.nit);
+    setNit(emp.nit ? emp.nit.replace(/\D/g, "") : "");
     setCodigo(emp.codigo);
     setEmailOperador(emp.emailOperador || `nomina@${emp.codigo.toLowerCase()}.com`);
     setPasswordDefault(emp.passwordDefault || `${emp.codigo.charAt(0).toUpperCase() + emp.codigo.slice(1).toLowerCase()}*2026`);
@@ -103,8 +103,14 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
       return;
     }
 
-    if (!nombre.trim() || !nit.trim() || !codigo.trim()) {
+    const nitNumerico = nit.replace(/\D/g, "").trim();
+    if (!nombre.trim() || !nitNumerico || !codigo.trim()) {
       setMensajeError("El nombre, NIT y código de empresa son obligatorios.");
+      return;
+    }
+
+    if (!/^\d+$/.test(nitNumerico)) {
+      setMensajeError("El NIT debe contener únicamente números (sin letras, puntos o guiones).");
       return;
     }
 
@@ -129,7 +135,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     const empresaData: Empresa = {
       id,
       nombre: nombre.trim(),
-      nit: nit.trim(),
+      nit: nitNumerico,
       codigo: codigoClean,
       emailOperador: correoFinal,
       passwordDefault: passwordFinal,
@@ -335,14 +341,19 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface-variant uppercase">NIT de la Empresa</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase flex items-center justify-between">
+                  <span>NIT de la Empresa</span>
+                  <span className="text-[10px] text-cyan-400 font-mono font-medium">(Solo números)</span>
+                </label>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   required
-                  placeholder="Ej: 900.876.543-2"
+                  placeholder="Ej: 900876543"
                   value={nit}
-                  onChange={(e) => setNit(e.target.value)}
-                  className="p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                  onChange={(e) => setNit(e.target.value.replace(/\D/g, ""))}
+                  className="p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono tracking-wide"
                 />
               </div>
 

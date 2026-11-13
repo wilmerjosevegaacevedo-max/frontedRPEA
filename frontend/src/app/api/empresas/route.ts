@@ -32,9 +32,18 @@ export async function POST(req: NextRequest) {
   try {
     const body: Empresa = await req.json();
 
-    if (!body.nombre || !body.nit || !body.codigo) {
+    const nitNumerico = String(body.nit || "").replace(/\D/g, "").trim();
+
+    if (!body.nombre?.trim() || !nitNumerico || !body.codigo?.trim()) {
       return NextResponse.json(
-        { ok: false, error: "Los campos 'nombre', 'nit' y 'codigo' son obligatorios." },
+        { ok: false, error: "Los campos 'nombre', 'nit' y 'codigo' son obligatorios, y el NIT debe contener únicamente números." },
+        { status: 400 }
+      );
+    }
+
+    if (!/^\d+$/.test(nitNumerico)) {
+      return NextResponse.json(
+        { ok: false, error: "El NIT de la empresa debe contener exclusivamente dígitos numéricos." },
         { status: 400 }
       );
     }
@@ -43,7 +52,7 @@ export async function POST(req: NextRequest) {
     const empresaData: Empresa = {
       id,
       nombre: body.nombre.trim(),
-      nit: body.nit.trim(),
+      nit: nitNumerico,
       codigo: body.codigo.trim().toUpperCase(),
       reglas: {
         porcentajeVida: Number(body.reglas?.porcentajeVida ?? 1.5),

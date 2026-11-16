@@ -36,7 +36,9 @@ export function Dashboard({
 
   // Perfil delimitado estrictamente según el correo autenticado y empresas registradas
   const perfil = useMemo(() => resolverPerfilUsuario(user.email, empresas), [user.email, empresas]);
-  const rolUsuario: RolUsuario = rolInicial || perfil.rol;
+  const [rolOverride, setRolOverride] = useState<RolUsuario | null>(null);
+  const rolUsuario: RolUsuario = rolOverride || rolInicial || perfil.rol;
+  const esAdminReal = perfil.rol === "ADMIN" || rolInicial === "ADMIN";
   const empresaAsignada: string =
     empresaAsignadaInicial && empresaAsignadaInicial !== "TODAS"
       ? empresaAsignadaInicial
@@ -279,9 +281,34 @@ export function Dashboard({
             />
           )}
 
+          {/* Banner de Simulación de Rol para Administrador */}
+          {rolOverride && esAdminReal && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-amber-300 font-mono shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">engineering</span>
+                <span>
+                  <strong>Modo Simulación Activo:</strong> Estás visualizando la plataforma con el rol{" "}
+                  <strong>{rolUsuario}</strong>.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRolOverride(null)}
+                className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-bold transition-colors"
+              >
+                Restaurar a Administrador
+              </button>
+            </div>
+          )}
+
           {/* SECCIÓN 5: AUDITORÍA Y ROLES (Solo ADMIN y SUPERVISOR) */}
           {seccionActiva === "auditoria-roles" && (rolUsuario === "ADMIN" || rolUsuario === "SUPERVISOR") && (
-            <AuditoriaRolesModule rolUsuario={rolUsuario} />
+            <AuditoriaRolesModule
+              rolUsuario={rolUsuario}
+              esAdmin={esAdminReal}
+              onCambiarRol={(nuevoRol) => setRolOverride(nuevoRol)}
+              empresas={empresas}
+            />
           )}
         </div>
       </main>

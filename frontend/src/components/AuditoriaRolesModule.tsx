@@ -1,83 +1,380 @@
 "use client";
 
-import { RolUsuario, ROLES_CONFIG } from "../types";
+import { useEffect, useState } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { Empresa, RolUsuario, ROLES_CONFIG } from "../types";
+
+export type UsuarioSistema = {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: RolUsuario;
+  empresaId: string;
+  estado: "ACTIVO" | "SUSPENDIDO";
+};
+
+export type PermisoFila = {
+  id: string;
+  funcionalidad: string;
+  descripcion: string;
+  admin: boolean | string;
+  supervisor: boolean | string;
+  analista: boolean | string;
+};
+
+const MATRIZ_PERMISOS_INICIAL: PermisoFila[] = [
+  {
+    id: "p1",
+    funcionalidad: "Registrar Empresa & Configurar Reglas de Negocio",
+    descripcion: "Crear empresas y ajustar % de Vida, GMM, Costos, Topes y Columnas Requeridas.",
+    admin: true,
+    supervisor: "Solo Lectura",
+    analista: false,
+  },
+  {
+    id: "p2",
+    funcionalidad: "Carga Masiva de Planillas (Excel / CSV)",
+    descripcion: "Procesamiento client-side en TypeScript, validación de esquemas y liquidación masiva.",
+    admin: true,
+    supervisor: false,
+    analista: true,
+  },
+  {
+    id: "p3",
+    funcionalidad: "Cargar Descuento Individual",
+    descripcion: "Asentar deducciones unitarias con verificación paramétrica de sobregiro y tope.",
+    admin: true,
+    supervisor: false,
+    analista: true,
+  },
+  {
+    id: "p4",
+    funcionalidad: "Monitoreo de Lotes y KPIs en Tiempo Real",
+    descripcion: "Visualización de estado de lotes, tasas de éxito, fallos y tiempos de procesamiento.",
+    admin: true,
+    supervisor: true,
+    analista: "Solo Lotes Propios",
+  },
+  {
+    id: "p5",
+    funcionalidad: "Exportar Liquidaciones en Excel (XLSX)",
+    descripcion: "Descarga de archivos consolidados con desglose de pólizas y resumen de auditoría.",
+    admin: true,
+    supervisor: true,
+    analista: true,
+  },
+  {
+    id: "p6",
+    funcionalidad: "Gestión de Roles y Auditoría de Seguridad",
+    descripcion: "Inspección de perfiles de usuario, roles RBAC y trazabilidad de operaciones.",
+    admin: true,
+    supervisor: "Solo Lectura",
+    analista: false,
+  },
+];
+
+const USUARIOS_DEFAULT: UsuarioSistema[] = [
+  {
+    id: "usr-admin",
+    email: "admin@rpa.com",
+    nombre: "Administrador Central",
+    rol: "ADMIN",
+    empresaId: "TODAS",
+    estado: "ACTIVO",
+  },
+  {
+    id: "usr-supervisor",
+    email: "supervisor@rpa.com",
+    nombre: "Auditor y Supervisor Central",
+    rol: "SUPERVISOR",
+    empresaId: "TODAS",
+    estado: "ACTIVO",
+  },
+  {
+    id: "usr-audit",
+    email: "audit@rpa.com",
+    nombre: "Oficial de Cumplimiento",
+    rol: "SUPERVISOR",
+    empresaId: "TODAS",
+    estado: "ACTIVO",
+  },
+  {
+    id: "usr-cont",
+    email: "nomina@continental.com",
+    nombre: "Analista Continental Gold",
+    rol: "ANALISTA",
+    empresaId: "continental",
+    estado: "ACTIVO",
+  },
+  {
+    id: "usr-cdf",
+    email: "nomina@cdf.com",
+    nombre: "Analista Compañía CDF",
+    rol: "ANALISTA",
+    empresaId: "cdf",
+    estado: "ACTIVO",
+  },
+  {
+    id: "usr-dxc",
+    email: "nomina@dxc.com",
+    nombre: "Analista DXC Technology",
+    rol: "ANALISTA",
+    empresaId: "dxc",
+    estado: "ACTIVO",
+  },
+];
 
 export function AuditoriaRolesModule({
   rolUsuario,
+  esAdmin = false,
+  onCambiarRol,
+  empresas = [],
 }: {
   rolUsuario: RolUsuario;
+  esAdmin?: boolean;
+  onCambiarRol?: (rol: RolUsuario) => void;
+  empresas?: Empresa[];
 }) {
-  const matrizPermisos = [
-    {
-      funcionalidad: "Registrar Empresa & Configurar Reglas de Negocio",
-      descripcion: "Crear empresas y ajustar % de Vida, GMM, Costos, Topes y Columnas Requeridas.",
-      admin: true,
-      supervisor: "Solo Lectura",
-      analista: false,
-    },
-    {
-      funcionalidad: "Carga Masiva de Planillas (Excel / CSV)",
-      descripcion: "Procesamiento client-side en TypeScript, validación de esquemas y liquidación masiva.",
-      admin: true,
-      supervisor: false,
-      analista: true,
-    },
-    {
-      funcionalidad: "Cargar Descuento Individual",
-      descripcion: "Asentar deducciones unitarias con verificación paramétrica de sobregiro y tope.",
-      admin: true,
-      supervisor: false,
-      analista: true,
-    },
-    {
-      funcionalidad: "Monitoreo de Lotes y KPIs en Tiempo Real",
-      descripcion: "Visualización de estado de lotes, tasas de éxito, fallos y tiempos de procesamiento.",
-      admin: true,
-      supervisor: true,
-      analista: "Solo Lotes Propios",
-    },
-    {
-      funcionalidad: "Exportar Liquidaciones en Excel (XLSX)",
-      descripcion: "Descarga de archivos consolidados con desglose de pólizas y resumen de auditoría.",
-      admin: true,
-      supervisor: true,
-      analista: true,
-    },
-    {
-      funcionalidad: "Gestión de Roles y Auditoría de Seguridad",
-      descripcion: "Inspección de perfiles de usuario, roles RBAC y trazabilidad de operaciones.",
-      admin: true,
-      supervisor: true,
-      analista: false,
-    },
-  ];
+  const [matrizPermisos, setMatrizPermisos] = useState<PermisoFila[]>(MATRIZ_PERMISOS_INICIAL);
+  const [usuarios, setUsuarios] = useState<UsuarioSistema[]>(USUARIOS_DEFAULT);
+  const [guardando, setGuardando] = useState(false);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
+
+  // Formulario nuevo usuario
+  const [mostrarModalNuevo, setMostrarModalNuevo] = useState(false);
+  const [nuevoEmail, setNuevoEmail] = useState("");
+  const [nuevoNombre, setNuevoNombre] = useState("");
+  const [nuevoRol, setNuevoRol] = useState<RolUsuario>("ANALISTA");
+  const [nuevaEmpresaId, setNuevaEmpresaId] = useState("TODAS");
+
+  // Cargar configuración guardada de Firestore o localStorage
+  useEffect(() => {
+    async function cargarConfiguracion() {
+      // Intentar leer de Firestore
+      if (db) {
+        try {
+          const docRbac = await getDoc(doc(db, "config", "rbac_matriz"));
+          if (docRbac.exists() && docRbac.data()?.matriz) {
+            setMatrizPermisos(docRbac.data().matriz);
+          }
+          const docUsrs = await getDoc(doc(db, "config", "usuarios_roles"));
+          if (docUsrs.exists() && docUsrs.data()?.usuarios) {
+            setUsuarios(docUsrs.data().usuarios);
+            return;
+          }
+        } catch {
+          // Fallback a localStorage
+        }
+      }
+
+      // Fallback a localStorage
+      if (typeof window !== "undefined") {
+        const localRbac = localStorage.getItem("rpa_rbac_matriz");
+        if (localRbac) {
+          try {
+            setMatrizPermisos(JSON.parse(localRbac));
+          } catch {}
+        }
+        const localUsrs = localStorage.getItem("rpa_usuarios_roles");
+        if (localUsrs) {
+          try {
+            setUsuarios(JSON.parse(localUsrs));
+          } catch {}
+        }
+      }
+    }
+
+    cargarConfiguracion();
+  }, []);
+
+  // Actualizar un permiso individual de la matriz
+  const togglePermiso = (idFila: string, campo: "supervisor" | "analista") => {
+    if (!esAdmin) return;
+    setMatrizPermisos((prev) =>
+      prev.map((fila) => {
+        if (fila.id !== idFila) return fila;
+
+        if (campo === "supervisor") {
+          const actual = fila.supervisor;
+          let nuevo: boolean | string = true;
+          if (actual === true) nuevo = "Solo Lectura";
+          else if (actual === "Solo Lectura") nuevo = false;
+          else nuevo = true;
+          return { ...fila, supervisor: nuevo };
+        } else {
+          const actual = fila.analista;
+          let nuevo: boolean | string = true;
+          if (actual === true) nuevo = "Solo Lotes Propios";
+          else if (actual === "Solo Lotes Propios") nuevo = false;
+          else nuevo = true;
+          return { ...fila, analista: nuevo };
+        }
+      })
+    );
+  };
+
+  // Guardar matriz de permisos
+  const guardarPermisos = async () => {
+    setGuardando(true);
+    setMensajeExito(null);
+    setMensajeError(null);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("rpa_rbac_matriz", JSON.stringify(matrizPermisos));
+      }
+      if (db) {
+        await setDoc(doc(db, "config", "rbac_matriz"), {
+          matriz: matrizPermisos,
+          actualizadoPor: "admin",
+          actualizadoEn: new Date().toISOString(),
+        });
+      }
+      setMensajeExito("Matriz de permisos RBAC guardada exitosamente.");
+      setTimeout(() => setMensajeExito(null), 4000);
+    } catch (err: any) {
+      setMensajeError(`Error al guardar permisos: ${err.message}`);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  // Restaurar matriz predeterminada
+  const restaurarPermisosDefault = () => {
+    setMatrizPermisos(MATRIZ_PERMISOS_INICIAL);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("rpa_rbac_matriz");
+    }
+    setMensajeExito("Matriz de permisos restaurada a los valores predeterminados.");
+    setTimeout(() => setMensajeExito(null), 4000);
+  };
+
+  // Modificar rol de un usuario existente
+  const actualizarRolUsuario = (id: string, nuevoRol: RolUsuario) => {
+    if (!esAdmin) return;
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, rol: nuevoRol } : u))
+    );
+  };
+
+  // Modificar empresa de un usuario
+  const actualizarEmpresaUsuario = (id: string, nuevaEmpresaId: string) => {
+    if (!esAdmin) return;
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, empresaId: nuevaEmpresaId } : u))
+    );
+  };
+
+  // Alternar estado activo / suspendido
+  const toggleEstadoUsuario = (id: string) => {
+    if (!esAdmin) return;
+    setUsuarios((prev) =>
+      prev.map((u) =>
+        u.id === id
+          ? { ...u, estado: u.estado === "ACTIVO" ? "SUSPENDIDO" : "ACTIVO" }
+          : u
+      )
+    );
+  };
+
+  // Guardar usuarios
+  const guardarUsuarios = async () => {
+    setGuardando(true);
+    setMensajeExito(null);
+    setMensajeError(null);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("rpa_usuarios_roles", JSON.stringify(usuarios));
+      }
+      if (db) {
+        await setDoc(doc(db, "config", "usuarios_roles"), {
+          usuarios,
+          actualizadoPor: "admin",
+          actualizadoEn: new Date().toISOString(),
+        });
+      }
+      setMensajeExito("Directorio de usuarios y roles actualizado y guardado.");
+      setTimeout(() => setMensajeExito(null), 4000);
+    } catch (err: any) {
+      setMensajeError(`Error al guardar usuarios: ${err.message}`);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  // Agregar nuevo usuario
+  const handleCrearUsuario = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nuevoEmail.trim() || !nuevoNombre.trim()) return;
+
+    const nuevo: UsuarioSistema = {
+      id: `usr-${Date.now()}`,
+      email: nuevoEmail.trim().toLowerCase(),
+      nombre: nuevoNombre.trim(),
+      rol: nuevoRol,
+      empresaId: nuevaEmpresaId,
+      estado: "ACTIVO",
+    };
+
+    setUsuarios((prev) => [...prev, nuevo]);
+    setNuevoEmail("");
+    setNuevoNombre("");
+    setNuevoRol("ANALISTA");
+    setNuevaEmpresaId("TODAS");
+    setMostrarModalNuevo(false);
+    setMensajeExito(`Usuario ${nuevo.email} registrado con rol ${nuevo.rol}.`);
+    setTimeout(() => setMensajeExito(null), 4000);
+  };
+
+  // Eliminar usuario
+  const eliminarUsuario = (id: string) => {
+    if (!esAdmin) return;
+    setUsuarios((prev) => prev.filter((u) => u.id !== id));
+  };
 
   return (
     <div className="flex flex-col gap-6 w-full text-slate-100">
       {/* Encabezado */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-cyan-400 text-[24px]">security</span>
-            <h2 className="text-lg font-bold text-white tracking-tight font-mono">
-              Auditoría y Control de Acceso Basado en Roles (RBAC)
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[22px]">security</span>
+            </div>
+            <h2 className="text-xl font-bold text-white tracking-tight font-mono">
+              Auditoría y Gestión de Roles (RBAC)
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/30">
-              RBAC Guard Activo
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              {esAdmin ? "Modo Administrador: Roles Editables" : "Modo Auditoría"}
             </span>
           </div>
-          <p className="text-xs text-slate-400 font-sans">
-            Matriz de gobierno y segregación de funciones entre Administrador, Supervisor y Analista de Nómina.
+          <p className="text-xs text-slate-400">
+            Control de acceso basado en roles, segregación de funciones y gestión de permisos del orquestador.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono">
-          <span className="text-xs text-slate-400 font-medium">Tu rol activo:</span>
+        <div className="flex items-center gap-2.5 font-mono">
+          <span className="text-xs text-slate-400 font-medium">Sesión activa:</span>
           <span className={`px-3 py-1 rounded-xl text-xs font-bold border ${ROLES_CONFIG[rolUsuario].badgeBg}`}>
             {ROLES_CONFIG[rolUsuario].label}
           </span>
         </div>
       </div>
+
+      {mensajeExito && (
+        <div className="p-4 rounded-xl bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 flex items-center gap-2.5 text-xs font-medium">
+          <span className="material-symbols-outlined text-emerald-400 text-[18px]">check_circle</span>
+          <span>{mensajeExito}</span>
+        </div>
+      )}
+
+      {mensajeError && (
+        <div className="p-4 rounded-xl bg-rose-950/40 text-rose-300 border border-rose-800/60 flex items-center gap-2.5 text-xs font-medium">
+          <span className="material-symbols-outlined text-rose-400 text-[18px]">error</span>
+          <span>{mensajeError}</span>
+        </div>
+      )}
 
       {/* Tarjetas de Roles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -87,51 +384,366 @@ export function AuditoriaRolesModule({
           return (
             <div
               key={rol}
-              className={`p-5 rounded-2xl bg-slate-900/90 shadow-sm flex flex-col justify-between gap-4 border transition-all ${
-                esElMio ? "border-cyan-500/60 ring-1 ring-cyan-500/30" : "border-slate-800/80"
+              className={`p-5 rounded-2xl bg-slate-900/90 shadow-xl flex flex-col justify-between gap-4 border transition-all ${
+                esElMio
+                  ? "border-cyan-500/60 ring-1 ring-cyan-500/30 bg-cyan-950/20"
+                  : "border-slate-800/80 hover:border-slate-700"
               }`}
             >
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${cfg.badgeBg}`}>
+                  <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono border ${cfg.badgeBg}`}>
                     {cfg.label}
                   </span>
-                  {esElMio && (
-                    <span className="text-[11px] font-mono font-bold text-cyan-400 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {esElMio ? (
+                    <span className="text-[11px] font-mono font-bold text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       Sesión Activa
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-mono font-medium text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-800/50">
+                      Perfil Habilitado
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans">{cfg.descripcion}</p>
+                <p className="text-xs text-slate-400 leading-relaxed">{cfg.descripcion}</p>
               </div>
 
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                <div className="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
-                  <span className="material-symbols-outlined text-[15px] text-cyan-400">shield</span>
-                  <span>{rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}</span>
+              <div className="pt-3 border-t border-slate-800/80 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
+                    <span className="material-symbols-outlined text-[15px] text-cyan-400">shield</span>
+                    <span>
+                      {rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}
+                    </span>
+                  </div>
+                  <span
+                    className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded font-bold ${
+                      esElMio
+                        ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60"
+                        : "bg-slate-950 text-slate-300 border border-slate-800"
+                    }`}
+                  >
+                    {esElMio ? "Tu Rol Activo" : "Disponible en Sistema"}
+                  </span>
                 </div>
-                <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded font-bold ${
-                  esElMio ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60" : "bg-slate-950 text-slate-500 border border-slate-800"
-                }`}>
-                  {esElMio ? "Rol Activo" : "Bloqueado"}
-                </span>
+
+                {/* Si es Administrador, botón para simular o cambiar su rol en tiempo real */}
+                {esAdmin && onCambiarRol && (
+                  <button
+                    type="button"
+                    onClick={() => onCambiarRol(rol)}
+                    disabled={esElMio}
+                    className={`w-full py-1.5 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 border ${
+                      esElMio
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 cursor-default"
+                        : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-cyan-500/50"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[15px]">
+                      {esElMio ? "verified" : "swap_horiz"}
+                    </span>
+                    <span>{esElMio ? "Rol en Uso" : `Simular Rol ${cfg.label}`}</span>
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Matriz de Permisos */}
-      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm flex flex-col gap-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-800/80">
-          <span className="material-symbols-outlined text-cyan-400 text-[20px]">table_chart</span>
-          <h3 className="text-sm font-bold text-white tracking-tight font-mono">
-            Matriz de Segregación de Funcionalidades por Rol
-          </h3>
+      {/* SECCIÓN 1: Directorio y Edición de Usuarios del Sistema */}
+      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[20px]">group</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-mono tracking-tight">
+                Directorio de Usuarios y Asignación de Roles
+              </h3>
+              <span className="text-xs text-slate-400">
+                {esAdmin
+                  ? "Como Administrador puedes editar el rol asignado a cualquier cuenta y guardar los cambios."
+                  : "Lista de usuarios y asignación de perfiles (solo lectura)."}
+              </span>
+            </div>
+          </div>
+
+          {esAdmin && (
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setMostrarModalNuevo(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-mono text-xs font-bold border border-slate-700 hover:border-cyan-500/40 transition-all"
+              >
+                <span className="material-symbols-outlined text-[16px]">person_add</span>
+                <span>Añadir Usuario</span>
+              </button>
+              <button
+                type="button"
+                onClick={guardarUsuarios}
+                disabled={guardando}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-mono text-xs font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] border border-cyan-300/30 transition-all disabled:opacity-50"
+              >
+                <span className={`material-symbols-outlined text-[16px] ${guardando ? "animate-spin" : ""}`}>
+                  {guardando ? "sync" : "save"}
+                </span>
+                <span>Guardar Usuarios</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-800/80">
+        {/* Modal / Formulario para Agregar Usuario */}
+        {mostrarModalNuevo && (
+          <form
+            onSubmit={handleCrearUsuario}
+            className="p-4 rounded-xl bg-slate-950/80 border border-cyan-500/30 flex flex-col gap-3 shadow-lg"
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <span className="text-xs font-bold text-cyan-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px]">person_add</span>
+                Nuevo Usuario del Sistema
+              </span>
+              <button
+                type="button"
+                onClick={() => setMostrarModalNuevo(false)}
+                className="text-xs text-slate-400 hover:text-white"
+              >
+                Cancelar
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-mono text-slate-400 uppercase">Correo Electrónico</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="usuario@empresa.com"
+                  value={nuevoEmail}
+                  onChange={(e) => setNuevoEmail(e.target.value)}
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs font-mono outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-mono text-slate-400 uppercase">Nombre Completo</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Laura Gómez"
+                  value={nuevoNombre}
+                  onChange={(e) => setNuevoNombre(e.target.value)}
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-mono text-slate-400 uppercase">Rol Asignado</label>
+                <select
+                  value={nuevoRol}
+                  onChange={(e) => setNuevoRol(e.target.value as RolUsuario)}
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs font-mono outline-none focus:border-cyan-400"
+                >
+                  <option value="ADMIN">ADMINISTRADOR (Nivel 3)</option>
+                  <option value="SUPERVISOR">SUPERVISOR (Nivel 2)</option>
+                  <option value="ANALISTA">ANALISTA (Nivel 1)</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-mono text-slate-400 uppercase">Empresa Asignada</label>
+                <select
+                  value={nuevaEmpresaId}
+                  onChange={(e) => setNuevaEmpresaId(e.target.value)}
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs font-mono outline-none focus:border-cyan-400"
+                >
+                  <option value="TODAS">TODAS (Corporativo)</option>
+                  {empresas.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setMostrarModalNuevo(false)}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-mono"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold"
+              >
+                Crear y Asignar
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Tabla de Usuarios */}
+        <div className="overflow-x-auto rounded-xl border border-slate-800">
+          <table className="w-full text-left text-xs border-collapse font-sans">
+            <thead>
+              <tr className="bg-slate-950 text-slate-400 uppercase font-mono text-[11px] tracking-wider border-b border-slate-800">
+                <th className="py-3 px-4">Usuario / Correo</th>
+                <th className="py-3 px-4">Nombre Completo</th>
+                <th className="py-3 px-4">Empresa Asignada</th>
+                <th className="py-3 px-4">Rol en Sistema</th>
+                <th className="py-3 px-4 text-center">Estado</th>
+                {esAdmin && <th className="py-3 px-4 text-right">Acción</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
+              {usuarios.map((u) => {
+                const esUsuarioActual = u.rol === rolUsuario;
+                return (
+                  <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
+                    <td className="py-3 px-4 font-mono text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px] text-cyan-400">account_circle</span>
+                        <span>{u.email}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-slate-300">{u.nombre}</td>
+                    <td className="py-3 px-4 font-mono text-slate-400">
+                      {esAdmin ? (
+                        <select
+                          value={u.empresaId}
+                          onChange={(e) => actualizarEmpresaUsuario(u.id, e.target.value)}
+                          className="p-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono outline-none focus:border-cyan-400"
+                        >
+                          <option value="TODAS">TODAS (Global)</option>
+                          {empresas.map((emp) => (
+                            <option key={emp.id} value={emp.id}>
+                              {emp.nombre}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span>{u.empresaId.toUpperCase()}</span>
+                      )}
+                    </td>
+
+                    {/* Selector de Rol Editable por Administrador */}
+                    <td className="py-3 px-4 font-mono">
+                      {esAdmin ? (
+                        <select
+                          value={u.rol}
+                          onChange={(e) => actualizarRolUsuario(u.id, e.target.value as RolUsuario)}
+                          className={`p-1.5 rounded-lg border font-mono text-xs font-bold outline-none cursor-pointer ${
+                            u.rol === "ADMIN"
+                              ? "bg-red-950/40 text-red-300 border-red-800/60"
+                              : u.rol === "SUPERVISOR"
+                              ? "bg-blue-950/40 text-blue-300 border-blue-800/60"
+                              : "bg-emerald-950/40 text-emerald-300 border-emerald-800/60"
+                          }`}
+                        >
+                          <option value="ADMIN" className="bg-slate-900 text-red-300">ADMINISTRADOR</option>
+                          <option value="SUPERVISOR" className="bg-slate-900 text-blue-300">SUPERVISOR</option>
+                          <option value="ANALISTA" className="bg-slate-900 text-emerald-300">ANALISTA</option>
+                        </select>
+                      ) : (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${ROLES_CONFIG[u.rol].badgeBg}`}>
+                          {ROLES_CONFIG[u.rol].label}
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="py-3 px-4 text-center font-mono">
+                      {esAdmin ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleEstadoUsuario(u.id)}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                            u.estado === "ACTIVO"
+                              ? "bg-emerald-950/60 text-emerald-400 border-emerald-800/60 hover:bg-emerald-900/60"
+                              : "bg-rose-950/60 text-rose-400 border-rose-800/60 hover:bg-rose-900/60"
+                          }`}
+                        >
+                          {u.estado}
+                        </button>
+                      ) : (
+                        <span className="text-slate-400">{u.estado}</span>
+                      )}
+                    </td>
+
+                    {esAdmin && (
+                      <td className="py-3 px-4 text-right">
+                        {u.email !== "admin@rpa.com" && (
+                          <button
+                            type="button"
+                            onClick={() => eliminarUsuario(u.id)}
+                            className="text-slate-500 hover:text-rose-400 transition-colors"
+                            title="Eliminar usuario"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* SECCIÓN 2: Matriz de Permisos RBAC Editable */}
+      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[20px]">table_chart</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-tight font-mono">
+                Matriz de Segregación de Funcionalidades por Rol
+              </h3>
+              <span className="text-xs text-slate-400">
+                {esAdmin
+                  ? "Haz clic sobre los permisos de Supervisor o Analista para alternar su estado."
+                  : "Permisos definidos por la arquitectura de seguridad bancaria (solo lectura)."}
+              </span>
+            </div>
+          </div>
+
+          {esAdmin && (
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={restaurarPermisosDefault}
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs font-bold border border-slate-700 transition-all"
+                title="Restaurar matriz original"
+              >
+                <span className="material-symbols-outlined text-[15px] align-middle mr-1">restore</span>
+                Restaurar
+              </button>
+              <button
+                type="button"
+                onClick={guardarPermisos}
+                disabled={guardando}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-mono text-xs font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] border border-cyan-300/30 transition-all disabled:opacity-50"
+              >
+                <span className={`material-symbols-outlined text-[16px] ${guardando ? "animate-spin" : ""}`}>
+                  {guardando ? "sync" : "save"}
+                </span>
+                <span>Guardar Permisos</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="overflow-x-auto rounded-xl border border-slate-800">
           <table className="w-full text-left text-xs border-collapse font-sans">
             <thead>
               <tr className="bg-slate-950 text-slate-400 uppercase font-mono text-[11px] tracking-wider border-b border-slate-800">
@@ -143,54 +755,76 @@ export function AuditoriaRolesModule({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
-              {matrizPermisos.map((p, idx) => (
-                <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
+              {matrizPermisos.map((p) => (
+                <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
                   <td className="py-3 px-4 font-semibold text-white font-mono">{p.funcionalidad}</td>
                   <td className="py-3 px-4 text-slate-400 text-xs">{p.descripcion}</td>
 
-                  {/* ADMIN */}
+                  {/* ADMIN: Siempre PERMITIDO */}
                   <td className="py-3 px-4 text-center font-mono">
-                    {p.admin === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-bold text-[10px]">
-                        <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">{p.admin}</span>
-                    )}
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-bold text-[10px]">
+                      <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
+                    </span>
                   </td>
 
-                  {/* SUPERVISOR */}
+                  {/* SUPERVISOR: Clickeable para Administrador */}
                   <td className="py-3 px-4 text-center font-mono">
-                    {p.supervisor === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60 font-bold text-[10px]">
-                        <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
+                    <button
+                      type="button"
+                      disabled={!esAdmin}
+                      onClick={() => togglePermiso(p.id, "supervisor")}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded font-bold text-[10px] transition-transform ${
+                        esAdmin ? "hover:scale-105 cursor-pointer" : "cursor-default"
+                      } ${
+                        p.supervisor === true
+                          ? "bg-blue-950/80 text-blue-300 border border-blue-800/60"
+                          : p.supervisor === false
+                          ? "bg-rose-950/60 text-rose-400 border border-rose-800/60"
+                          : "bg-slate-800 text-cyan-300 border border-slate-700"
+                      }`}
+                      title={esAdmin ? "Haz clic para cambiar permiso" : undefined}
+                    >
+                      <span className="material-symbols-outlined text-[12px]">
+                        {p.supervisor === true ? "check" : p.supervisor === false ? "close" : "visibility"}
                       </span>
-                    ) : p.supervisor === false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-800/60 font-bold text-[10px]">
-                        <span className="material-symbols-outlined text-[12px]">close</span> DENEGADO
+                      <span>
+                        {p.supervisor === true
+                          ? "PERMITIDO"
+                          : p.supervisor === false
+                          ? "DENEGADO"
+                          : String(p.supervisor)}
                       </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-[10px]">
-                        {p.supervisor}
-                      </span>
-                    )}
+                    </button>
                   </td>
 
-                  {/* ANALISTA */}
+                  {/* ANALISTA: Clickeable para Administrador */}
                   <td className="py-3 px-4 text-center font-mono">
-                    {p.analista === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-bold text-[10px]">
-                        <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
+                    <button
+                      type="button"
+                      disabled={!esAdmin}
+                      onClick={() => togglePermiso(p.id, "analista")}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded font-bold text-[10px] transition-transform ${
+                        esAdmin ? "hover:scale-105 cursor-pointer" : "cursor-default"
+                      } ${
+                        p.analista === true
+                          ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60"
+                          : p.analista === false
+                          ? "bg-rose-950/60 text-rose-400 border border-rose-800/60"
+                          : "bg-amber-950/60 text-amber-300 border border-amber-800/60"
+                      }`}
+                      title={esAdmin ? "Haz clic para cambiar permiso" : undefined}
+                    >
+                      <span className="material-symbols-outlined text-[12px]">
+                        {p.analista === true ? "check" : p.analista === false ? "close" : "tune"}
                       </span>
-                    ) : p.analista === false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-800/60 font-bold text-[10px]">
-                        <span className="material-symbols-outlined text-[12px]">close</span> DENEGADO
+                      <span>
+                        {p.analista === true
+                          ? "PERMITIDO"
+                          : p.analista === false
+                          ? "DENEGADO"
+                          : String(p.analista)}
                       </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-[10px]">
-                        {p.analista}
-                      </span>
-                    )}
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -200,27 +834,29 @@ export function AuditoriaRolesModule({
       </div>
 
       {/* Tarjeta de Arquitectura Técnica */}
-      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-cyan-400 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-[22px]">code</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xs text-white font-mono">Arquitectura Fullstack TypeScript Puro (Cero Python)</span>
+            <span className="font-bold text-xs text-white font-mono">
+              Arquitectura Fullstack TypeScript Puro (Cero Python)
+            </span>
             <span className="text-xs text-slate-400 font-sans mt-0.5">
-              Toda la lógica de parsing de planillas, validación de reglas de negocio y cálculo financiero se ejecuta en JavaScript / TypeScript.
+              Control RBAC desacoplado, parsing client-side en tiempo real y sincronización en la nube vía Firestore.
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 text-xs font-mono">
           <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-cyan-400">
-            Next.js 14
+            RBAC Dinámico
           </span>
           <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-emerald-400">
-            SheetJS XLSX
+            Next.js 14
           </span>
           <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-amber-400">
-            Firebase 10
+            Firebase Firestore
           </span>
         </div>
       </div>

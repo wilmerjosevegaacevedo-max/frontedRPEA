@@ -194,6 +194,9 @@ export default function HomePage() {
         }
         setModoDemo(true);
         if (typeof window !== "undefined") {
+          if (rememberDevice) {
+            window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+          }
           window.sessionStorage.setItem(
             DEMO_SESSION_KEY,
             JSON.stringify({
@@ -202,6 +205,38 @@ export default function HomePage() {
               displayName: credEncontrada.nombre,
               rol: credEncontrada.rol,
               empresaId: credEncontrada.empresaId,
+            })
+          );
+        }
+        return;
+      }
+
+      // 1.1 Si coincide con un perfil resuelto (p. ej. supervisor@rpa.com, admin@rpa.com)
+      if (perfil && perfil.passwordDefault && password === perfil.passwordDefault) {
+        const mockUid = `usr-${perfil.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`;
+        setUser({
+          uid: mockUid,
+          email: email.trim(),
+          displayName: perfil.nombre,
+        } as User);
+        setRolUsuarioActivo(perfil.rol);
+        setEmpresaAsignadaActiva(perfil.empresaId);
+        if (perfil.empresaId !== "TODAS") {
+          setCliente(perfil.empresaId as ClienteId);
+        }
+        setModoDemo(true);
+        if (typeof window !== "undefined") {
+          if (rememberDevice) {
+            window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+          }
+          window.sessionStorage.setItem(
+            DEMO_SESSION_KEY,
+            JSON.stringify({
+              uid: mockUid,
+              email: email.trim(),
+              displayName: perfil.nombre,
+              rol: perfil.rol,
+              empresaId: perfil.empresaId,
             })
           );
         }

@@ -24,28 +24,44 @@ export interface CredencialEmpresa {
 
 export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
   {
-    email: "admin.rpa@blacksmith.com.co",
+    email: "admin@rpa.com",
     passwordDefault: "Admin*2026",
     nombre: "Administrador General del Sistema",
     rol: "ADMIN",
     empresaId: "TODAS",
-    descripcion: "Control total: Único autorizado para registrar empresas y configurar reglas de negocio."
+    descripcion: "Control total: Registrar empresas, configurar reglas de negocio y supervisión.",
   },
   {
-    email: "nomina@continentalgold.com",
+    email: "supervisor@rpa.com",
+    passwordDefault: "Audit*2026",
+    nombre: "Auditor y Supervisor Central",
+    rol: "SUPERVISOR",
+    empresaId: "TODAS",
+    descripcion: "Auditoría en tiempo real, aprobación de lotes y visualización de reportes.",
+  },
+  {
+    email: "audit@rpa.com",
+    passwordDefault: "Audit*2026",
+    nombre: "Oficial de Auditoría y Cumplimiento",
+    rol: "SUPERVISOR",
+    empresaId: "TODAS",
+    descripcion: "Monitoreo integral, auditoría y trazabilidad en solo lectura.",
+  },
+  {
+    email: "nomina@continental.com",
     passwordDefault: "Cont*2026",
     nombre: "Analista Nómina Continental Gold",
     rol: "ANALISTA",
     empresaId: "continental",
-    descripcion: "Gestión exclusiva de planillas y descuentos individuales de Continental Gold."
+    descripcion: "Carga masiva de planillas y descuentos individuales de Continental Gold.",
   },
   {
-    email: "nomina@cdf-financiera.com",
+    email: "nomina@cdf.com",
     passwordDefault: "Cdf*2026",
     nombre: "Analista Nómina Compañía CDF",
     rol: "ANALISTA",
     empresaId: "cdf",
-    descripcion: "Gestión exclusiva de planillas y deducciones de Compañía de Financiamiento CDF."
+    descripcion: "Carga masiva de planillas y deducciones de Compañía de Financiamiento CDF.",
   },
   {
     email: "nomina@dxc.com",
@@ -53,7 +69,16 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
     nombre: "Analista Nómina DXC Technology",
     rol: "ANALISTA",
     empresaId: "dxc",
-    descripcion: "Gestión exclusiva de planillas y deducciones de DXC Technology Colombia."
+    descripcion: "Carga masiva de planillas y deducciones de DXC Technology Colombia.",
+  },
+  // Alias de respaldo para compatibilidad
+  {
+    email: "admin.rpa@blacksmith.com.co",
+    passwordDefault: "Admin*2026",
+    nombre: "Administrador General del Sistema",
+    rol: "ADMIN",
+    empresaId: "TODAS",
+    descripcion: "Control total: Único autorizado para registrar empresas y configurar reglas de negocio.",
   },
   {
     email: "auditoria@rpa-nomina.com",
@@ -61,8 +86,24 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
     nombre: "Auditor Central (Supervisión)",
     rol: "SUPERVISOR",
     empresaId: "TODAS",
-    descripcion: "Monitoreo integral, auditoría y trazabilidad en solo lectura."
-  }
+    descripcion: "Monitoreo integral, auditoría y trazabilidad en solo lectura.",
+  },
+  {
+    email: "nomina@continentalgold.com",
+    passwordDefault: "Cont*2026",
+    nombre: "Analista Nómina Continental Gold",
+    rol: "ANALISTA",
+    empresaId: "continental",
+    descripcion: "Gestión exclusiva de planillas y descuentos individuales de Continental Gold.",
+  },
+  {
+    email: "nomina@cdf-financiera.com",
+    passwordDefault: "Cdf*2026",
+    nombre: "Analista Nómina Compañía CDF",
+    rol: "ANALISTA",
+    empresaId: "cdf",
+    descripcion: "Gestión exclusiva de planillas y deducciones de Compañía de Financiamiento CDF.",
+  },
 ];
 
 export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[]): CredencialEmpresa {

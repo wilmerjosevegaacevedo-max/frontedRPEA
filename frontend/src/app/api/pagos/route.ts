@@ -58,6 +58,14 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
   try {
+    const rolHeader = (req.headers.get("x-user-role") || "ADMIN").toUpperCase();
+    if (rolHeader === "SUPERVISOR") {
+      return NextResponse.json(
+        { ok: false, error: "Acceso denegado: El rol SUPERVISOR tiene acceso exclusivo de solo lectura." },
+        { status: 403 }
+      );
+    }
+
     const body: PagoIndividual = await req.json();
 
     if (!body.documento || !body.empleadoNombre || !body.salarioBase || !body.empresaId) {

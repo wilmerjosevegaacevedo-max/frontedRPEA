@@ -56,3 +56,5 @@ backend/files/salidas/
 Thumbs.db
 ~$*.docx
 ~$*.xlsx
+*.pptx
+frontend/PPT_*.py

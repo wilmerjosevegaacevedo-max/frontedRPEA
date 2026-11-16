@@ -8,7 +8,7 @@ export async function GET() {
       service: "RPA LAD-6819 Fullstack Engine",
       runtime: "Node.js (Next.js 14 App Router)",
       stack: "TypeScript + SheetJS + Firebase Firestore",
-      version: "2.0.0",
+      version: "2.4.0",
       pythonDeprecation: "Backend migrado 100% a TypeScript / Next.js",
     },
     { status: 200 }

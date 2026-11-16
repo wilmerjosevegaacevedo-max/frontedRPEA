@@ -238,6 +238,10 @@ export default function HomePage() {
     setJobs((prev) => [nuevoJob, ...prev]);
   }
 
+  function handleActualizarJob(jobId: string, cambios: Partial<Job>) {
+    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, ...cambios } : j)));
+  }
+
   if (!user) {
     return (
       <div className="relative">
@@ -276,6 +280,7 @@ export default function HomePage() {
       user={user}
       jobs={jobs}
       onNuevoJob={handleNuevoJob}
+      onActualizarJob={handleActualizarJob}
       rolInicial={rolUsuarioActivo}
       empresaAsignadaInicial={empresaAsignadaActiva}
       onSignOut={() => {

@@ -77,40 +77,32 @@ const MATRIZ_PERMISOS_INICIAL: PermisoFila[] = [
 const USUARIOS_DEFAULT: UsuarioSistema[] = [
   {
     id: "usr-admin",
-    email: "admin@rpa.com",
-    nombre: "Administrador Central",
+    email: "admin.rpa@blacksmith.com.co",
+    nombre: "Administrador General del Sistema",
     rol: "ADMIN",
     empresaId: "TODAS",
     estado: "ACTIVO",
   },
   {
     id: "usr-supervisor",
-    email: "supervisor@rpa.com",
-    nombre: "Auditor y Supervisor Central",
-    rol: "SUPERVISOR",
-    empresaId: "TODAS",
-    estado: "ACTIVO",
-  },
-  {
-    id: "usr-audit",
-    email: "audit@rpa.com",
-    nombre: "Oficial de Cumplimiento",
+    email: "auditoria@rpa-nomina.com",
+    nombre: "Auditor Central (Supervisión)",
     rol: "SUPERVISOR",
     empresaId: "TODAS",
     estado: "ACTIVO",
   },
   {
     id: "usr-cont",
-    email: "nomina@continental.com",
-    nombre: "Analista Continental Gold",
+    email: "nomina@continentalgold.com",
+    nombre: "Analista Nómina Continental Gold",
     rol: "ANALISTA",
     empresaId: "continental",
     estado: "ACTIVO",
   },
   {
     id: "usr-cdf",
-    email: "nomina@cdf.com",
-    nombre: "Analista Compañía CDF",
+    email: "nomina@cdf-financiera.com",
+    nombre: "Analista Nómina Compañía CDF",
     rol: "ANALISTA",
     empresaId: "cdf",
     estado: "ACTIVO",
@@ -118,7 +110,7 @@ const USUARIOS_DEFAULT: UsuarioSistema[] = [
   {
     id: "usr-dxc",
     email: "nomina@dxc.com",
-    nombre: "Analista DXC Technology",
+    nombre: "Analista Nómina DXC Technology",
     rol: "ANALISTA",
     empresaId: "dxc",
     estado: "ACTIVO",
@@ -678,9 +670,10 @@ export function AuditoriaRolesModule({
 
                     {esAdmin && (
                       <td className="py-3 px-4 text-right">
-                        {u.email !== "admin@rpa.com" && (
+                        {u.email !== "admin.rpa@blacksmith.com.co" && u.email !== "admin@rpa.com" && (
                           <button
                             type="button"
+                            aria-label={`Eliminar usuario ${u.email}`}
                             onClick={() => eliminarUsuario(u.id)}
                             className="text-slate-500 hover:text-rose-400 transition-colors"
                             title="Eliminar usuario"

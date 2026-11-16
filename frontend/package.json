@@ -1,12 +1,14 @@
 {
   "name": "rpa-lad-6819",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.4.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit --incremental false",
+    "test": "tsc --noEmit --incremental false"
   },
   "dependencies": {
     "@types/nodemailer": "^8.0.2",

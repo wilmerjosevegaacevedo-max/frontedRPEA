@@ -61,7 +61,7 @@ export function DashboardHeader({
       id: "empresas-reglas",
       label: "Empresas & Reglas",
       icon: "domain",
-      roles: ["ADMIN"],
+      roles: ["ADMIN", "SUPERVISOR"],
     },
     {
       id: "auditoria-roles",
@@ -152,6 +152,7 @@ export function DashboardHeader({
               type="button"
               onClick={onSignOut}
               title="Cerrar Sesión Segura"
+              aria-label="Cerrar Sesión Segura"
               className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-800/40 transition-colors active:scale-[0.98]"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>

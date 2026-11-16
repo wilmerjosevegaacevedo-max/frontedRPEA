@@ -70,6 +70,30 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
   const match = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
   if (match) return match;
 
+  if (typeof window !== "undefined") {
+    try {
+      const localUsrs = window.localStorage.getItem("rpa_usuarios_roles");
+      if (localUsrs) {
+        const parsed = JSON.parse(localUsrs);
+        const usrMatch = Array.isArray(parsed)
+          ? parsed.find((u: any) => u.email?.toLowerCase() === emailNorm && u.estado !== "SUSPENDIDO")
+          : null;
+        if (usrMatch) {
+          return {
+            email: emailNorm,
+            passwordDefault: "",
+            nombre: usrMatch.nombre || emailNorm,
+            rol: usrMatch.rol || "ANALISTA",
+            empresaId: usrMatch.empresaId || "continental",
+            descripcion: `Perfil asignado por directorio RBAC (${usrMatch.rol}).`,
+          };
+        }
+      }
+    } catch {
+      // Continuar con resolución estándar
+    }
+  }
+
   if (empresas && empresas.length > 0) {
     const empMatch = empresas.find(
       (e) => e.emailOperador && e.emailOperador.toLowerCase() === emailNorm
@@ -86,7 +110,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
     }
   }
 
-  if (emailNorm.includes("admin")) {
+  if (emailNorm === "admin@rpa.com" || emailNorm === "admin@blacksmith.com.co") {
     return {
       email: emailNorm,
       passwordDefault: "Admin*2026",
@@ -96,7 +120,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
       descripcion: "Control total: Único con acceso a crear empresas y editar reglas."
     };
   }
-  if (emailNorm.includes("audit") || emailNorm.includes("supervisor")) {
+  if (emailNorm === "supervisor@rpa.com" || emailNorm === "audit@rpa.com") {
     return {
       email: emailNorm,
       passwordDefault: "Audit*2026",
@@ -106,7 +130,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
       descripcion: "Supervisión y auditoría en tiempo real (solo lectura)."
     };
   }
-  if (emailNorm.includes("cdf")) {
+  if (emailNorm.endsWith("@cdf-financiera.com") || emailNorm.endsWith("@cdf.com")) {
     return {
       email: emailNorm,
       passwordDefault: "Cdf*2026",
@@ -116,7 +140,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
       descripcion: "Gestión exclusiva de Compañía de Financiamiento CDF."
     };
   }
-  if (emailNorm.includes("dxc")) {
+  if (emailNorm.endsWith("@dxc.com") || emailNorm.endsWith("@hpe.com")) {
     return {
       email: emailNorm,
       passwordDefault: "Dxc*2026",
@@ -126,7 +150,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
       descripcion: "Gestión exclusiva de DXC Technology Colombia."
     };
   }
-  if (emailNorm.includes("continental") || emailNorm.includes("gold")) {
+  if (emailNorm.endsWith("@continentalgold.com") || emailNorm.endsWith("@continental.com")) {
     return {
       email: emailNorm,
       passwordDefault: "Cont*2026",

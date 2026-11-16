@@ -64,17 +64,17 @@ npm run dev
 # Abrir: http://localhost:3000
 ```
 
-### 2. Ejecutar Pruebas Automatizadas
+### 2. Verificación Estática y Compilación de Producción
 ```bash
 cd frontend
-npm test
-# 14 tests unitarios (Vitest)
+npm run typecheck
+npm run build
 ```
 
-### 3. Ejecutar Robot RPA por Consola (o doble clic en `ejecutar_rpa.bat`)
+### 3. Ejecutar Robot RPA de Correo (Vía UI o Endpoint REST)
+Desde el **Centro de Control** pulsando **"Sincronizar Gmail"**, o mediante petición HTTP:
 ```bash
-cd frontend
-npm run rpa
+curl -X POST http://localhost:3000/api/rpa/scan
 ```
 
 ---

@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { CLIENTES, Job, grupoEstado, RolUsuario } from "../types";
+import { CLIENTES, Empresa, Job, grupoEstado, RolUsuario } from "../types";
 import { formatRelativeTime } from "../utils/format";
 
 type FiltroEstado = "todos" | "proceso" | "exito" | "fallo";
 
 type JobsTableProps = {
   jobs: Job[];
+  empresas?: Empresa[];
   onSelectJob: (jobId: string) => void;
   onReintentar: (jobId: string) => void;
   reintentandoId: string | null;
@@ -48,6 +49,7 @@ function badgeEstado(job: Job) {
 
 export function JobsTable({
   jobs,
+  empresas,
   onSelectJob,
   onReintentar,
   reintentandoId,
@@ -58,6 +60,9 @@ export function JobsTable({
   const [busqueda, setBusqueda] = useState("");
 
   const esDelimitado = Boolean(empresaAsignada && empresaAsignada !== "TODAS");
+  const opcionesClientes = empresas && empresas.length > 0
+    ? empresas.map((e) => ({ id: e.id, label: e.nombre }))
+    : CLIENTES;
 
   const conteos = useMemo(
     () => ({
@@ -155,13 +160,14 @@ export function JobsTable({
         </div>
       </div>
 
-      {/* Barra de Búsqueda y Filtro de Entidad */}
+        {/* Barra de Búsqueda y Filtro de Entidad */}
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="relative w-full sm:flex-1">
           <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-[18px]">
             search
           </span>
           <input
+            aria-label="Buscar por Batch ID, archivo o cliente"
             className="w-full pl-9 pr-4 py-2 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/20 transition-colors font-mono"
             placeholder="Buscar por Batch ID, archivo o cliente..."
             type="text"
@@ -182,7 +188,7 @@ export function JobsTable({
             onChange={(event) => setFiltroCliente(event.target.value)}
           >
             <option value="">Cliente: Todos</option>
-            {CLIENTES.map((c) => (
+            {opcionesClientes.map((c) => (
               <option key={c.id} value={c.id}>
                 Cliente: {c.label}
               </option>
@@ -256,17 +262,14 @@ export function JobsTable({
                   <td className="py-3 px-4 text-right" onClick={(event) => event.stopPropagation()}>
                     <div className="inline-flex items-center gap-1.5">
                       {job.archivoSalida && (
-                        <a
-                          href="#"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            onSelectJob(job.id);
-                          }}
+                        <button
+                          type="button"
+                          onClick={() => onSelectJob(job.id)}
                           className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-md text-xs font-mono font-medium border border-emerald-700/60 transition-all active:scale-[0.98]"
                         >
                           <span className="material-symbols-outlined text-[14px]">download</span>
                           <span>ZIP</span>
-                        </a>
+                        </button>
                       )}
                       {grupo === "fallo" && (
                         <button

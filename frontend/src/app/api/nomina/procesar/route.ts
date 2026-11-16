@@ -9,6 +9,14 @@ import { collection, doc, getDoc, serverTimestamp, setDoc } from "firebase/fires
  */
 export async function POST(req: NextRequest) {
   try {
+    const rolHeader = (req.headers.get("x-user-role") || "ADMIN").toUpperCase();
+    if (rolHeader === "SUPERVISOR") {
+      return NextResponse.json(
+        { ok: false, error: "Acceso denegado: El rol SUPERVISOR tiene acceso exclusivo de solo lectura." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { empresaId, nombreArchivo, filas, usuarioId, usuarioEmail } = body;
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { Empresa, PagoIndividual, RolUsuario } from "../types";
-import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { User } from "firebase/auth";
 
@@ -79,6 +79,24 @@ export function PagoUnicoModule({
       usuarioId: user.uid,
     },
   ]);
+
+  // Sincronizar historial de pagos individuales desde Firestore en tiempo real
+  useEffect(() => {
+    if (!db) return;
+    const unsub = onSnapshot(
+      collection(db, "pagos_individuales"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const cargados = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() } as PagoIndividual));
+          setHistorialPagos(cargados);
+        }
+      },
+      (error) => {
+        console.warn("Aviso al sincronizar pagos individuales de Firestore:", error.message);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   const empresaActual = useMemo(
     () => empresas.find((e) => e.id === empresaId) || empresas[0],
@@ -500,13 +518,20 @@ export function PagoUnicoModule({
               <span className="material-symbols-outlined text-slate-500 text-[18px]">search</span>
               <input
                 type="text"
+                aria-label="Buscar por cédula, nombre o folio"
                 placeholder="Buscar por cédula, nombre o folio..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
                 className="w-full text-xs bg-transparent outline-none text-white placeholder:text-slate-500 font-mono"
               />
               {busqueda && (
-                <button type="button" onClick={() => setBusqueda("")} className="text-slate-500 hover:text-white">
+                <button
+                  type="button"
+                  aria-label="Limpiar búsqueda"
+                  title="Limpiar búsqueda"
+                  onClick={() => setBusqueda("")}
+                  className="text-slate-500 hover:text-white"
+                >
                   <span className="material-symbols-outlined text-[16px]">close</span>
                 </button>
               )}

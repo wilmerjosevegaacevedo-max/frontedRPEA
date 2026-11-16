@@ -1,13 +1,17 @@
-import { CLIENTES, Job, grupoEstado } from "../types";
+import { CLIENTES, Empresa, Job, grupoEstado } from "../types";
 import { esHoy, formatRelativeTime } from "../utils/format";
 
-export function KpiSummary({ jobs }: { jobs: Job[] }) {
+export function KpiSummary({ jobs, empresas }: { jobs: Job[]; empresas?: Empresa[] }) {
   const lotesHoy = jobs.filter((job) => esHoy(job.creadoEn?.toDate())).length;
   const exitosos = jobs.filter((job) => grupoEstado(job.estado) === "exito").length;
   const fallidos = jobs.filter((job) => grupoEstado(job.estado) === "fallo").length;
   const procesando = jobs.filter((job) => grupoEstado(job.estado) === "proceso").length;
   const total = jobs.length;
   const tasaEfectividad = total > 0 ? (exitosos / total) * 100 : 0;
+
+  const entidadesLista = empresas && empresas.length > 0
+    ? empresas.map((e) => ({ id: e.id, label: e.nombre }))
+    : CLIENTES;
 
   const clientesConLotes = new Set(jobs.map((job) => job.cliente.toLowerCase()));
 
@@ -97,7 +101,7 @@ export function KpiSummary({ jobs }: { jobs: Job[] }) {
               Clientes Activos
             </span>
             <span className="text-3xl font-bold text-white mt-1 font-mono tabular-nums tracking-tight flex items-baseline gap-1.5">
-              {CLIENTES.length} <span className="text-xs font-normal text-slate-400 uppercase">entidades</span>
+              {entidadesLista.length} <span className="text-xs font-normal text-slate-400 uppercase">entidades</span>
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-200 flex items-center justify-center">
@@ -105,11 +109,11 @@ export function KpiSummary({ jobs }: { jobs: Job[] }) {
           </div>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
-          {CLIENTES.map((c) => (
+          {entidadesLista.map((c) => (
             <span
               key={c.id}
               className={`px-2 py-0.5 text-[10px] font-mono rounded-md font-semibold border transition-colors ${
-                clientesConLotes.has(c.id)
+                clientesConLotes.has(c.id.toLowerCase())
                   ? "bg-slate-800 text-slate-200 border-slate-700"
                   : "bg-slate-950/60 text-slate-500 border-slate-800/80"
               }`}

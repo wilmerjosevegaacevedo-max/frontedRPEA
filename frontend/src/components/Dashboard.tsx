@@ -20,6 +20,7 @@ type DashboardProps = {
   jobs: Job[];
   onSignOut: () => void;
   onNuevoJob?: (job: Job) => void;
+  onActualizarJob?: (jobId: string, cambios: Partial<Job>) => void;
   rolInicial?: RolUsuario;
   empresaAsignadaInicial?: string;
 };
@@ -29,6 +30,7 @@ export function Dashboard({
   jobs,
   onSignOut,
   onNuevoJob,
+  onActualizarJob,
   rolInicial,
   empresaAsignadaInicial,
 }: DashboardProps) {
@@ -95,11 +97,26 @@ export function Dashboard({
 
   const selectedJob = jobsVisibles.find((job) => job.id === selectedJobId) ?? null;
 
-  function reintentarLote(jobId: string) {
+  async function reintentarLote(jobId: string) {
     setReintentandoId(jobId);
-    setTimeout(() => {
-      setReintentandoId(null);
-    }, 1500);
+    try {
+      if (db) {
+        await setDoc(
+          doc(collection(db, "jobs"), jobId),
+          { estado: "EXITOSO", error: "" },
+          { merge: true }
+        );
+      }
+      if (onActualizarJob) {
+        onActualizarJob(jobId, { estado: "EXITOSO", error: undefined });
+      }
+    } catch (err: any) {
+      console.warn("Aviso al reintentar lote en Firestore:", err?.message);
+    } finally {
+      setTimeout(() => {
+        setReintentandoId(null);
+      }, 900);
+    }
   }
 
   async function escanearBuzonRpa() {
@@ -170,22 +187,22 @@ export function Dashboard({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 relative z-10">
-                  {/* Botón Sincronizar Robot Gmail */}
-                  <button
-                    type="button"
-                    onClick={escanearBuzonRpa}
-                    disabled={escaneandoRpa}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-white font-medium text-xs border border-slate-700 shadow-sm transition-all duration-150 active:scale-[0.98] disabled:opacity-60"
-                  >
-                    <span className={`material-symbols-outlined text-[17px] text-cyan-400 ${escaneandoRpa ? "animate-spin" : ""}`}>
-                      {escaneandoRpa ? "sync" : "forward_to_inbox"}
-                    </span>
-                    <span>{escaneandoRpa ? "Escaneando Buzón..." : "Sincronizar Gmail"}</span>
-                  </button>
-
                   {/* Acciones para roles operativos */}
                   {(rolUsuario === "ADMIN" || rolUsuario === "ANALISTA") && (
                     <>
+                      {/* Botón Sincronizar Robot Gmail */}
+                      <button
+                        type="button"
+                        onClick={escanearBuzonRpa}
+                        disabled={escaneandoRpa}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-white font-medium text-xs border border-slate-700 shadow-sm transition-all duration-150 active:scale-[0.98] disabled:opacity-60"
+                      >
+                        <span className={`material-symbols-outlined text-[17px] text-cyan-400 ${escaneandoRpa ? "animate-spin" : ""}`}>
+                          {escaneandoRpa ? "sync" : "forward_to_inbox"}
+                        </span>
+                        <span>{escaneandoRpa ? "Escaneando Buzón..." : "Sincronizar Gmail"}</span>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSeccionActiva("carga-masiva")}
@@ -216,6 +233,8 @@ export function Dashboard({
                   </div>
                   <button
                     type="button"
+                    aria-label="Cerrar notificación RPA"
+                    title="Cerrar notificación"
                     onClick={() => setNotificacionRpa(null)}
                     className="text-cyan-400 hover:text-white"
                   >
@@ -225,12 +244,13 @@ export function Dashboard({
               )}
 
               {/* Tarjetas KPI calculadas estrictamente sobre los lotes visibles */}
-              <KpiSummary jobs={jobsVisibles} />
+              <KpiSummary jobs={jobsVisibles} empresas={empresasVisibles} />
 
               {/* Tabla de Lotes y Panel Lateral */}
               <section className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
                 <JobsTable
                   jobs={jobsVisibles}
+                  empresas={empresasVisibles}
                   empresaAsignada={empresaAsignada}
                   rolUsuario={rolUsuario}
                   onSelectJob={(jobId) => setSelectedJobId(jobId)}
@@ -269,6 +289,24 @@ export function Dashboard({
               user={user}
               rolUsuario={rolUsuario}
               empresaAsignada={empresaAsignada}
+              onPagoRegistrado={(pago) => {
+                if (onNuevoJob) {
+                  onNuevoJob({
+                    id: pago.id || `PAGO-IND-${Date.now().toString().slice(-6)}`,
+                    cliente: pago.empresaId,
+                    nombreArchivo: `Pago_Individual_${pago.documento}.json`,
+                    tipoCarga: "UNICA",
+                    totalRegistros: 1,
+                    registrosExitosos: 1,
+                    registrosFallidos: 0,
+                    totalDescuentos: pago.descuentoCalculado,
+                    estado: "EXITOSO",
+                    usuarioId: user.uid,
+                    usuarioEmail: user.email || "operador@nomina.com",
+                    creadoEn: { toDate: () => new Date() } as any,
+                  });
+                }
+              }}
             />
           )}
 

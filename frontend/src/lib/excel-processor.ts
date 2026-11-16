@@ -12,6 +12,7 @@ export interface RegistroNominaProcesado {
   descuentoCalculado: number;
   descuentoAplicado: number;
   topeAplicado: boolean;
+  superaLimiteLegal?: boolean;
   estado: "VALIDO" | "INVALIDO";
   motivoError?: string;
   detallesOriginales?: Record<string, any>;
@@ -47,14 +48,28 @@ function normalizarClave(texto: string): string {
 }
 
 /**
- * Encuentra el valor correspondiente a varias posibles cabeceras en una fila
+ * Encuentra el valor correspondiente a varias posibles cabeceras en una fila.
+ * Prioriza coincidencia exacta antes que coincidencia por token para evitar falsos positivos (ej. FECHA_INGRESO vs INGRESO).
  */
 function buscarValor(fila: Record<string, any>, posiblesNombres: string[]): any {
   const entradas = Object.entries(fila);
+  // 1. Coincidencia exacta normalizada
   for (const posible of posiblesNombres) {
     const normalizado = normalizarClave(posible);
     for (const [k, v] of entradas) {
-      if (normalizarClave(k) === normalizado || normalizarClave(k).includes(normalizado)) {
+      if (normalizarClave(k) === normalizado) {
+        return v;
+      }
+    }
+  }
+  // 2. Coincidencia por palabra completa separada por guion bajo
+  for (const posible of posiblesNombres) {
+    const normalizado = normalizarClave(posible);
+    for (const [k, v] of entradas) {
+      const kNorm = normalizarClave(k);
+      if (kNorm.includes("FECHA")) continue;
+      const tokens = kNorm.split("_").filter(Boolean);
+      if (tokens.includes(normalizado)) {
         return v;
       }
     }
@@ -176,6 +191,8 @@ export async function procesarNominaEnFrontend(
       }
     }
 
+    const superaLimiteLegal = salarioBase > 0 && dAplicado / salarioBase > 0.5;
+
     if (estado === "VALIDO") {
       totalSalariosBase += salarioBase;
       totalDescuentoVida += dVida;
@@ -195,8 +212,9 @@ export async function procesarNominaEnFrontend(
       descuentoCalculado: dCalculado,
       descuentoAplicado: dAplicado,
       topeAplicado,
+      superaLimiteLegal,
       estado,
-      motivoError: motivoError || undefined,
+      motivoError: motivoError || (superaLimiteLegal ? "Advertencia: Descuento supera el 50% legal (CST)." : undefined),
       detallesOriginales: fila,
     });
   });

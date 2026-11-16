@@ -213,6 +213,18 @@ export function CargaMasivaModule({
         </div>
       )}
 
+      {resultado && resultado.erroresGenerales.length > 0 && (
+        <div className="p-4 rounded-xl bg-amber-950/50 text-amber-300 border border-amber-800/60 flex flex-col gap-1.5 text-xs font-mono">
+          <div className="flex items-center gap-2 font-bold text-amber-400">
+            <span className="material-symbols-outlined text-[18px]">warning</span>
+            <span>Advertencia de Estructura de Columnas:</span>
+          </div>
+          {resultado.erroresGenerales.map((err, i) => (
+            <span key={i} className="pl-6">• {err} (Se aplicó mapeo heurístico de respaldo).</span>
+          ))}
+        </div>
+      )}
+
       {/* Zona de Carga Drag & Drop */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <div
@@ -489,24 +501,34 @@ export function CargaMasivaModule({
                 <tbody className="divide-y divide-slate-800/60 bg-slate-900/40 font-mono">
                   {registrosFiltrados.slice(0, 50).map((r) => (
                     <tr key={r.indice} className="hover:bg-slate-800/50 transition-colors">
-                      <td className="py-2.5 px-3 text-slate-500">{r.indice}</td>
-                      <td className="py-2.5 px-3 text-slate-200 font-medium">{r.documento || "—"}</td>
+                      <td className="py-2.5 px-3 text-slate-500 tabular-nums">{r.indice}</td>
+                      <td className="py-2.5 px-3 text-slate-200 font-medium tabular-nums">{r.documento || "—"}</td>
                       <td className="py-2.5 px-3 font-medium text-white font-sans">{r.nombre}</td>
-                      <td className="py-2.5 px-3 text-right text-slate-300">${r.salarioBase.toLocaleString("es-CO")}</td>
-                      <td className="py-2.5 px-3 text-right text-cyan-400">${r.descuentoVida.toLocaleString("es-CO")}</td>
-                      <td className="py-2.5 px-3 text-right text-emerald-400">${r.descuentoGmm.toLocaleString("es-CO")}</td>
-                      <td className="py-2.5 px-3 text-right text-amber-400">${r.descuentoCostos.toLocaleString("es-CO")}</td>
-                      <td className="py-2.5 px-3 text-right font-bold text-cyan-300">
+                      <td className="py-2.5 px-3 text-right text-slate-300 tabular-nums">${r.salarioBase.toLocaleString("es-CO")}</td>
+                      <td className="py-2.5 px-3 text-right text-cyan-400 tabular-nums">${r.descuentoVida.toLocaleString("es-CO")}</td>
+                      <td className="py-2.5 px-3 text-right text-emerald-400 tabular-nums">${r.descuentoGmm.toLocaleString("es-CO")}</td>
+                      <td className="py-2.5 px-3 text-right text-amber-400 tabular-nums">${r.descuentoCostos.toLocaleString("es-CO")}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-cyan-300 tabular-nums">
                         ${r.descuentoAplicado.toLocaleString("es-CO")}
                       </td>
                       <td className="py-2.5 px-3 text-center">
-                        {r.topeAplicado ? (
-                          <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[10px]">
-                            TOPADO
-                          </span>
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )}
+                        <div className="flex flex-col items-center gap-0.5">
+                          {r.topeAplicado ? (
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[10px]">
+                              TOPADO
+                            </span>
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                          {r.superaLimiteLegal && (
+                            <span
+                              title="Supera el 50% del salario base (Límite legal CST)"
+                              className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/30 font-bold text-[9px] cursor-help"
+                            >
+                              &gt;50% CST
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-2.5 px-3 text-center">
                         {r.estado === "VALIDO" ? (

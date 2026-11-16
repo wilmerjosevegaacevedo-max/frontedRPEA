@@ -30,6 +30,14 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
   try {
+    const rolHeader = (req.headers.get("x-user-role") || "ADMIN").toUpperCase();
+    if (rolHeader !== "ADMIN") {
+      return NextResponse.json(
+        { ok: false, error: "Acceso denegado: Solo el rol ADMIN puede registrar o modificar reglas de empresas." },
+        { status: 403 }
+      );
+    }
+
     const body: Empresa = await req.json();
 
     const nitNumerico = String(body.nit || "").replace(/\D/g, "").trim();

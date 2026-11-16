@@ -14,19 +14,19 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-background p-6">
-      <div className="w-full max-w-md p-8 rounded-2xl bg-surface-container-lowest shadow-xl border border-surface-container text-center flex flex-col items-center gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-error/10 text-error flex items-center justify-center">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#030712] cyber-grid p-6 text-slate-100">
+      <div className="w-full max-w-md p-8 rounded-2xl bg-slate-900/90 backdrop-blur-xl shadow-2xl border border-slate-800 text-center flex flex-col items-center gap-4">
+        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
           <span className="material-symbols-outlined text-[36px]">warning</span>
         </div>
-        <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface">Ocurrió un Error Inesperado</h1>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">
+        <h1 className="text-xl font-bold text-white font-mono tracking-tight">Ocurrió un Error Inesperado</h1>
+        <p className="text-xs text-slate-400 leading-relaxed">
           {error.message || "Se produjo una excepción durante la ejecución del módulo."}
         </p>
         <button
           type="button"
           onClick={() => reset()}
-          className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-all shadow-md"
+          className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold transition-all active:scale-[0.98] shadow-lg border border-cyan-500/40"
         >
           <span className="material-symbols-outlined text-[18px]">refresh</span>
           Reintentar Operación

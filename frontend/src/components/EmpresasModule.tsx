@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Empresa, EMPRESAS_PREDETERMINADAS, RolUsuario } from "../types";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 type EmpresasModuleProps = {
@@ -72,6 +72,37 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
       setMensajeExito("Empresas predeterminadas (Continental, CDF, DXC) restauradas con éxito.");
     } catch (err: any) {
       setMensajeError(`Error al restaurar: ${err.message}`);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function eliminarEmpresaActual(emp: Empresa) {
+    if (!esAdmin) return;
+    const esPredeterminada = EMPRESAS_PREDETERMINADAS.some((p) => p.id === emp.id);
+    if (esPredeterminada) {
+      setMensajeError("Las empresas corporativas base (Continental, CDF, DXC) no pueden eliminarse; puedes modificar sus parámetros.");
+      return;
+    }
+
+    setGuardando(true);
+    setMensajeError("");
+    setMensajeExito("");
+    try {
+      if (db) {
+        try {
+          await deleteDoc(doc(collection(db, "empresas"), emp.id));
+        } catch (dbErr: any) {
+          console.warn("Aviso Firestore al eliminar empresa:", dbErr?.message);
+        }
+      }
+      const restantes = empresas.filter((e) => e.id !== emp.id);
+      onActualizarEmpresas(restantes);
+      setEmpresaSeleccionada(restantes[0] || null);
+      setModoEdicion(false);
+      setMensajeExito(`Empresa "${emp.nombre}" eliminada del catálogo.`);
+    } catch (err: any) {
+      setMensajeError(`Error al eliminar empresa: ${err.message}`);
     } finally {
       setGuardando(false);
     }
@@ -571,14 +602,28 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                 </div>
 
                 {esAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => editarEmpresa(empresaSeleccionada)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm transition-all duration-200"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">tune</span>
-                    Modificar Parámetros
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {!EMPRESAS_PREDETERMINADAS.some((p) => p.id === empresaSeleccionada.id) && (
+                      <button
+                        type="button"
+                        disabled={guardando}
+                        onClick={() => eliminarEmpresaActual(empresaSeleccionada)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 font-bold text-xs border border-rose-800/60 transition-all duration-200"
+                        title="Eliminar esta empresa"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                        Eliminar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => editarEmpresa(empresaSeleccionada)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm transition-all duration-200"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">tune</span>
+                      Modificar Parámetros
+                    </button>
+                  </div>
                 )}
               </div>
 

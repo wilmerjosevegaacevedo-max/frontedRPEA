@@ -36,6 +36,7 @@ declare module "firebase/firestore" {
   export function collection(db: any, path: string, ...pathSegments: string[]): any;
   export function doc(db: any, path?: string, ...pathSegments: string[]): any;
   export function setDoc(reference: any, data: any, options?: any): Promise<void>;
+  export function deleteDoc(reference: any): Promise<void>;
   export function getDoc(reference: any): Promise<any>;
   export function getDocs(query: any): Promise<any>;
   export function query(collectionRef: any, ...queryConstraints: any[]): any;

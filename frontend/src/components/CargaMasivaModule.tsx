@@ -58,11 +58,23 @@ export function CargaMasivaModule({
 
   async function procesarArchivo(file: File) {
     if (!empresaActual) return;
+    setErrorProcesamiento("");
+    setMensajeExito("");
+
+    if (!/\.(xlsx|xls|csv)$/i.test(file.name)) {
+      setErrorProcesamiento("Formato no válido. Solo se permiten archivos .xlsx, .xls o .csv.");
+      return;
+    }
+
+    const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+    if (file.size > MAX_BYTES) {
+      setErrorProcesamiento("El archivo supera el tamaño máximo permitido de 10 MB.");
+      return;
+    }
+
     setArchivo(file);
     setAnalizando(true);
-    setErrorProcesamiento("");
     setResultado(null);
-    setMensajeExito("");
 
     try {
       const res = await procesarNominaEnFrontend(file, empresaActual);

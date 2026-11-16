@@ -9,6 +9,7 @@ import { LoginScreen } from "../components/LoginScreen";
 import { Dashboard } from "../components/Dashboard";
 
 const REMEMBER_EMAIL_KEY = "rpa-lad-6819:lastEmail";
+const DEMO_SESSION_KEY = "rpa-lad-6819:demoSession";
 
 const DEMO_JOBS: Job[] = [
   {
@@ -97,7 +98,7 @@ export default function HomePage() {
     });
   }, [empresas]);
 
-  // Cargar email recordado
+  // Cargar email recordado y restaurar sesión activa si se recarga la página (F5)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedEmail = window.localStorage.getItem(REMEMBER_EMAIL_KEY);
@@ -105,12 +106,29 @@ export default function HomePage() {
         setEmail(savedEmail);
         setRememberDevice(true);
       }
+
+      const savedDemo = window.sessionStorage.getItem(DEMO_SESSION_KEY);
+      if (savedDemo) {
+        try {
+          const parsed = JSON.parse(savedDemo);
+          if (parsed?.email) {
+            setUser({
+              uid: parsed.uid || "usr-demo-restored",
+              email: parsed.email,
+              displayName: parsed.displayName || parsed.email,
+            } as User);
+            setRolUsuarioActivo(parsed.rol || "ADMIN");
+            setEmpresaAsignadaActiva(parsed.empresaId || "TODAS");
+            setModoDemo(true);
+          }
+        } catch {}
+      }
     }
   }, []);
 
-  // Sincronizar trabajos en tiempo real desde Firestore
+  // Sincronizar trabajos en tiempo real desde Firestore (incluso en modo demo de lectura)
   useEffect(() => {
-    if (!user || modoDemo || !db) return;
+    if (!user || !db) return;
 
     const jobsQuery = query(collection(db, "jobs"));
     const unsub = onSnapshot(
@@ -128,7 +146,7 @@ export default function HomePage() {
     );
 
     return () => unsub();
-  }, [user, modoDemo]);
+  }, [user]);
 
   async function iniciarSesion(event: React.FormEvent) {
     event.preventDefault();
@@ -163,8 +181,9 @@ export default function HomePage() {
         (c) => c.email.toLowerCase() === email.trim().toLowerCase()
       );
       if (credEncontrada && password === credEncontrada.passwordDefault) {
+        const mockUid = `usr-${credEncontrada.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`;
         setUser({
-          uid: `usr-${credEncontrada.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`,
+          uid: mockUid,
           email: credEncontrada.email,
           displayName: credEncontrada.nombre,
         } as User);
@@ -174,6 +193,18 @@ export default function HomePage() {
           setCliente(credEncontrada.empresaId as ClienteId);
         }
         setModoDemo(true);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem(
+            DEMO_SESSION_KEY,
+            JSON.stringify({
+              uid: mockUid,
+              email: credEncontrada.email,
+              displayName: credEncontrada.nombre,
+              rol: credEncontrada.rol,
+              empresaId: credEncontrada.empresaId,
+            })
+          );
+        }
         return;
       }
 
@@ -184,15 +215,29 @@ export default function HomePage() {
           (e.passwordDefault === password || (!e.passwordDefault && password === `${e.codigo}*2026`))
       );
       if (empresaCoincidente) {
+        const mockUid = `usr-empresa-${empresaCoincidente.id}`;
+        const displayName = `Analista Nómina ${empresaCoincidente.nombre}`;
         setUser({
-          uid: `usr-empresa-${empresaCoincidente.id}`,
+          uid: mockUid,
           email: email.trim(),
-          displayName: `Analista Nómina ${empresaCoincidente.nombre}`,
+          displayName,
         } as User);
         setRolUsuarioActivo("ANALISTA");
         setEmpresaAsignadaActiva(empresaCoincidente.id);
         setCliente(empresaCoincidente.id as ClienteId);
         setModoDemo(true);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem(
+            DEMO_SESSION_KEY,
+            JSON.stringify({
+              uid: mockUid,
+              email: email.trim(),
+              displayName,
+              rol: "ANALISTA",
+              empresaId: empresaCoincidente.id,
+            })
+          );
+        }
         return;
       }
 
@@ -224,14 +269,27 @@ export default function HomePage() {
     }
     const emailDemo = email || "admin.rpa@blacksmith.com.co";
     const perfil = resolverPerfilUsuario(emailDemo);
+    const uidDemo = auth?.currentUser?.uid || "usr-demo-academico";
     setUser({
-      uid: auth?.currentUser?.uid || "usr-demo-academico",
+      uid: uidDemo,
       email: emailDemo,
       displayName: perfil.nombre,
     } as User);
     setRolUsuarioActivo(perfil.rol);
     setEmpresaAsignadaActiva(perfil.empresaId);
     setModoDemo(true);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(
+        DEMO_SESSION_KEY,
+        JSON.stringify({
+          uid: uidDemo,
+          email: emailDemo,
+          displayName: perfil.nombre,
+          rol: perfil.rol,
+          empresaId: perfil.empresaId,
+        })
+      );
+    }
   }
 
   function handleNuevoJob(nuevoJob: Job) {
@@ -285,6 +343,9 @@ export default function HomePage() {
       empresaAsignadaInicial={empresaAsignadaActiva}
       onSignOut={() => {
         auth?.signOut();
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem(DEMO_SESSION_KEY);
+        }
         setUser(null);
         setModoDemo(false);
         setRolUsuarioActivo("ADMIN");

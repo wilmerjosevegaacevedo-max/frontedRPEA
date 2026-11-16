@@ -123,19 +123,40 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
         </button>
       </div>
 
-      {/* Parámetros del Archivo */}
-      <div className="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs font-mono">
-        <div>
-          <span className="text-slate-400 block text-[10px] uppercase">Archivo:</span>
+      {/* Parámetros del Archivo y Resumen Financiero */}
+      <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs font-mono">
+        <div className="col-span-2 pb-2 border-b border-slate-800/80">
+          <span className="text-slate-400 block text-[10px] uppercase">Archivo Origen:</span>
           <span className="font-semibold text-slate-200 break-all text-[11px]">{job.nombreArchivo}</span>
         </div>
         <div>
-          <span className="text-slate-400 block text-[10px] uppercase">Tamaño:</span>
-          <span className="font-semibold text-slate-200 text-[11px]">{formatBytes(job.tamanoBytes)}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Tipo de Carga:</span>
+          <span className="font-semibold text-cyan-400 text-[11px]">{job.tipoCarga || "MASIVA"}</span>
         </div>
         <div>
-          <span className="text-slate-400 block text-[10px] uppercase">Estado:</span>
-          <span className="font-semibold text-slate-200 text-[11px]">{job.estado}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Tamaño:</span>
+          <span className="font-semibold text-slate-200 text-[11px] tabular-nums">{formatBytes(job.tamanoBytes)}</span>
+        </div>
+        <div>
+          <span className="text-slate-400 block text-[10px] uppercase">Registros (OK / Total):</span>
+          <span className="font-semibold text-emerald-400 text-[11px] tabular-nums">
+            {job.registrosExitosos ?? job.totalRegistros ?? 1} / {job.totalRegistros ?? 1}
+            {(job.registrosFallidos ?? 0) > 0 && (
+              <span className="text-red-400 ml-1">({job.registrosFallidos} err)</span>
+            )}
+          </span>
+        </div>
+        <div>
+          <span className="text-slate-400 block text-[10px] uppercase">Total Descontado:</span>
+          <span className="font-bold text-cyan-300 text-[11px] tabular-nums">
+            ${(job.totalDescuentos ?? 0).toLocaleString("es-CO")} COP
+          </span>
+        </div>
+        <div>
+          <span className="text-slate-400 block text-[10px] uppercase">Operador:</span>
+          <span className="text-slate-300 text-[11px] truncate block" title={job.usuarioEmail || "analista@nomina.com"}>
+            {job.usuarioEmail || "analista@nomina.com"}
+          </span>
         </div>
         <div>
           <span className="text-slate-400 block text-[10px] uppercase">Creado:</span>

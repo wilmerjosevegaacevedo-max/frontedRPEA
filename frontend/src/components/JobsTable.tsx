@@ -205,6 +205,8 @@ export function JobsTable({
               <th className="py-3 px-4">Batch ID</th>
               <th className="py-3 px-4">Cliente</th>
               <th className="py-3 px-4">Archivo Origen</th>
+              <th className="py-3 px-4 text-right">Registros</th>
+              <th className="py-3 px-4 text-right">Total Liquidado</th>
               <th className="py-3 px-4">Estado</th>
               <th className="py-3 px-4">Timestamp</th>
               <th className="py-3 px-4 text-right">Acción</th>
@@ -213,7 +215,7 @@ export function JobsTable({
           <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {jobsFiltrados.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-10 text-center text-xs text-slate-400 font-sans">
+                <td colSpan={8} className="py-10 text-center text-xs text-slate-400 font-sans">
                   <div className="flex flex-col items-center justify-center gap-1.5">
                     <span className="material-symbols-outlined text-slate-600 text-[28px]">search_off</span>
                     <span>No se encontraron lotes para este filtro.</span>
@@ -240,9 +242,18 @@ export function JobsTable({
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="text-xs font-medium text-slate-200 truncate max-w-[200px] block" title={job.nombreArchivo}>
+                    <span className="text-xs font-medium text-slate-200 truncate max-w-[180px] block" title={job.nombreArchivo}>
                       {job.nombreArchivo}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-xs tabular-nums">
+                    <span className="text-emerald-400 font-semibold">
+                      {job.registrosExitosos ?? job.totalRegistros ?? 1}
+                    </span>
+                    <span className="text-slate-500">/{job.totalRegistros ?? 1}</span>
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-xs font-bold text-cyan-300 tabular-nums">
+                    ${(job.totalDescuentos ?? 0).toLocaleString("es-CO")}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex flex-col gap-1">

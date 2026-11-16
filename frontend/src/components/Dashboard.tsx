@@ -138,6 +138,27 @@ export function Dashboard({
       const proc = data.totalProcesados || 0;
       const ex = data.exitosos || 0;
 
+      if (Array.isArray(data.resultados) && onNuevoJob) {
+        data.resultados.forEach((r: any) => {
+          if (r.batchId) {
+            onNuevoJob({
+              id: r.batchId,
+              cliente: r.cliente || "continental",
+              nombreArchivo: r.archivo || `Nomina_${r.cliente}.xlsx`,
+              tipoCarga: "MASIVA",
+              totalRegistros: r.registros ?? 0,
+              registrosExitosos: r.registrosExitosos ?? r.registros ?? 0,
+              registrosFallidos: r.registrosFallidos ?? 0,
+              totalDescuentos: r.totalDescuentos ?? 0,
+              estado: r.estado || "EXITOSO",
+              usuarioId: "rpa-bot-gmail",
+              usuarioEmail: r.remitente || "rpalad6819@gmail.com",
+              creadoEn: { toDate: () => new Date() } as any,
+            });
+          }
+        });
+      }
+
       if (proc === 0) {
         setNotificacionRpa(
           "El buzón de Gmail está al día. No se encontraron correos nuevos con planillas de nómina en la bandeja de entrada."

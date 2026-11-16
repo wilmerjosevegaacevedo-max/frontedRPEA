@@ -1,31 +1,30 @@
 # 🚀 Guía de Ejecución de la Plataforma RPA LAD-6819
 
-Este documento contiene las instrucciones paso a paso para levantar tanto el **Frontend (Next.js)** como el **Backend (Bot RPA / FastAPI)** en un entorno local de Windows.
+Este documento contiene las instrucciones paso a paso para ejecutar y verificar la plataforma **RPA LAD-6819 (Next.js 14 Fullstack + Motor RPA Gmail + Firebase Firestore)** en un entorno local de Windows o en producción.
 
 ---
 
 ## 📋 Prerrequisitos
 
 - **Node.js** v18 o superior y **npm**.
-- **Python** 3.10 o superior.
 - **Git** instalado.
-- Conexión a Internet para sincronización con Firebase y servicios de correo.
+- Conexión a Internet para sincronización en tiempo real con Firebase Firestore y el buzón corporativo de Gmail (IMAP/SMTP).
 
 ---
 
-## 🌐 1. Ejecutar el Frontend (Next.js 14 Web App)
+## 🌐 1. Ejecutar la Plataforma Completa (Frontend + API REST + Bot RPA)
 
-La aplicación web ofrece el Dashboard administrativo y operativo con roles RBAC.
+Toda la solución (Dashboard interactivo, motor de cálculo SheetJS y robot de lectura de correo IMAP/SMTP) se ejecuta de forma unificada sobre Next.js 14.
 
-### Opción Rápida (Script por Lotes)
-1. Abrir una terminal o el Explorador de Archivos en la carpeta `frontend/`.
-2. Hacer doble clic o ejecutar:
+### Opción Rápida (Un clic en Windows)
+1. Abrir el Explorador de Archivos en la carpeta `frontend/`.
+2. Hacer doble clic en:
    ```cmd
    INICIAR_SISTEMA_LOCAL.bat
    ```
-   *El script iniciará el servidor en el puerto 3001 y abrirá automáticamente el navegador.*
+   *El script iniciará el servidor en el puerto `3000` y abrirá automáticamente el navegador.*
 
-### Opción Manual (Línea de Comandos)
+### Opción Manual (Terminal PowerShell)
 ```powershell
 # 1. Ubicarse en la carpeta frontend
 cd frontend
@@ -33,70 +32,43 @@ cd frontend
 # 2. Instalar dependencias (solo la primera vez)
 npm install
 
-# 3. Iniciar el servidor en modo desarrollo
-npm run dev -- -p 3001
+# 3. Iniciar el servidor de desarrollo
+npm run dev
 ```
 
-- **URL de Acceso Local**: [http://localhost:3001](http://localhost:3001)
-- **Roles para Pruebas**: Puedes alternar entre `ADMIN`, `SUPERVISOR` y `ANALISTA` directamente desde el selector de la barra superior.
+- **URL de Acceso Local**: [http://localhost:3000](http://localhost:3000)
+- **URL de Producción (Vercel)**: [https://fronted-rpea.vercel.app](https://fronted-rpea.vercel.app)
 
 ---
 
-## 🐍 2. Ejecutar el Backend (Bot RPA & API HTTP)
+## 🔌 2. Endpoints de la API Fullstack Integrada
 
-El backend contiene el motor de automatización de nómina y los servicios de correo.
+El servidor Next.js expone los siguientes endpoints bajo `src/app/api/`:
 
-### A. Ejecutar el Motor RPA (Modo Automático Buzón IMAP)
-Monitorea la bandeja de correo en busca de planillas adjuntas, las liquida y envía el resultado por correo:
-
-```powershell
-# 1. Ubicarse en la carpeta backend
-cd backend
-
-# 2. Activar el entorno virtual
-.\venv\Scripts\activate
-
-# 3. Ejecutar el motor principal
-python main.py
-```
-*(También puedes hacer doble clic en `backend\ejecutar_rpa.bat`)*
-
-### B. Ejecutar el Motor RPA en Modo Manual (Archivo Específico)
-Para procesar un archivo Excel local sin requerir conexión a la bandeja de correo:
-
-```powershell
-python main.py --cliente cdf --archivo "files\templates\cdf_plantilla.xlsx"
-```
-*Clientes disponibles: `cdf`, `continental`, `dxc`.*
-
-### C. Ejecutar el Servidor REST API (FastAPI)
-Para habilitar el despacho de trabajos y conexión HTTP:
-
-```powershell
-uvicorn api:app --host 127.0.0.1 --port 8000 --reload
-```
-
-- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
-- **Documentación Swagger Interactiva**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+| Endpoint | Método | Descripción |
+| :--- | :---: | :--- |
+| `/api/health` | `GET` | Diagnóstico de salud, versión (`v2.4.0`) y estado del motor Fullstack. |
+| `/api/rpa/scan` | `POST` | Conecta vía IMAP a Gmail, descarga adjuntos Excel, liquida según reglas de la empresa, guarda en Firestore, mueve el correo a `Procesados`/`Errores` y notifica por SMTP. |
+| `/api/nomina/procesar` | `POST` | Liquida un lote de nómina enviado en formato JSON aplicando las reglas de negocio de la empresa. |
+| `/api/empresas` | `GET / POST` | Consulta o actualiza el catálogo de empresas aliadas y sus porcentajes paramétricos. |
+| `/api/pagos` | `GET / POST` | Consulta o asienta descuentos individuales con generación de lote en Firestore. |
 
 ---
 
-## 🧪 3. Ejecución de Pruebas Automatizadas
+## 🧪 3. Verificación de Tipos y Compilación de Producción
 
-### Pruebas del Backend (Pytest)
-```powershell
-cd backend
-.\venv\Scripts\python.exe -m pytest -v
-```
-
-### Validación del Frontend (Build & Lint)
 ```powershell
 cd frontend
+
+# 1. Verificación estática de tipos TypeScript
+npm run typecheck
+
+# 2. Compilación optimizada de producción
 npm run build
 ```
 
 ---
 
-## 🛑 Detener los Servicios
+## 🛑 Detener el Servidor
 
-Para detener cualquiera de los servidores en ejecución, presiona `Ctrl + C` en la terminal correspondiente.
+Para detener el servidor local en ejecución, presiona `Ctrl + C` en la terminal activa.

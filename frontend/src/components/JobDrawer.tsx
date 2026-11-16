@@ -75,10 +75,10 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
 
   if (!job) {
     return (
-      <aside className="xl:col-span-4 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col items-center justify-center text-center gap-space-sm sticky top-20 min-h-[240px]">
-        <span className="material-symbols-outlined text-on-surface-variant text-[32px]">touch_app</span>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">
-          Selecciona un lote de la tabla para ver su trazabilidad.
+      <aside className="xl:col-span-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm flex flex-col items-center justify-center text-center gap-2 sticky top-20 min-h-[240px] text-slate-400">
+        <span className="material-symbols-outlined text-slate-600 text-[32px]">touch_app</span>
+        <p className="text-xs font-sans text-slate-400">
+          Selecciona un lote de la tabla para ver su trazabilidad y auditoría.
         </p>
       </aside>
     );
@@ -88,33 +88,33 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
   const pasoActual = grupo === "proceso" ? 1 : grupo === "exito" || grupo === "fallo" ? 2 : 0;
 
   return (
-    <aside className="xl:col-span-4 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md sticky top-20">
-      <div className="flex items-start justify-between pb-space-xs border-b border-surface-container">
+    <aside className="xl:col-span-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm flex flex-col gap-4 sticky top-20 text-slate-100">
+      <div className="flex items-start justify-between pb-3 border-b border-slate-800/80">
         <div className="flex flex-col">
-          <div className="flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[20px]">account_tree</span>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface">Detalle de Trazabilidad</h3>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-cyan-400 text-[20px]">account_tree</span>
+            <h3 className="text-sm font-bold text-white tracking-tight font-mono">Detalle de Trazabilidad</h3>
           </div>
-          <div className="flex items-center gap-space-xs mt-1">
-            <span className="font-code-sm text-code-sm bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="font-mono text-xs bg-slate-800 text-cyan-400 px-2 py-0.5 rounded border border-slate-700 font-bold">
               {job.id}
             </span>
             <button
               type="button"
               onClick={copiarFolio}
               title="Copiar identificador de lote"
-              className="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
+              className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <span className="material-symbols-outlined text-[14px]">
                 {copiado ? "done" : "content_copy"}
               </span>
             </button>
-            <span className="font-label-sm text-label-sm text-on-surface-variant">({job.cliente.toUpperCase()})</span>
+            <span className="text-xs text-slate-400 font-mono">({job.cliente.toUpperCase()})</span>
           </div>
         </div>
         <button
           aria-label="Cerrar panel de inspección"
-          className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           title="Cerrar panel de inspección"
           type="button"
           onClick={onClose}
@@ -123,50 +123,52 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-space-sm p-space-sm rounded-lg bg-surface-container-low text-body-xs font-body-xs">
+      {/* Parámetros del Archivo */}
+      <div className="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs font-mono">
         <div>
-          <span className="text-on-surface-variant block">Archivo:</span>
-          <span className="font-semibold text-on-surface break-all">{job.nombreArchivo}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Archivo:</span>
+          <span className="font-semibold text-slate-200 break-all text-[11px]">{job.nombreArchivo}</span>
         </div>
         <div>
-          <span className="text-on-surface-variant block">Tamaño:</span>
-          <span className="font-semibold text-on-surface">{formatBytes(job.tamanoBytes)}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Tamaño:</span>
+          <span className="font-semibold text-slate-200 text-[11px]">{formatBytes(job.tamanoBytes)}</span>
         </div>
         <div>
-          <span className="text-on-surface-variant block">Estado:</span>
-          <span className="font-semibold text-on-surface">{job.estado}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Estado:</span>
+          <span className="font-semibold text-slate-200 text-[11px]">{job.estado}</span>
         </div>
         <div>
-          <span className="text-on-surface-variant block">Creado:</span>
-          <span className="font-code-sm text-on-surface">{formatDateTime(job.creadoEn?.toDate())}</span>
+          <span className="text-slate-400 block text-[10px] uppercase">Creado:</span>
+          <span className="text-slate-200 text-[11px]">{formatDateTime(job.creadoEn?.toDate())}</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-space-sm pt-space-xs">
-        <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+      {/* Stepper de Progreso */}
+      <div className="flex flex-col gap-2 pt-1">
+        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-mono">
           Progreso del Lote
         </span>
-        <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-high">
+        <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
           {PASOS.map((paso, index) => {
             const completado = index < pasoActual || (index === pasoActual && grupo !== "proceso" && grupo !== "otro");
             const enCurso = index === pasoActual && (grupo === "proceso" || grupo === "otro");
             const esFalloFinal = index === 2 && grupo === "fallo";
             return (
-              <div key={paso.key} className={`relative flex flex-col gap-0.5 ${index > pasoActual ? "opacity-40" : ""}`}>
+              <div key={paso.key} className={`relative flex flex-col gap-0.5 ${index > pasoActual ? "opacity-35" : ""}`}>
                 <span
-                  className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ring-4 ring-surface-container-lowest ${
+                  className={`absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ring-4 ring-slate-900 ${
                     esFalloFinal
                       ? "bg-red-500"
                       : completado
                         ? "bg-emerald-500"
                         : enCurso
-                          ? "bg-amber-500 animate-pulse"
-                          : "bg-surface-variant"
+                          ? "bg-amber-400 animate-pulse"
+                          : "bg-slate-700"
                   }`}
                 />
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[14px] text-on-surface-variant">{paso.icon}</span>
-                  <p className="font-body-sm text-body-sm text-on-surface">{paso.label}</p>
+                  <span className="material-symbols-outlined text-[15px] text-slate-400">{paso.icon}</span>
+                  <p className="text-xs text-slate-200 font-sans">{paso.label}</p>
                 </div>
               </div>
             );
@@ -175,17 +177,18 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
       </div>
 
       {job.error && (
-        <div className="flex flex-col gap-space-xs pt-space-xs">
-          <span className="font-label-sm text-label-sm text-error uppercase tracking-wider">Mensaje de Error</span>
-          <div className="bg-red-50 text-red-800 p-space-sm rounded-lg font-body-sm text-body-sm">{job.error}</div>
+        <div className="flex flex-col gap-1 pt-1">
+          <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider font-mono">Mensaje de Error</span>
+          <div className="bg-red-950/40 border border-red-800/60 text-red-300 p-3 rounded-xl text-xs font-mono">{job.error}</div>
         </div>
       )}
 
-      <div className="flex flex-col gap-space-sm pt-space-sm">
+      {/* Acciones del Lote */}
+      <div className="flex flex-col gap-2 pt-2 border-t border-slate-800/80">
         <button
           type="button"
           onClick={descargarReporteLoteExcel}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs rounded-xl border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800/90 hover:bg-slate-750 text-slate-200 hover:text-white font-medium text-xs rounded-xl border border-slate-700 transition-all active:scale-[0.98]"
         >
           <span className="material-symbols-outlined text-[16px]">description</span>
           <span>Descargar Resumen del Lote (.xlsx)</span>
@@ -194,25 +197,25 @@ export function JobDrawer({ job, onClose, onReintentar, reintentando }: JobDrawe
         {job.archivoSalida && (
           <a
             href={downloadUrl ?? undefined}
-            className={`w-full inline-flex items-center justify-center gap-space-xs px-space-md py-2 font-label-md text-label-md rounded-lg shadow-sm transition-colors ${
+            className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium rounded-xl transition-all active:scale-[0.98] ${
               downloadUrl
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "bg-surface-container-low text-on-surface-variant pointer-events-none"
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/50"
+                : "bg-slate-800/40 text-slate-500 border border-slate-800 pointer-events-none"
             }`}
           >
-            <span className="material-symbols-outlined text-[18px]">download</span>
+            <span className="material-symbols-outlined text-[16px]">download</span>
             <span>{downloadUrl ? "Descargar ZIP de Resultado" : "Preparando enlace de descarga..."}</span>
           </a>
         )}
         {grupo === "fallo" && (
           <button
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-b from-amber-50 to-amber-100/70 hover:from-amber-100 hover:to-amber-200/70 text-amber-900 font-bold text-xs rounded-xl border border-amber-300 hover:border-amber-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-medium text-xs rounded-xl border border-amber-500/30 transition-all active:scale-[0.98] disabled:opacity-60"
             type="button"
             disabled={reintentando}
             onClick={() => onReintentar(job.id)}
           >
-            <span className={`material-symbols-outlined text-[18px] ${reintentando ? "animate-spin" : ""}`}>
-              {reintentando ? "sync" : "cached"}
+            <span className={`material-symbols-outlined text-[16px] ${reintentando ? "animate-spin" : ""}`}>
+              {reintentando ? "sync" : "replay"}
             </span>
             <span>{reintentando ? "Reintentando..." : "Reintentar Lote"}</span>
           </button>

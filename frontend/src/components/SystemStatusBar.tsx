@@ -58,32 +58,32 @@ export function SystemStatusBar() {
   }, []);
 
   return (
-    <section className="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-lg border border-surface-container">
-      <div className="flex items-center gap-space-md">
-        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-500/20">
-          <span className="material-symbols-outlined text-[26px]">dns</span>
+    <section className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 text-slate-100">
+      <div className="flex items-center gap-3.5">
+        <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-emerald-400 flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined text-[22px]">dns</span>
         </div>
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+            <span className="text-sm font-bold text-white tracking-tight font-mono">
               Diagnóstico del Sistema Fullstack
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-[10px] font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               {health?.status || "ONLINE"}
             </span>
           </div>
-          <span className="font-body-xs text-body-xs text-on-surface-variant">
-            Runtime: <strong className="text-on-surface">{health?.runtime || "Node.js (Next.js 14 App Router)"}</strong> • Stack: {health?.stack || "TypeScript + SheetJS + Firestore"}
+          <span className="text-xs text-slate-400 font-sans mt-0.5">
+            Runtime: <strong className="text-slate-200 font-mono">{health?.runtime || "Node.js (Next.js 14 App Router)"}</strong> • Stack: <span className="font-mono text-slate-300">{health?.stack || "TypeScript + SheetJS + Firestore"}</span>
           </span>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 justify-end">
         {ultimoChequeo && (
-          <div className="text-right text-xs text-on-surface-variant font-mono hidden sm:block">
-            <span>Latencia: <strong className="text-emerald-700">{health?.latencyMs ?? 8} ms</strong></span>
-            <span className="block text-[10px]">Última verificación: {ultimoChequeo}</span>
+          <div className="text-right text-xs text-slate-400 font-mono hidden sm:block">
+            <span>Latencia: <strong className="text-emerald-400">{health?.latencyMs ?? 8} ms</strong></span>
+            <span className="block text-[10px] text-slate-500">Última verificación: {ultimoChequeo}</span>
           </div>
         )}
 
@@ -91,7 +91,7 @@ export function SystemStatusBar() {
           type="button"
           onClick={ejecutarDiagnostico}
           disabled={cargando}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 hover:text-white font-medium text-xs border border-slate-700 transition-all active:scale-[0.98] disabled:opacity-50"
         >
           <span className={`material-symbols-outlined text-[16px] ${cargando ? "animate-spin" : ""}`}>
             {cargando ? "sync" : "refresh"}

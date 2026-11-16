@@ -17,30 +17,30 @@ function badgeEstado(job: Job) {
   const grupo = grupoEstado(job.estado);
   if (grupo === "proceso") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-code-sm text-code-sm font-semibold">
-        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
         {job.estado.toUpperCase()}
       </span>
     );
   }
   if (grupo === "exito") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-code-sm text-code-sm font-semibold">
-        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
         {job.estado.toUpperCase()}
       </span>
     );
   }
   if (grupo === "fallo") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-800 rounded font-code-sm text-code-sm font-semibold">
-        <span className="material-symbols-outlined text-[14px]">error</span>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-red-500/10 text-red-400 border border-red-500/30">
+        <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
         {job.estado.toUpperCase()}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-container text-on-surface-variant rounded font-code-sm text-code-sm font-semibold">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-slate-800 text-slate-300 border border-slate-700">
       {job.estado.toUpperCase()}
     </span>
   );
@@ -91,23 +91,26 @@ export function JobsTable({
   }, [jobs, filtroEstado, filtroCliente, busqueda, esDelimitado, empresaAsignada]);
 
   return (
-    <div className="xl:col-span-8 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div className="xl:col-span-8 flex flex-col gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm text-slate-100">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
-          <div className="flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[22px]">hub</span>
-            <h2 className="font-headline-md text-headline-md text-on-surface">Monitor en Vivo de Lotes RPA</h2>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-cyan-400 text-[22px]">hub</span>
+            <h2 className="text-lg font-bold text-white tracking-tight font-mono">Monitor en Vivo de Lotes RPA</h2>
           </div>
-          <span className="font-body-xs text-body-xs text-on-surface-variant">
+          <span className="text-xs text-slate-400 font-sans mt-0.5">
             Sincronizado vía Firestore onSnapshot en tiempo real
           </span>
         </div>
 
-        <div className="flex items-center gap-space-xs flex-wrap">
+        {/* Segmented Control de Filtros */}
+        <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800/80 flex-wrap">
           <button
             onClick={() => setFiltroEstado("todos")}
-            className={`px-space-sm py-1 rounded-lg font-label-sm text-label-sm font-semibold ${
-              filtroEstado === "todos" ? "bg-surface-container-high text-on-surface" : "bg-surface-container text-on-surface-variant"
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all active:scale-[0.98] ${
+              filtroEstado === "todos"
+                ? "bg-slate-800 text-white border border-slate-700/80 shadow-sm font-semibold"
+                : "text-slate-400 hover:text-slate-200"
             }`}
             type="button"
           >
@@ -115,41 +118,51 @@ export function JobsTable({
           </button>
           <button
             onClick={() => setFiltroEstado("proceso")}
-            className={`px-space-sm py-1 rounded-lg font-code-sm text-code-sm font-medium flex items-center gap-1 ${
-              filtroEstado === "proceso" ? "bg-amber-100 text-amber-900" : "bg-amber-50 text-amber-800 hover:bg-amber-100"
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all active:scale-[0.98] ${
+              filtroEstado === "proceso"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold"
+                : "text-slate-400 hover:text-amber-400"
             }`}
             type="button"
           >
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /> PROCESANDO ({conteos.proceso})
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            PROCESANDO ({conteos.proceso})
           </button>
           <button
             onClick={() => setFiltroEstado("exito")}
-            className={`px-space-sm py-1 rounded-lg font-code-sm text-code-sm font-medium flex items-center gap-1 ${
-              filtroEstado === "exito" ? "bg-emerald-100 text-emerald-900" : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all active:scale-[0.98] ${
+              filtroEstado === "exito"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold"
+                : "text-slate-400 hover:text-emerald-400"
             }`}
             type="button"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-600" /> EXITOSO ({conteos.exito})
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            EXITOSO ({conteos.exito})
           </button>
           <button
             onClick={() => setFiltroEstado("fallo")}
-            className={`px-space-sm py-1 rounded-lg font-code-sm text-code-sm font-medium flex items-center gap-1 ${
-              filtroEstado === "fallo" ? "bg-red-100 text-red-900" : "bg-red-50 text-red-800 hover:bg-red-100"
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all active:scale-[0.98] ${
+              filtroEstado === "fallo"
+                ? "bg-red-500/20 text-red-300 border border-red-500/40 font-semibold"
+                : "text-slate-400 hover:text-red-400"
             }`}
             type="button"
           >
-            <span className="w-2 h-2 rounded-full bg-red-600" /> FALLIDO ({conteos.fallo})
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            FALLIDO ({conteos.fallo})
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-space-sm">
+      {/* Barra de Búsqueda y Filtro de Entidad */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="relative w-full sm:flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">
+          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-[18px]">
             search
           </span>
           <input
-            className="w-full pl-9 pr-4 py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-surface-container-lowest shadow-inner transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/20 transition-colors font-mono"
             placeholder="Buscar por Batch ID, archivo o cliente..."
             type="text"
             value={busqueda}
@@ -157,14 +170,14 @@ export function JobsTable({
           />
         </div>
         {esDelimitado ? (
-          <div className="w-full sm:w-auto px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg text-xs font-bold flex items-center gap-1.5 shrink-0">
-            <span className="material-symbols-outlined text-[16px] text-emerald-600">apartment</span>
-            <span>Empresa: {empresaAsignada?.toUpperCase()}</span>
+          <div className="w-full sm:w-auto px-3 py-2 bg-slate-950/80 border border-slate-800 text-cyan-300 rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 shrink-0">
+            <span className="material-symbols-outlined text-[16px] text-cyan-400">apartment</span>
+            <span>EMPRESA: {empresaAsignada?.toUpperCase()}</span>
           </div>
         ) : (
           <select
             aria-label="Filtrar por Cliente"
-            className="w-full sm:w-48 px-3 py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container-lowest"
+            className="w-full sm:w-48 px-3 py-2 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500/60 font-mono"
             value={filtroCliente}
             onChange={(event) => setFiltroCliente(event.target.value)}
           >
@@ -178,23 +191,27 @@ export function JobsTable({
         )}
       </div>
 
-      <div className="w-full overflow-x-auto">
+      {/* Tabla de Lotes */}
+      <div className="w-full overflow-x-auto rounded-xl border border-slate-800/80">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-surface-container-low text-on-surface-variant uppercase font-label-sm text-label-sm tracking-wider">
-              <th className="py-2.5 px-space-md rounded-l-lg">Batch ID</th>
-              <th className="py-2.5 px-space-md">Cliente</th>
-              <th className="py-2.5 px-space-md">Archivo Origen</th>
-              <th className="py-2.5 px-space-md">Estado</th>
-              <th className="py-2.5 px-space-md">Timestamp</th>
-              <th className="py-2.5 px-space-md text-right rounded-r-lg">Acción</th>
+            <tr className="bg-slate-950/90 text-slate-400 uppercase font-mono text-[11px] tracking-wider border-b border-slate-800/80">
+              <th className="py-3 px-4">Batch ID</th>
+              <th className="py-3 px-4">Cliente</th>
+              <th className="py-3 px-4">Archivo Origen</th>
+              <th className="py-3 px-4">Estado</th>
+              <th className="py-3 px-4">Timestamp</th>
+              <th className="py-3 px-4 text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-surface-container">
+          <tbody className="divide-y divide-slate-800/60 bg-slate-900/50">
             {jobsFiltrados.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-8 text-center font-body-sm text-body-sm text-on-surface-variant">
-                  No hay lotes que coincidan con el filtro actual.
+                <td colSpan={6} className="py-10 text-center text-xs text-slate-400 font-sans">
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <span className="material-symbols-outlined text-slate-600 text-[28px]">search_off</span>
+                    <span>No se encontraron lotes para este filtro.</span>
+                  </div>
                 </td>
               </tr>
             )}
@@ -203,41 +220,41 @@ export function JobsTable({
               return (
                 <tr
                   key={job.id}
-                  className={`hover:bg-surface-container-low/60 transition-colors cursor-pointer ${
-                    grupo === "proceso" ? "bg-primary/5" : grupo === "fallo" ? "bg-red-50/40" : ""
+                  className={`hover:bg-slate-800/60 transition-colors cursor-pointer ${
+                    grupo === "proceso" ? "bg-amber-500/5" : grupo === "fallo" ? "bg-red-500/5" : ""
                   }`}
                   onClick={() => onSelectJob(job.id)}
                 >
-                  <td className="py-3 px-space-md">
-                    <span className="font-code-sm text-code-sm font-semibold text-primary">{job.id}</span>
+                  <td className="py-3 px-4">
+                    <span className="font-mono tabular-nums text-xs font-semibold text-cyan-400">{job.id}</span>
                   </td>
-                  <td className="py-3 px-space-md">
-                    <span className="px-2 py-0.5 bg-primary/10 text-primary font-code-sm text-code-sm rounded font-semibold">
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-0.5 bg-slate-800 text-slate-200 border border-slate-700 font-mono text-[10px] rounded font-bold">
                       {job.cliente.toUpperCase()}
                     </span>
                   </td>
-                  <td className="py-3 px-space-md">
-                    <span className="font-body-sm text-body-sm font-medium text-on-surface truncate max-w-[200px] block">
+                  <td className="py-3 px-4">
+                    <span className="text-xs font-medium text-slate-200 truncate max-w-[200px] block" title={job.nombreArchivo}>
                       {job.nombreArchivo}
                     </span>
                   </td>
-                  <td className="py-3 px-space-md">
+                  <td className="py-3 px-4">
                     <div className="flex flex-col gap-1">
                       {badgeEstado(job)}
                       {job.error && (
-                        <span className="font-code-sm text-[11px] text-error truncate max-w-[210px]" title={job.error}>
+                        <span className="font-mono text-[11px] text-red-400 truncate max-w-[210px]" title={job.error}>
                           {job.error}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="py-3 px-space-md">
-                    <span className="font-body-xs text-body-xs text-on-surface-variant">
+                  <td className="py-3 px-4">
+                    <span className="text-xs text-slate-400 font-mono">
                       {formatRelativeTime(job.creadoEn?.toDate())}
                     </span>
                   </td>
-                  <td className="py-3 px-space-md text-right" onClick={(event) => event.stopPropagation()}>
-                    <div className="inline-flex items-center gap-1">
+                  <td className="py-3 px-4 text-right" onClick={(event) => event.stopPropagation()}>
+                    <div className="inline-flex items-center gap-1.5">
                       {job.archivoSalida && (
                         <a
                           href="#"
@@ -245,10 +262,10 @@ export function JobsTable({
                             event.preventDefault();
                             onSelectJob(job.id);
                           }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-b from-emerald-50 to-emerald-100 text-emerald-800 hover:from-emerald-100 hover:to-emerald-200 rounded-md text-xs font-bold border border-emerald-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 rounded-md text-xs font-mono font-medium border border-emerald-700/60 transition-all active:scale-[0.98]"
                         >
                           <span className="material-symbols-outlined text-[14px]">download</span>
-                          <span>Ver ZIP</span>
+                          <span>ZIP</span>
                         </a>
                       )}
                       {grupo === "fallo" && (
@@ -256,7 +273,7 @@ export function JobsTable({
                           type="button"
                           disabled={reintentandoId === job.id}
                           onClick={() => onReintentar(job.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-b from-red-50 to-red-100 text-red-800 hover:from-red-100 hover:to-red-200 rounded-md text-xs font-bold border border-red-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 disabled:opacity-60"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-950/80 hover:bg-red-900/80 text-red-300 rounded-md text-xs font-mono font-medium border border-red-700/60 transition-all active:scale-[0.98] disabled:opacity-60"
                         >
                           <span className={`material-symbols-outlined text-[14px] ${reintentandoId === job.id ? "animate-spin" : ""}`}>
                             {reintentandoId === job.id ? "sync" : "replay"}
@@ -273,7 +290,7 @@ export function JobsTable({
         </table>
       </div>
 
-      <div className="flex items-center justify-between pt-space-xs text-on-surface-variant font-body-xs text-body-xs">
+      <div className="flex items-center justify-between pt-1 text-slate-400 font-mono text-xs">
         <span>
           Mostrando {jobsFiltrados.length} de {jobs.length} lotes registrados
         </span>

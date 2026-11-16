@@ -53,65 +53,67 @@ export function AuditoriaRolesModule({
   ];
 
   return (
-    <div className="flex flex-col gap-space-lg w-full">
+    <div className="flex flex-col gap-6 w-full text-slate-100">
       {/* Encabezado */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[24px]">security</span>
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+            <span className="material-symbols-outlined text-cyan-400 text-[24px]">security</span>
+            <h2 className="text-lg font-bold text-white tracking-tight font-mono">
               Auditoría y Control de Acceso Basado en Roles (RBAC)
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-              Frontend RBAC Guard
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+              RBAC Guard Activo
             </span>
           </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
+          <p className="text-xs text-slate-400 font-sans">
             Matriz de gobierno y segregación de funciones entre Administrador, Supervisor y Analista de Nómina.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-on-surface-variant font-medium">Tu rol activo actual:</span>
-          <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${ROLES_CONFIG[rolUsuario].badgeBg}`}>
+        <div className="flex items-center gap-2 font-mono">
+          <span className="text-xs text-slate-400 font-medium">Tu rol activo:</span>
+          <span className={`px-3 py-1 rounded-xl text-xs font-bold border ${ROLES_CONFIG[rolUsuario].badgeBg}`}>
             {ROLES_CONFIG[rolUsuario].label}
           </span>
         </div>
       </div>
 
       {/* Tarjetas de Roles */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {(["ADMIN", "SUPERVISOR", "ANALISTA"] as RolUsuario[]).map((rol) => {
           const cfg = ROLES_CONFIG[rol];
           const esElMio = rol === rolUsuario;
           return (
             <div
               key={rol}
-              className={`p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between gap-3 border ${
-                esElMio ? "border-primary ring-2 ring-primary/20" : "border-surface-container"
+              className={`p-5 rounded-2xl bg-slate-900/90 shadow-sm flex flex-col justify-between gap-4 border transition-all ${
+                esElMio ? "border-cyan-500/60 ring-1 ring-cyan-500/30" : "border-slate-800/80"
               }`}
             >
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-0.5 rounded text-xs font-bold border ${cfg.badgeBg}`}>
+                  <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${cfg.badgeBg}`}>
                     {cfg.label}
                   </span>
                   {esElMio && (
-                    <span className="text-[11px] font-bold text-primary flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Activo
+                    <span className="text-[11px] font-mono font-bold text-cyan-400 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Sesión Activa
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-on-surface-variant leading-relaxed">{cfg.descripcion}</p>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">{cfg.descripcion}</p>
               </div>
 
-              <div className="pt-2 border-t border-surface-container flex items-center justify-between gap-2">
-                <div className="text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
-                  <span className="material-symbols-outlined text-[14px]">shield</span>
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                <div className="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono">
+                  <span className="material-symbols-outlined text-[15px] text-cyan-400">shield</span>
                   <span>{rol === "ADMIN" ? "Nivel 3 (Total)" : rol === "SUPERVISOR" ? "Nivel 2 (Auditor)" : "Nivel 1 (Operativo)"}</span>
                 </div>
-                <span className="text-[10px] font-mono text-on-surface-variant uppercase">
+                <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded font-bold ${
+                  esElMio ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60" : "bg-slate-950 text-slate-500 border border-slate-800"
+                }`}>
                   {esElMio ? "Rol Activo" : "Bloqueado"}
                 </span>
               </div>
@@ -121,71 +123,71 @@ export function AuditoriaRolesModule({
       </div>
 
       {/* Matriz de Permisos */}
-      <div className="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
-        <div className="flex items-center gap-2 pb-space-sm border-b border-surface-container">
-          <span className="material-symbols-outlined text-primary">table_chart</span>
-          <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">
+      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm flex flex-col gap-4">
+        <div className="flex items-center gap-2 pb-3 border-b border-slate-800/80">
+          <span className="material-symbols-outlined text-cyan-400 text-[20px]">table_chart</span>
+          <h3 className="text-sm font-bold text-white tracking-tight font-mono">
             Matriz de Segregación de Funcionalidades por Rol
           </h3>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="overflow-x-auto rounded-xl border border-slate-800/80">
+          <table className="w-full text-left text-xs border-collapse font-sans">
             <thead>
-              <tr className="border-b border-surface-container text-on-surface-variant font-semibold">
-                <th className="py-3 px-3">Funcionalidad del Sistema</th>
-                <th className="py-3 px-3">Descripción de Negocio</th>
-                <th className="py-3 px-3 text-center">ADMIN</th>
-                <th className="py-3 px-3 text-center">SUPERVISOR</th>
-                <th className="py-3 px-3 text-center">ANALISTA</th>
+              <tr className="bg-slate-950 text-slate-400 uppercase font-mono text-[11px] tracking-wider border-b border-slate-800">
+                <th className="py-3 px-4">Funcionalidad del Sistema</th>
+                <th className="py-3 px-4">Descripción de Negocio</th>
+                <th className="py-3 px-4 text-center">ADMIN</th>
+                <th className="py-3 px-4 text-center">SUPERVISOR</th>
+                <th className="py-3 px-4 text-center">ANALISTA</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-container">
+            <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
               {matrizPermisos.map((p, idx) => (
-                <tr key={idx} className="hover:bg-surface-container-low transition-colors">
-                  <td className="py-3 px-3 font-semibold text-on-surface">{p.funcionalidad}</td>
-                  <td className="py-3 px-3 text-on-surface-variant">{p.descripcion}</td>
+                <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
+                  <td className="py-3 px-4 font-semibold text-white font-mono">{p.funcionalidad}</td>
+                  <td className="py-3 px-4 text-slate-400 text-xs">{p.descripcion}</td>
 
                   {/* ADMIN */}
-                  <td className="py-3 px-3 text-center">
+                  <td className="py-3 px-4 text-center font-mono">
                     {p.admin === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-bold text-[10px]">
                         <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
                       </span>
                     ) : (
-                      <span className="text-on-surface-variant">{p.admin}</span>
+                      <span className="text-slate-500">{p.admin}</span>
                     )}
                   </td>
 
                   {/* SUPERVISOR */}
-                  <td className="py-3 px-3 text-center">
+                  <td className="py-3 px-4 text-center font-mono">
                     {p.supervisor === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60 font-bold text-[10px]">
                         <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
                       </span>
                     ) : p.supervisor === false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-800/60 font-bold text-[10px]">
                         <span className="material-symbols-outlined text-[12px]">close</span> DENEGADO
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-semibold text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-[10px]">
                         {p.supervisor}
                       </span>
                     )}
                   </td>
 
                   {/* ANALISTA */}
-                  <td className="py-3 px-3 text-center">
+                  <td className="py-3 px-4 text-center font-mono">
                     {p.analista === true ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-bold text-[10px]">
                         <span className="material-symbols-outlined text-[12px]">check</span> PERMITIDO
                       </span>
                     ) : p.analista === false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-800/60 font-bold text-[10px]">
                         <span className="material-symbols-outlined text-[12px]">close</span> DENEGADO
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-semibold text-[10px]">
+                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-[10px]">
                         {p.analista}
                       </span>
                     )}
@@ -198,26 +200,26 @@ export function AuditoriaRolesModule({
       </div>
 
       {/* Tarjeta de Arquitectura Técnica */}
-      <div className="p-space-md rounded-xl bg-surface-container-low border border-surface-container flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-cyan-400 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-[22px]">code</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xs text-on-surface">Arquitectura Fullstack Next.js + TypeScript (No Python)</span>
-            <span className="text-[11px] text-on-surface-variant">
+            <span className="font-bold text-xs text-white font-mono">Arquitectura Fullstack TypeScript Puro (Cero Python)</span>
+            <span className="text-xs text-slate-400 font-sans mt-0.5">
               Toda la lógica de parsing de planillas, validación de reglas de negocio y cálculo financiero se ejecuta en JavaScript / TypeScript.
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 text-xs font-mono">
-          <span className="px-2.5 py-1 rounded bg-white border border-surface-container-highest font-bold text-primary">
+          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-cyan-400">
             Next.js 14
           </span>
-          <span className="px-2.5 py-1 rounded bg-white border border-surface-container-highest font-bold text-primary">
+          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-emerald-400">
             SheetJS XLSX
           </span>
-          <span className="px-2.5 py-1 rounded bg-white border border-surface-container-highest font-bold text-primary">
+          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-amber-400">
             Firebase 10
           </span>
         </div>

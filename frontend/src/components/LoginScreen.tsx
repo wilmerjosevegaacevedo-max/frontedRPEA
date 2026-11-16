@@ -53,7 +53,7 @@ export function LoginScreen({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 font-mono">
-                    RPA LAD-6819 • REPO PRIVADO ACTIVO
+                    RPA LAD-6819 • PLATAFORMA CENTRAL
                   </span>
                   <span className="text-base font-bold tracking-tight text-white">
                     Orquestador de Nómina

@@ -175,21 +175,23 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
   }
 
   return (
-    <div className="flex flex-col gap-space-lg w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* Encabezado del Módulo */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[24px]">domain</span>
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[22px]">domain</span>
+            </div>
+            <h2 className="text-xl font-bold text-white tracking-tight">
               Empresas y Reglas de Negocio
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-              Motor Dinámico
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              Motor Paramétrico
             </span>
           </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Configuración de parámetros paramétricos de descuento (Vida, GMM, Costos, Topes Máximos) para cada empresa aliada.
+          <p className="text-xs text-slate-400">
+            Configuración de parámetros de descuento (Vida, GMM, Costos, Topes Máximos) para cada empresa aliada.
           </p>
         </div>
 
@@ -215,38 +217,38 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold shrink-0">
-            <span className="material-symbols-outlined text-blue-600 text-[18px]">verified_user</span>
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 text-xs font-semibold shrink-0">
+            <span className="material-symbols-outlined text-cyan-400 text-[18px]">verified_user</span>
             <span>Modo Auditoría: Acceso exclusivo de solo lectura</span>
           </div>
         )}
       </div>
 
       {mensajeExito && (
-        <div className="p-space-md rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-2 text-sm font-medium">
-          <span className="material-symbols-outlined text-emerald-600">check_circle</span>
+        <div className="p-4 rounded-xl bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 flex items-center gap-2.5 text-xs font-medium">
+          <span className="material-symbols-outlined text-emerald-400 text-[18px]">check_circle</span>
           <span>{mensajeExito}</span>
         </div>
       )}
 
       {mensajeError && (
-        <div className="p-space-md rounded-lg bg-red-50 text-red-800 border border-red-200 flex items-center gap-2 text-sm font-medium">
-          <span className="material-symbols-outlined text-red-600">error</span>
+        <div className="p-4 rounded-xl bg-rose-950/40 text-rose-300 border border-rose-800/60 flex items-center gap-2.5 text-xs font-medium">
+          <span className="material-symbols-outlined text-rose-400 text-[18px]">error</span>
           <span>{mensajeError}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Lista de Empresas Disponibles */}
-        <div className="lg:col-span-5 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
-          <div className="flex items-center justify-between pb-space-sm border-b border-surface-container">
-            <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
+        <div className="lg:col-span-5 flex flex-col gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <span className="text-[11px] font-mono uppercase font-bold text-slate-400 tracking-wider">
               Empresas Registradas ({empresas.length})
             </span>
-            <span className="text-xs text-on-surface-variant font-code-sm">Firestore: empresas</span>
+            <span className="text-[11px] text-slate-500 font-mono">Firestore: empresas</span>
           </div>
 
-          <div className="flex flex-col gap-space-sm">
+          <div className="flex flex-col gap-2.5">
             {empresas.map((emp) => {
               const estaSeleccionada = empresaSeleccionada?.id === emp.id;
               return (
@@ -258,34 +260,34 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     setMensajeExito("");
                     setMensajeError("");
                   }}
-                  className={`p-space-md rounded-xl cursor-pointer transition-all border flex flex-col gap-2 ${
+                  className={`p-4 rounded-xl cursor-pointer transition-all border flex flex-col gap-2.5 ${
                     estaSeleccionada
-                      ? "bg-primary/5 border-primary shadow-sm"
-                      : "bg-surface-container-low border-transparent hover:bg-surface-container"
+                      ? "bg-cyan-950/30 border-cyan-500/60 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+                      : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/60 hover:border-slate-700"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-headline-sm text-headline-sm font-bold text-on-surface">
+                    <span className="text-sm font-bold text-white tracking-wide">
                       {emp.nombre}
                     </span>
-                    <span className="px-2 py-0.5 rounded font-code-sm text-code-sm bg-surface-container-highest text-primary font-bold">
+                    <span className="px-2 py-0.5 rounded font-mono text-[11px] bg-slate-900 border border-slate-700 text-cyan-400 font-bold">
                       {emp.codigo}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-on-surface-variant">
+                  <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
                     <span>NIT: {emp.nit}</span>
                     <span>Tope: ${emp.reglas.topeMaximoDescuento.toLocaleString("es-CO")} COP</span>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-1 text-xs">
-                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">
+                  <div className="flex items-center gap-2 pt-1 text-[11px] font-mono">
+                    <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-medium">
                       Vida: {emp.reglas.porcentajeVida}%
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-medium">
                       GMM: {emp.reglas.porcentajeGmm}%
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-medium">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">
                       Costos: {emp.reglas.porcentajeCostos}%
                     </span>
                   </div>
@@ -296,28 +298,28 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
         </div>
 
         {/* Panel de Detalle o Formulario de Edición */}
-        <div className="lg:col-span-7 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+        <div className="lg:col-span-7 flex flex-col gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
           {modoEdicion ? (
-            <form onSubmit={guardarEmpresa} className="flex flex-col gap-space-md">
-              <div className="flex items-center justify-between pb-space-sm border-b border-surface-container">
+            <form onSubmit={guardarEmpresa} className="flex flex-col gap-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary">edit_note</span>
-                  <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">
+                  <span className="material-symbols-outlined text-cyan-400">edit_note</span>
+                  <h3 className="text-sm font-bold text-white">
                     {empresaSeleccionada ? `Editar Reglas: ${empresaSeleccionada.nombre}` : "Registrar Nueva Empresa"}
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setModoEdicion(false)}
-                  className="text-xs text-on-surface-variant hover:text-on-surface underline font-medium"
+                  className="text-xs text-slate-400 hover:text-white underline font-medium"
                 >
                   Cancelar
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="flex flex-col gap-1.5 sm:col-span-2">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase">Razón Social</label>
+                  <label className="text-[11px] font-mono font-bold text-slate-400 uppercase">Razón Social</label>
                   <input
                     type="text"
                     required
@@ -328,7 +330,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase">Código Interno</label>
+                  <label className="text-[11px] font-mono font-bold text-slate-400 uppercase">Código Interno</label>
                   <input
                     type="text"
                     required
@@ -341,7 +343,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface-variant uppercase flex items-center justify-between">
+                <label className="text-[11px] font-mono font-bold text-slate-400 uppercase flex items-center justify-between">
                   <span>NIT de la Empresa</span>
                   <span className="text-[10px] text-cyan-400 font-mono font-medium">(Solo números)</span>
                 </label>
@@ -358,7 +360,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               {/* Credenciales de Acceso para el Analista de la Empresa */}
-              <div className="p-space-md rounded-xl bg-slate-900/90 border border-cyan-500/30 flex flex-col gap-3 shadow-[0_0_15px_rgba(6,182,212,0.08)]">
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-cyan-500/30 flex flex-col gap-3 shadow-[0_0_15px_rgba(6,182,212,0.08)]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                     <span className="material-symbols-outlined text-[16px]">vpn_key</span>
@@ -372,9 +374,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   Define el correo institucional y la clave con la cual el analista de esta empresa iniciará sesión en el sistema.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-300 uppercase">
+                    <label className="text-[11px] font-mono font-bold text-slate-300 uppercase">
                       Correo Institucional del Analista
                     </label>
                     <div className="relative">
@@ -392,7 +394,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-300 uppercase">
+                    <label className="text-[11px] font-mono font-bold text-slate-300 uppercase">
                       Clave de Acceso Asignada
                     </label>
                     <div className="relative">
@@ -422,15 +424,15 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               {/* Parámetros de Descuento (Reglas de Negocio) */}
-              <div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-md border border-surface-container">
-                <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+              <div className="p-4 rounded-xl bg-slate-950/60 flex flex-col gap-4 border border-slate-800">
+                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                   <span className="material-symbols-outlined text-[16px]">tune</span>
                   Porcentajes Paramétricos de Descuento
                 </span>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-on-surface">Seguro de Vida (%)</label>
+                    <label className="text-xs font-semibold text-slate-300">Seguro de Vida (%)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -444,7 +446,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-on-surface">Gastos Médicos GMM (%)</label>
+                    <label className="text-xs font-semibold text-slate-300">Gastos Médicos GMM (%)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -458,7 +460,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-on-surface">Costos Admin (%)</label>
+                    <label className="text-xs font-semibold text-slate-300">Costos Admin (%)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -472,9 +474,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-2 border-t border-surface-container">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800">
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-on-surface">Tope Máximo de Descuento ($ COP)</label>
+                    <label className="text-xs font-semibold text-slate-300">Tope Máximo de Descuento ($ COP)</label>
                     <input
                       type="number"
                       step="1000"
@@ -487,23 +489,25 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-on-surface">¿Permite Sobregiro de Descuento?</label>
-                    <div className="flex items-center gap-3 mt-2">
-                      <label className="inline-flex items-center gap-2 cursor-pointer text-sm">
+                    <label className="text-xs font-semibold text-slate-300">¿Permite Sobregiro de Descuento?</label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <label className="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-300">
                         <input
                           type="radio"
                           name="sobregiro"
                           checked={permiteSobregiro}
                           onChange={() => setPermiteSobregiro(true)}
+                          className="accent-cyan-400"
                         />
                         <span>Sí (Sobregiro permitido)</span>
                       </label>
-                      <label className="inline-flex items-center gap-2 cursor-pointer text-sm">
+                      <label className="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-300">
                         <input
                           type="radio"
                           name="sobregiro"
                           checked={!permiteSobregiro}
                           onChange={() => setPermiteSobregiro(false)}
+                          className="accent-cyan-400"
                         />
                         <span>No (Aplicar tope)</span>
                       </label>
@@ -511,8 +515,8 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1 pt-2 border-t border-surface-container">
-                  <label className="text-xs font-semibold text-on-surface">
+                <div className="flex flex-col gap-1 pt-3 border-t border-slate-800">
+                  <label className="text-xs font-semibold text-slate-300">
                     Columnas Requeridas en la Planilla Excel (separadas por coma)
                   </label>
                   <input
@@ -523,17 +527,17 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     onChange={(e) => setColumnasStr(e.target.value)}
                     className="p-2 rounded-lg border border-slate-700 bg-slate-950 text-white text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20 font-mono"
                   />
-                  <span className="text-[11px] text-on-surface-variant">
+                  <span className="text-[11px] text-slate-500">
                     El orquestador verificará la existencia de estas columnas antes de calcular la nómina.
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-space-sm pt-space-xs">
+              <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setModoEdicion(false)}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs transition-all duration-200"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 transition-all duration-200"
                 >
                   Cancelar
                 </button>
@@ -550,15 +554,17 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
             </form>
           ) : empresaSeleccionada ? (
-            <div className="flex flex-col gap-space-md">
-              <div className="flex items-center justify-between pb-space-sm border-b border-surface-container">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[24px]">verified</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[22px]">verified</span>
+                  </div>
                   <div>
-                    <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">
+                    <h3 className="text-base font-bold text-white tracking-wide">
                       {empresaSeleccionada.nombre}
                     </h3>
-                    <span className="text-xs text-on-surface-variant font-mono">
+                    <span className="text-xs text-slate-400 font-mono">
                       NIT: {empresaSeleccionada.nit} • Código: {empresaSeleccionada.codigo}
                     </span>
                   </div>
@@ -568,7 +574,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   <button
                     type="button"
                     onClick={() => editarEmpresa(empresaSeleccionada)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-blue-700 hover:text-blue-800 font-bold text-xs border border-slate-300 hover:border-slate-400 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm transition-all duration-200"
                   >
                     <span className="material-symbols-outlined text-[16px]">tune</span>
                     Modificar Parámetros
@@ -577,7 +583,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               {/* Credenciales de Acceso Asignadas a esta Empresa */}
-              <div className="p-space-md rounded-xl bg-slate-900/80 border border-cyan-500/30 flex flex-col gap-2">
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-cyan-500/30 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                     <span className="material-symbols-outlined text-[16px]">badge</span>
@@ -588,7 +594,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
-                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="material-symbols-outlined text-slate-400 text-[18px]">mail</span>
                     <div className="flex flex-col overflow-hidden">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold">Correo de Acceso</span>
@@ -597,7 +603,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-950/80 border border-slate-800">
+                  <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="material-symbols-outlined text-slate-400 text-[18px]">key</span>
                     <div className="flex flex-col">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold">Clave Asignada</span>
@@ -609,54 +615,54 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
-                <div className="p-space-md rounded-xl bg-blue-50/70 border border-blue-200 flex flex-col gap-1">
-                  <span className="text-xs text-blue-700 font-semibold uppercase">Seguro de Vida</span>
-                  <span className="font-headline-lg text-headline-lg font-bold text-blue-900">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 flex flex-col gap-1">
+                  <span className="text-[11px] font-mono text-blue-400 font-semibold uppercase">Seguro de Vida</span>
+                  <span className="text-2xl font-bold font-mono text-blue-300">
                     {empresaSeleccionada.reglas.porcentajeVida}%
                   </span>
-                  <span className="text-[11px] text-blue-700">Calculado sobre Salario Base</span>
+                  <span className="text-[11px] text-slate-400">Calculado s/ Salario Base</span>
                 </div>
 
-                <div className="p-space-md rounded-xl bg-emerald-50/70 border border-emerald-200 flex flex-col gap-1">
-                  <span className="text-xs text-emerald-700 font-semibold uppercase">Gastos Médicos GMM</span>
-                  <span className="font-headline-lg text-headline-lg font-bold text-emerald-900">
+                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex flex-col gap-1">
+                  <span className="text-[11px] font-mono text-emerald-400 font-semibold uppercase">Gastos Médicos GMM</span>
+                  <span className="text-2xl font-bold font-mono text-emerald-300">
                     {empresaSeleccionada.reglas.porcentajeGmm}%
                   </span>
-                  <span className="text-[11px] text-emerald-700">Cobertura Integral Médica</span>
+                  <span className="text-[11px] text-slate-400">Cobertura Integral Médica</span>
                 </div>
 
-                <div className="p-space-md rounded-xl bg-amber-50/70 border border-amber-200 flex flex-col gap-1">
-                  <span className="text-xs text-amber-700 font-semibold uppercase">Costos Administrativos</span>
-                  <span className="font-headline-lg text-headline-lg font-bold text-amber-900">
+                <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 flex flex-col gap-1">
+                  <span className="text-[11px] font-mono text-amber-400 font-semibold uppercase">Costos Admin</span>
+                  <span className="text-2xl font-bold font-mono text-amber-300">
                     {empresaSeleccionada.reglas.porcentajeCostos}%
                   </span>
-                  <span className="text-[11px] text-amber-700">Operación & Gestión RPA</span>
+                  <span className="text-[11px] text-slate-400">Operación & Gestión RPA</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-2">
-                <div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
-                  <span className="text-xs text-on-surface-variant font-bold uppercase">Tope Máximo Permitido</span>
-                  <span className="font-headline-md text-headline-md font-bold text-on-surface">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col gap-1">
+                  <span className="text-[11px] font-mono text-slate-400 font-bold uppercase">Tope Máximo Permitido</span>
+                  <span className="text-lg font-bold font-mono text-white">
                     ${empresaSeleccionada.reglas.topeMaximoDescuento.toLocaleString("es-CO")} COP
                   </span>
-                  <span className="text-xs text-on-surface-variant">
+                  <span className="text-xs text-slate-400">
                     {empresaSeleccionada.reglas.permiteSobregiro
                       ? "⚠️ Sobregiro activado: se permite superar el tope."
                       : "🛡️ Descuentos mayores se truncan al tope estricto."}
                   </span>
                 </div>
 
-                <div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
-                  <span className="text-xs text-on-surface-variant font-bold uppercase">
+                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col gap-1">
+                  <span className="text-[11px] font-mono text-slate-400 font-bold uppercase">
                     Columnas Requeridas en Excel
                   </span>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {empresaSeleccionada.reglas.columnasRequeridas.map((col) => (
                       <span
                         key={col}
-                        className="px-2 py-0.5 rounded font-mono text-xs bg-surface-container-highest text-primary font-bold"
+                        className="px-2 py-0.5 rounded font-mono text-xs bg-slate-900 border border-slate-700 text-cyan-400 font-bold"
                       >
                         {col}
                       </span>
@@ -666,16 +672,16 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
 
               {/* Ejemplo en vivo de cálculo */}
-              <div className="p-space-md rounded-xl bg-surface-container-high/60 flex flex-col gap-2 mt-2">
-                <span className="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">calculate</span>
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col gap-2 mt-1">
+                <span className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-cyan-400">calculate</span>
                   Simulador de Reglas para Salario Base de $2.000.000 COP
                 </span>
-                <div className="text-xs text-on-surface-variant grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div>Vida: ${(2000000 * (empresaSeleccionada.reglas.porcentajeVida / 100)).toLocaleString("es-CO")}</div>
-                  <div>GMM: ${(2000000 * (empresaSeleccionada.reglas.porcentajeGmm / 100)).toLocaleString("es-CO")}</div>
-                  <div>Costos: ${(2000000 * (empresaSeleccionada.reglas.porcentajeCostos / 100)).toLocaleString("es-CO")}</div>
-                  <div className="font-bold text-primary">
+                <div className="text-xs font-mono text-slate-400 grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <div>Vida: <span className="text-slate-200">${(2000000 * (empresaSeleccionada.reglas.porcentajeVida / 100)).toLocaleString("es-CO")}</span></div>
+                  <div>GMM: <span className="text-slate-200">${(2000000 * (empresaSeleccionada.reglas.porcentajeGmm / 100)).toLocaleString("es-CO")}</span></div>
+                  <div>Costos: <span className="text-slate-200">${(2000000 * (empresaSeleccionada.reglas.porcentajeCostos / 100)).toLocaleString("es-CO")}</span></div>
+                  <div className="font-bold text-cyan-400">
                     Total: $
                     {Math.min(
                       empresaSeleccionada.reglas.permiteSobregiro ? Infinity : empresaSeleccionada.reglas.topeMaximoDescuento,
@@ -690,9 +696,9 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
               </div>
             </div>
           ) : (
-            <div className="py-12 text-center text-on-surface-variant flex flex-col items-center gap-2">
-              <span className="material-symbols-outlined text-[36px]">business</span>
-              <span>Selecciona una empresa de la lista para ver o editar sus reglas de negocio.</span>
+            <div className="py-12 text-center text-slate-500 flex flex-col items-center gap-2">
+              <span className="material-symbols-outlined text-[36px] text-slate-600">business</span>
+              <span className="text-xs">Selecciona una empresa de la lista para ver o editar sus reglas de negocio.</span>
             </div>
           )}
         </div>

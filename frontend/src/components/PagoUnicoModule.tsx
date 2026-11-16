@@ -248,34 +248,33 @@ export function PagoUnicoModule({
   }
 
   return (
-    <div className="flex flex-col gap-space-lg w-full">
+    <div className="flex flex-col gap-6 w-full text-slate-100">
       {/* Encabezado */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[24px]">payments</span>
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">
+            <span className="material-symbols-outlined text-cyan-400 text-[24px]">payments</span>
+            <h2 className="text-lg font-bold text-white tracking-tight font-mono">
               Descuento Individual de Nómina
             </h2>
-            
           </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
+          <p className="text-xs text-slate-400 font-sans">
             Registra y liquida deducciones directas para un empleado específico, con validación de topes y emisión de comprobante oficial.
           </p>
         </div>
       </div>
 
       {mensajeExito && (
-        <div className="p-space-md rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm font-medium">
+        <div className="p-4 rounded-xl bg-emerald-950/60 text-emerald-300 border border-emerald-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono font-medium animate-fadeIn">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-emerald-600">check_circle</span>
+            <span className="material-symbols-outlined text-emerald-400 text-[18px]">check_circle</span>
             <span>{mensajeExito}</span>
           </div>
           {historialPagos[0] && (
             <button
               type="button"
               onClick={() => setComprobanteActivo(historialPagos[0])}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-lg text-xs font-bold shadow-[0_2px_8px_rgba(16,185,129,0.3)] border border-emerald-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium border border-emerald-500/50 active:scale-[0.98] transition-all shrink-0"
             >
               <span className="material-symbols-outlined text-[15px]">receipt_long</span>
               Ver Comprobante Oficial
@@ -285,48 +284,47 @@ export function PagoUnicoModule({
       )}
 
       {mensajeError && (
-        <div className="p-space-md rounded-lg bg-red-50 text-red-800 border border-red-200 flex items-center gap-2 text-sm font-medium">
-          <span className="material-symbols-outlined text-red-600">error</span>
+        <div className="p-4 rounded-xl bg-red-950/50 text-red-300 border border-red-800/60 flex items-center gap-2 text-xs font-mono">
+          <span className="material-symbols-outlined text-red-400 text-[18px]">error</span>
           <span>{mensajeError}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Formulario de Descuento Individual */}
-        <div className="lg:col-span-5 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
-          <div className="flex items-center justify-between pb-space-sm border-b border-surface-container">
-            <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
+        <div className="lg:col-span-5 flex flex-col gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
+            <span className="text-[11px] uppercase font-bold text-slate-400 tracking-wider font-mono">
               Datos del Descuento
             </span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={autocompletarEjemplo}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-cyan-500/30 hover:border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.15)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-cyan-300 font-medium text-xs flex items-center gap-1.5 border border-slate-700 transition-all active:scale-[0.98]"
               >
                 <span className="material-symbols-outlined text-[14px]">bolt</span>
                 <span>Llenar con Ejemplo</span>
               </button>
-              
             </div>
           </div>
 
-          <form onSubmit={registrarPago} className="flex flex-col gap-space-md">
+          <form onSubmit={registrarPago} className="flex flex-col gap-4">
             {/* Empresa Aliada */}
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-on-surface-variant uppercase">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-slate-400 uppercase font-mono">
                 {esDelimitado ? "Empresa Asignada" : "Empresa Aliada"}
               </label>
               {esDelimitado ? (
-                <div className="p-2.5 rounded-lg border border-emerald-300 bg-emerald-50 text-sm font-bold text-emerald-900 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px] text-emerald-600">domain_verification</span>
+                <div className="p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-950/60 text-xs font-bold text-emerald-400 font-mono flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-emerald-400">domain_verification</span>
                   <span>{empresaActual?.nombre || empresaAsignada?.toUpperCase()} ({empresaActual?.codigo})</span>
                 </div>
               ) : (
                 <select
                   value={empresaId}
                   onChange={(e) => setEmpresaId(e.target.value)}
-                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white text-sm font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white text-xs font-mono outline-none focus:border-cyan-500/60"
                 >
                   {empresas.map((emp) => (
                     <option key={emp.id} value={emp.id}>
@@ -338,11 +336,11 @@ export function PagoUnicoModule({
             </div>
 
             {/* Documento y Nombre */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface-variant uppercase flex items-center justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-400 uppercase flex items-center justify-between font-mono">
                   <span>Cédula / Documento</span>
-                  <span className="text-[10px] text-cyan-400 font-mono">(Solo números)</span>
+                  <span className="text-[10px] text-cyan-400">(Solo números)</span>
                 </label>
                 <input
                   type="text"
@@ -352,30 +350,30 @@ export function PagoUnicoModule({
                   placeholder="Ej: 1098765432"
                   value={documento}
                   onChange={(e) => setDocumento(e.target.value.replace(/\D/g, ""))}
-                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder:text-slate-500 text-sm font-mono outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-xs font-mono outline-none focus:border-cyan-500/60"
                 />
               </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface-variant uppercase">Nombre Completo</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-400 uppercase font-mono">Nombre Completo</label>
                 <input
                   type="text"
                   required
                   placeholder="Ej: Juan Camilo Pérez"
                   value={empleadoNombre}
                   onChange={(e) => setEmpleadoNombre(e.target.value)}
-                  className="p-2.5 rounded-xl border border-slate-700/80 bg-slate-950/80 text-white placeholder:text-slate-500 text-sm outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-xs outline-none focus:border-cyan-500/60"
                 />
               </div>
             </div>
 
             {/* Salario Base y Concepto */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
-              <div className="flex flex-col gap-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase">Salario Base ($ COP)</label>
+                  <label className="text-xs font-bold text-slate-400 uppercase font-mono">Salario Base ($ COP)</label>
                   {typeof salarioBase === "number" && salarioBase > 0 && (
-                    <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800/60">
                       ${salarioBase.toLocaleString("es-CO")}
                     </span>
                   )}
@@ -388,16 +386,16 @@ export function PagoUnicoModule({
                   placeholder="Ej: 2500000"
                   value={salarioBase}
                   onChange={(e) => setSalarioBase(e.target.value === "" ? "" : parseFloat(e.target.value))}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm font-mono"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-xs font-mono outline-none focus:border-cyan-500/60"
                 />
               </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-on-surface-variant uppercase">Concepto de Deducción</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-400 uppercase font-mono">Concepto de Deducción</label>
                 <select
                   value={concepto}
                   onChange={(e) => setConcepto(e.target.value as any)}
-                  className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white text-xs font-mono outline-none focus:border-cyan-500/60"
                 >
                   <option value="Total">Total Integrado (Vida + GMM + Costos)</option>
                   <option value="Vida">Solo Seguro de Vida ({empresaActual?.reglas.porcentajeVida}%)</option>
@@ -408,55 +406,55 @@ export function PagoUnicoModule({
             </div>
 
             {/* Observaciones */}
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-on-surface-variant uppercase">Observaciones / Motivo</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-slate-400 uppercase font-mono">Observaciones / Motivo</label>
               <input
                 type="text"
                 placeholder="Ej: Deducción acordada por concepto de póliza colectiva"
                 value={observacion}
                 onChange={(e) => setObservacion(e.target.value)}
-                className="p-2.5 rounded-lg border border-surface-container-highest bg-white text-sm"
+                className="p-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-xs outline-none focus:border-cyan-500/60"
               />
             </div>
 
             {/* Tarjeta de Cálculo en Vivo y Reglas */}
-            <div className="p-space-md rounded-xl bg-surface-container-low border border-surface-container flex flex-col gap-2">
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col gap-2 font-mono">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-on-surface-variant uppercase">Desglose Paramétrico en Tiempo Real</span>
-                <span className="font-mono text-primary font-bold">{calculoEnVivo.porcentajeAplicado}% aplicado</span>
+                <span className="font-semibold text-slate-400 uppercase text-[10px]">Desglose Paramétrico en Vivo</span>
+                <span className="text-cyan-400 font-bold">{calculoEnVivo.porcentajeAplicado}% aplicado</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-1 border-t border-surface-container/60">
+              <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80">
                 <div className="flex flex-col">
-                  <span className="text-[11px] text-on-surface-variant">Deducción Calculada:</span>
-                  <span className="text-xl font-bold font-mono text-primary">
+                  <span className="text-[10px] text-slate-500 uppercase">Deducción Calculada:</span>
+                  <span className="text-lg font-bold text-cyan-400 tabular-nums">
                     ${calculoEnVivo.descuento.toLocaleString("es-CO")} COP
                   </span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-[11px] text-on-surface-variant">Neto Estimado al Colaborador:</span>
-                  <span className="text-xl font-bold font-mono text-emerald-700">
+                  <span className="text-[10px] text-slate-500 uppercase">Neto Estimado:</span>
+                  <span className="text-lg font-bold text-emerald-400 tabular-nums">
                     ${calculoEnVivo.salarioNeto.toLocaleString("es-CO")} COP
                   </span>
                 </div>
               </div>
 
               {calculoEnVivo.superaTope && (
-                <div className="text-xs p-2 rounded bg-amber-50 text-amber-800 border border-amber-200 mt-1 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">info</span>
+                <div className="text-xs p-2.5 rounded-lg bg-amber-950/50 text-amber-300 border border-amber-800/60 mt-1 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-amber-400">info</span>
                   <span>
                     {calculoEnVivo.permiteSobregiro
                       ? `Atención: Supera el tope (${calculoEnVivo.tope.toLocaleString("es-CO")}), pero la empresa permite sobregiro.`
-                      : `Aviso: El cálculo original era $${calculoEnVivo.montoTeorico?.toLocaleString("es-CO")}, pero se topó a $${calculoEnVivo.tope.toLocaleString("es-CO")} por regla de negocio.`}
+                      : `Aviso: El cálculo era $${calculoEnVivo.montoTeorico?.toLocaleString("es-CO")}, pero se topó a $${calculoEnVivo.tope.toLocaleString("es-CO")} por regla de negocio.`}
                   </span>
                 </div>
               )}
 
               {calculoEnVivo.superaLimiteLegal && (
-                <div className="text-xs p-2 rounded bg-red-50 text-red-800 border border-red-200 mt-1 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">warning</span>
+                <div className="text-xs p-2.5 rounded-lg bg-red-950/50 text-red-300 border border-red-800/60 mt-1 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-red-400">warning</span>
                   <span>
-                    Atención: La deducción supera el 50% del salario base (Límite legal sugerido por el CST).
+                    Atención: La deducción supera el 50% del salario base (Límite legal del CST).
                   </span>
                 </div>
               )}
@@ -465,7 +463,7 @@ export function PagoUnicoModule({
             <button
               type="submit"
               disabled={procesando || !salarioBase}
-              className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_0_25px_rgba(6,182,212,0.45)] border border-cyan-300/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs border border-cyan-500/50 transition-all active:scale-[0.98] disabled:opacity-50"
             >
               <span className={`material-symbols-outlined text-[18px] ${procesando ? "animate-spin" : ""}`}>
                 {procesando ? "sync" : "send"}
@@ -476,11 +474,11 @@ export function PagoUnicoModule({
         </div>
 
         {/* Historial de Descuentos Individuales */}
-        <div className="lg:col-span-7 flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-surface-container">
+        <div className="lg:col-span-7 flex flex-col gap-4 p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">receipt_long</span>
-              <span className="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant tracking-wider">
+              <span className="material-symbols-outlined text-cyan-400 text-[20px]">receipt_long</span>
+              <span className="text-xs uppercase font-bold text-slate-300 tracking-wider font-mono">
                 Historial de Descuentos ({historialFiltrado.length} de {historialPagos.length})
               </span>
             </div>
@@ -488,7 +486,7 @@ export function PagoUnicoModule({
               <button
                 type="button"
                 onClick={exportarHistorialExcel}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 hover:border-slate-600 shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium text-xs border border-slate-700 transition-all active:scale-[0.98]"
               >
                 <span className="material-symbols-outlined text-[15px]">download</span>
                 <span>Exportar (.xlsx)</span>
@@ -497,26 +495,26 @@ export function PagoUnicoModule({
           </div>
 
           {/* Barra de Filtros y Búsqueda */}
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-surface-container-low p-2.5 rounded-lg border border-surface-container">
-            <div className="sm:col-span-7 flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-700/80">
-              <span className="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
+            <div className="sm:col-span-7 flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700/80">
+              <span className="material-symbols-outlined text-slate-500 text-[18px]">search</span>
               <input
                 type="text"
                 placeholder="Buscar por cédula, nombre o folio..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                className="w-full text-xs bg-transparent outline-none text-on-surface"
+                className="w-full text-xs bg-transparent outline-none text-white placeholder:text-slate-500 font-mono"
               />
               {busqueda && (
-                <button type="button" onClick={() => setBusqueda("")} className="text-on-surface-variant hover:text-on-surface">
+                <button type="button" onClick={() => setBusqueda("")} className="text-slate-500 hover:text-white">
                   <span className="material-symbols-outlined text-[16px]">close</span>
                 </button>
               )}
             </div>
 
             {esDelimitado ? (
-              <div className="sm:col-span-5 flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-bold">
-                <span className="material-symbols-outlined text-[15px] text-emerald-600">domain_verification</span>
+              <div className="sm:col-span-5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800/60 text-xs text-emerald-400 font-mono font-bold">
+                <span className="material-symbols-outlined text-[15px] text-emerald-400">domain_verification</span>
                 <span>Empresa: {empresaAsignada?.toUpperCase()}</span>
               </div>
             ) : (
@@ -524,7 +522,7 @@ export function PagoUnicoModule({
                 <select
                   value={filtroEmpresa}
                   onChange={(e) => setFiltroEmpresa(e.target.value)}
-                  className="w-full bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-slate-700/80 text-xs text-white font-medium outline-none"
+                  className="w-full bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700/80 text-xs text-white font-mono outline-none"
                 >
                   <option value="TODAS">Todas las empresas</option>
                   {empresas.map((emp) => (
@@ -538,10 +536,10 @@ export function PagoUnicoModule({
           </div>
 
           {/* Tabla de Resultados */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-800/80">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-surface-container text-on-surface-variant font-semibold">
+                <tr className="bg-slate-950 text-slate-400 font-mono text-[11px] uppercase tracking-wider border-b border-slate-800">
                   <th className="py-2.5 px-3">Folio</th>
                   <th className="py-2.5 px-3">Empleado</th>
                   <th className="py-2.5 px-3">Empresa</th>
@@ -550,10 +548,10 @@ export function PagoUnicoModule({
                   <th className="py-2.5 px-3 text-center">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-surface-container">
+              <tbody className="divide-y divide-slate-800/60 bg-slate-900/40 font-mono">
                 {historialFiltrado.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-on-surface-variant">
+                    <td colSpan={6} className="py-8 text-center text-slate-500 font-sans">
                       No se encontraron deducciones individuales con los filtros seleccionados.
                     </td>
                   </tr>
@@ -561,21 +559,21 @@ export function PagoUnicoModule({
                   historialFiltrado.map((p) => {
                     const emp = empresas.find((e) => e.id === p.empresaId);
                     return (
-                      <tr key={p.id} className="hover:bg-surface-container-low transition-colors">
-                        <td className="py-3 px-3 font-mono font-medium text-primary">{p.id}</td>
+                      <tr key={p.id} className="hover:bg-slate-800/50 transition-colors">
+                        <td className="py-3 px-3 font-mono font-medium text-cyan-400">{p.id}</td>
                         <td className="py-3 px-3">
                           <div className="flex flex-col">
-                            <span className="font-bold text-on-surface">{p.empleadoNombre}</span>
-                            <span className="text-[11px] text-on-surface-variant font-mono">CC: {p.documento}</span>
+                            <span className="font-medium text-white font-sans">{p.empleadoNombre}</span>
+                            <span className="text-[11px] text-slate-500 font-mono">CC: {p.documento}</span>
                           </div>
                         </td>
                         <td className="py-3 px-3">
-                          <span className="px-2 py-0.5 rounded font-mono font-bold bg-surface-container text-on-surface">
+                          <span className="px-2 py-0.5 rounded font-mono font-bold bg-slate-800 text-slate-200 border border-slate-700 text-[10px]">
                             {emp?.codigo || p.empresaId.toUpperCase()}
                           </span>
                         </td>
-                        <td className="py-3 px-3 font-medium">{p.concepto}</td>
-                        <td className="py-3 px-3 text-right font-mono font-bold text-emerald-700">
+                        <td className="py-3 px-3 font-medium text-slate-300 font-sans">{p.concepto}</td>
+                        <td className="py-3 px-3 text-right font-mono font-bold text-emerald-400 tabular-nums">
                           ${p.descuentoCalculado.toLocaleString("es-CO")}
                         </td>
                         <td className="py-3 px-3 text-center">
@@ -583,7 +581,7 @@ export function PagoUnicoModule({
                             type="button"
                             onClick={() => setComprobanteActivo(p)}
                             title="Ver e Imprimir Comprobante Oficial"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 hover:text-white text-xs font-bold transition-all border border-cyan-500/40 hover:border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.2)] hover:-translate-y-0.5 active:translate-y-0 duration-150"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-cyan-300 hover:text-white text-xs font-mono font-medium transition-all border border-slate-700 active:scale-[0.98]"
                           >
                             <span className="material-symbols-outlined text-[14px]">receipt_long</span>
                             <span>Comprobante</span>

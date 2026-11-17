@@ -108,9 +108,18 @@ export const CREDENCIALES_SISTEMA: CredencialEmpresa[] = [
 
 export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[]): CredencialEmpresa {
   const emailNorm = (email || "").trim().toLowerCase();
-  const match = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
-  if (match) return match;
+  if (!emailNorm) {
+    return {
+      email: "",
+      passwordDefault: "",
+      nombre: "Invitado",
+      rol: "ANALISTA",
+      empresaId: "continental",
+      descripcion: "Sesión no autenticada."
+    };
+  }
 
+  // 1. PRIORIDAD MÁXIMA: Configuración editada por el Administrador en rpa_usuarios_roles
   if (typeof window !== "undefined") {
     try {
       const localUsrs = window.localStorage.getItem("rpa_usuarios_roles");
@@ -120,13 +129,21 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
           ? parsed.find((u: any) => u.email?.toLowerCase() === emailNorm && u.estado !== "SUSPENDIDO")
           : null;
         if (usrMatch) {
+          const credBase = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
+          const empBase = empresas?.find((e) => e.emailOperador?.toLowerCase() === emailNorm);
+          const pwd =
+            usrMatch.passwordDefault ||
+            credBase?.passwordDefault ||
+            empBase?.passwordDefault ||
+            (usrMatch.rol === "ADMIN" ? "Admin*2026" : usrMatch.rol === "SUPERVISOR" ? "Audit*2026" : "Nomina*2026");
+
           return {
             email: emailNorm,
-            passwordDefault: "",
-            nombre: usrMatch.nombre || emailNorm,
+            passwordDefault: pwd,
+            nombre: usrMatch.nombre || credBase?.nombre || emailNorm,
             rol: usrMatch.rol || "ANALISTA",
-            empresaId: usrMatch.empresaId || "continental",
-            descripcion: `Perfil asignado por directorio RBAC (${usrMatch.rol}).`,
+            empresaId: usrMatch.empresaId || credBase?.empresaId || "TODAS",
+            descripcion: `Rol configurado por Administrador (${usrMatch.rol}).`,
           };
         }
       }
@@ -135,6 +152,7 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
     }
   }
 
+  // 2. SEGUNDA PRIORIDAD: Empresas creadas en el sistema (tienen sus propios usuarios operadores)
   if (empresas && empresas.length > 0) {
     const empMatch = empresas.find(
       (e) => e.emailOperador && e.emailOperador.toLowerCase() === emailNorm
@@ -143,13 +161,17 @@ export function resolverPerfilUsuario(email?: string | null, empresas?: Empresa[
       return {
         email: emailNorm,
         passwordDefault: empMatch.passwordDefault || `${empMatch.codigo}*2026`,
-        nombre: `Analista Nómina ${empMatch.nombre}`,
-        rol: "ANALISTA",
+        nombre: `Operador Nómina ${empMatch.nombre}`,
+        rol: empMatch.rolOperador || "ANALISTA",
         empresaId: empMatch.id,
-        descripcion: `Gestión exclusiva de planillas y descuentos de ${empMatch.nombre}.`,
+        descripcion: `Usuario de empresa ${empMatch.nombre} con rol ${empMatch.rolOperador || "ANALISTA"}.`,
       };
     }
   }
+
+  // 3. TERCERA PRIORIDAD: Credenciales predeterminadas del sistema
+  const match = CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === emailNorm);
+  if (match) return match;
 
   if (emailNorm === "admin@rpa.com" || emailNorm === "admin@blacksmith.com.co") {
     return {
@@ -256,6 +278,7 @@ export interface Empresa {
   codigo: string;
   emailOperador?: string; // Correo institucional asignado para login
   passwordDefault?: string; // Clave de acceso asignada para el analista
+  rolOperador?: RolUsuario; // Rol asignado al operador/analista de la empresa (ADMIN, SUPERVISOR, ANALISTA)
   reglas: ReglasNegocio;
   creadoEn?: Timestamp;
 }

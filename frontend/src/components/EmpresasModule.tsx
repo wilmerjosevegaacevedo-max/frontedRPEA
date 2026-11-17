@@ -24,6 +24,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
   const [codigo, setCodigo] = useState("");
   const [emailOperador, setEmailOperador] = useState("");
   const [passwordDefault, setPasswordDefault] = useState("");
+  const [rolOperador, setRolOperador] = useState<RolUsuario>("ANALISTA");
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [porcentajeVida, setPorcentajeVida] = useState(1.5);
   const [porcentajeGmm, setPorcentajeGmm] = useState(2.0);
@@ -41,6 +42,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setCodigo("");
     setEmailOperador("");
     setPasswordDefault("");
+    setRolOperador("ANALISTA");
     setMostrarPassword(false);
     setPorcentajeVida(1.5);
     setPorcentajeGmm(2.0);
@@ -115,6 +117,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
     setCodigo(emp.codigo);
     setEmailOperador(emp.emailOperador || `nomina@${emp.codigo.toLowerCase()}.com`);
     setPasswordDefault(emp.passwordDefault || `${emp.codigo.charAt(0).toUpperCase() + emp.codigo.slice(1).toLowerCase()}*2026`);
+    setRolOperador(emp.rolOperador || "ANALISTA");
     setMostrarPassword(false);
     setPorcentajeVida(emp.reglas.porcentajeVida);
     setPorcentajeGmm(emp.reglas.porcentajeGmm);
@@ -170,6 +173,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
       codigo: codigoClean,
       emailOperador: correoFinal,
       passwordDefault: passwordFinal,
+      rolOperador: rolOperador || "ANALISTA",
       reglas: {
         porcentajeVida: Number(porcentajeVida),
         porcentajeGmm: Number(porcentajeGmm),
@@ -452,6 +456,25 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     </div>
                   </div>
                 </div>
+
+                {/* Rol Asignado para el Usuario de esta Empresa */}
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-mono font-bold text-slate-300 uppercase">
+                      Rol Asignado a este Usuario (Editable por Administrador)
+                    </label>
+                    <span className="text-[10px] text-cyan-400 font-mono">Control de Acceso RBAC</span>
+                  </div>
+                  <select
+                    value={rolOperador}
+                    onChange={(e) => setRolOperador(e.target.value as RolUsuario)}
+                    className="w-full p-2.5 rounded-lg border border-slate-700 bg-slate-950 text-cyan-300 text-xs font-mono font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/20"
+                  >
+                    <option value="ANALISTA">ANALISTA DE NÓMINA (Nivel 1 - Operativo: planillas y descuentos)</option>
+                    <option value="SUPERVISOR">SUPERVISOR (Nivel 2 - Auditoría en tiempo real y lectura)</option>
+                    <option value="ADMIN">ADMINISTRADOR (Nivel 3 - Control Total del Sistema)</option>
+                  </select>
+                </div>
               </div>
 
               {/* Parámetros de Descuento (Reglas de Negocio) */}
@@ -635,7 +658,7 @@ export function EmpresasModule({ empresas, onActualizarEmpresas, rolUsuario }: E
                     Credenciales Asignadas para el Analista
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
-                    ROL: ANALISTA ({empresaSeleccionada.codigo})
+                    ROL: {empresaSeleccionada.rolOperador || "ANALISTA"} ({empresaSeleccionada.codigo})
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">

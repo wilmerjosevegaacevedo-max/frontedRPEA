@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Empresa, RolUsuario, ROLES_CONFIG } from "../types";
 
@@ -11,6 +11,7 @@ export type UsuarioSistema = {
   nombre: string;
   rol: RolUsuario;
   empresaId: string;
+  passwordDefault?: string;
   estado: "ACTIVO" | "SUSPENDIDO";
 };
 
@@ -77,45 +78,71 @@ const MATRIZ_PERMISOS_INICIAL: PermisoFila[] = [
 const USUARIOS_DEFAULT: UsuarioSistema[] = [
   {
     id: "usr-admin",
-    email: "admin.rpa@blacksmith.com.co",
-    nombre: "Administrador General del Sistema",
+    email: "admin@rpa.com",
+    nombre: "Administrador Central",
     rol: "ADMIN",
     empresaId: "TODAS",
+    passwordDefault: "Admin*2026",
     estado: "ACTIVO",
   },
   {
     id: "usr-supervisor",
-    email: "auditoria@rpa-nomina.com",
-    nombre: "Auditor Central (Supervisión)",
+    email: "supervisor@rpa.com",
+    nombre: "Auditor y Supervisor Central",
     rol: "SUPERVISOR",
     empresaId: "TODAS",
+    passwordDefault: "Audit*2026",
     estado: "ACTIVO",
   },
   {
-    id: "usr-cont",
-    email: "nomina@continentalgold.com",
-    nombre: "Analista Nómina Continental Gold",
-    rol: "ANALISTA",
-    empresaId: "continental",
-    estado: "ACTIVO",
-  },
-  {
-    id: "usr-cdf",
-    email: "nomina@cdf-financiera.com",
-    nombre: "Analista Nómina Compañía CDF",
-    rol: "ANALISTA",
-    empresaId: "cdf",
-    estado: "ACTIVO",
-  },
-  {
-    id: "usr-dxc",
-    email: "nomina@dxc.com",
-    nombre: "Analista Nómina DXC Technology",
-    rol: "ANALISTA",
-    empresaId: "dxc",
+    id: "usr-audit",
+    email: "audit@rpa.com",
+    nombre: "Oficial de Auditoría y Cumplimiento",
+    rol: "SUPERVISOR",
+    empresaId: "TODAS",
+    passwordDefault: "Audit*2026",
     estado: "ACTIVO",
   },
 ];
+
+function fusionarUsuariosConEmpresas(base: UsuarioSistema[], listaEmpresas: Empresa[]): UsuarioSistema[] {
+  const mapa = new Map<string, UsuarioSistema>();
+
+  // 1. Insertar base
+  base.forEach((u) => {
+    mapa.set(u.email.toLowerCase(), u);
+  });
+
+  // 2. Integrar todas las empresas registradas (cada empresa tiene su usuario operador)
+  listaEmpresas.forEach((emp) => {
+    const emailEmp = (emp.emailOperador || `nomina@${emp.codigo.toLowerCase()}.com`).toLowerCase();
+    const passEmp = emp.passwordDefault || `${emp.codigo.charAt(0).toUpperCase() + emp.codigo.slice(1).toLowerCase()}*2026`;
+    const rolEmp = emp.rolOperador || "ANALISTA";
+    const existente = mapa.get(emailEmp);
+
+    if (existente) {
+      mapa.set(emailEmp, {
+        ...existente,
+        nombre: existente.nombre || `Analista Nómina ${emp.nombre}`,
+        empresaId: emp.id,
+        passwordDefault: existente.passwordDefault || passEmp,
+        rol: existente.rol || rolEmp,
+      });
+    } else {
+      mapa.set(emailEmp, {
+        id: `usr-emp-${emp.id}`,
+        email: emailEmp,
+        nombre: `Analista Nómina ${emp.nombre}`,
+        rol: rolEmp,
+        empresaId: emp.id,
+        passwordDefault: passEmp,
+        estado: "ACTIVO",
+      });
+    }
+  });
+
+  return Array.from(mapa.values());
+}
 
 export function AuditoriaRolesModule({
   rolUsuario,
@@ -129,7 +156,9 @@ export function AuditoriaRolesModule({
   empresas?: Empresa[];
 }) {
   const [matrizPermisos, setMatrizPermisos] = useState<PermisoFila[]>(MATRIZ_PERMISOS_INICIAL);
-  const [usuarios, setUsuarios] = useState<UsuarioSistema[]>(USUARIOS_DEFAULT);
+  const [usuarios, setUsuarios] = useState<UsuarioSistema[]>(() =>
+    fusionarUsuariosConEmpresas(USUARIOS_DEFAULT, empresas)
+  );
   const [guardando, setGuardando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
   const [mensajeError, setMensajeError] = useState<string | null>(null);
@@ -140,11 +169,17 @@ export function AuditoriaRolesModule({
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [nuevoRol, setNuevoRol] = useState<RolUsuario>("ANALISTA");
   const [nuevaEmpresaId, setNuevaEmpresaId] = useState("TODAS");
+  const [nuevaPassword, setNuevaPassword] = useState("Nomina*2026");
+
+  // Sincronizar usuarios cuando la lista de empresas cambie
+  useEffect(() => {
+    setUsuarios((prev) => fusionarUsuariosConEmpresas(prev, empresas));
+  }, [empresas]);
 
   // Cargar configuración guardada de Firestore o localStorage
   useEffect(() => {
     async function cargarConfiguracion() {
-      // Intentar leer de Firestore
+      // 1. Intentar leer de Firestore
       if (db) {
         try {
           const docRbac = await getDoc(doc(db, "config", "rbac_matriz"));
@@ -152,8 +187,9 @@ export function AuditoriaRolesModule({
             setMatrizPermisos(docRbac.data().matriz);
           }
           const docUsrs = await getDoc(doc(db, "config", "usuarios_roles"));
-          if (docUsrs.exists() && docUsrs.data()?.usuarios) {
-            setUsuarios(docUsrs.data().usuarios);
+          if (docUsrs.exists() && Array.isArray(docUsrs.data()?.usuarios)) {
+            const cargados = docUsrs.data().usuarios as UsuarioSistema[];
+            setUsuarios(fusionarUsuariosConEmpresas(cargados, empresas));
             return;
           }
         } catch {
@@ -161,7 +197,7 @@ export function AuditoriaRolesModule({
         }
       }
 
-      // Fallback a localStorage
+      // 2. Fallback a localStorage
       if (typeof window !== "undefined") {
         const localRbac = localStorage.getItem("rpa_rbac_matriz");
         if (localRbac) {
@@ -172,14 +208,17 @@ export function AuditoriaRolesModule({
         const localUsrs = localStorage.getItem("rpa_usuarios_roles");
         if (localUsrs) {
           try {
-            setUsuarios(JSON.parse(localUsrs));
+            const parsed = JSON.parse(localUsrs);
+            if (Array.isArray(parsed)) {
+              setUsuarios(fusionarUsuariosConEmpresas(parsed, empresas));
+            }
           } catch {}
         }
       }
     }
 
     cargarConfiguracion();
-  }, []);
+  }, [empresas]);
 
   // Actualizar un permiso individual de la matriz
   const togglePermiso = (idFila: string, campo: "supervisor" | "analista") => {
@@ -258,6 +297,14 @@ export function AuditoriaRolesModule({
     );
   };
 
+  // Modificar clave de un usuario
+  const actualizarPasswordUsuario = (id: string, nuevaPass: string) => {
+    if (!esAdmin) return;
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, passwordDefault: nuevaPass } : u))
+    );
+  };
+
   // Alternar estado activo / suspendido
   const toggleEstadoUsuario = (id: string) => {
     if (!esAdmin) return;
@@ -270,7 +317,7 @@ export function AuditoriaRolesModule({
     );
   };
 
-  // Guardar usuarios
+  // Guardar usuarios y sincronizar con Firestore
   const guardarUsuarios = async () => {
     setGuardando(true);
     setMensajeExito(null);
@@ -279,15 +326,39 @@ export function AuditoriaRolesModule({
       if (typeof window !== "undefined") {
         localStorage.setItem("rpa_usuarios_roles", JSON.stringify(usuarios));
       }
+
       if (db) {
+        // 1. Guardar colección central de usuarios
         await setDoc(doc(db, "config", "usuarios_roles"), {
           usuarios,
           actualizadoPor: "admin",
           actualizadoEn: new Date().toISOString(),
         });
+
+        // 2. Sincronizar el rolOperador y passwordDefault en cada empresa registrada
+        for (const u of usuarios) {
+          if (u.empresaId && u.empresaId !== "TODAS") {
+            try {
+              await setDoc(
+                doc(db, "empresas", u.empresaId),
+                {
+                  rolOperador: u.rol,
+                  emailOperador: u.email,
+                  ...(u.passwordDefault ? { passwordDefault: u.passwordDefault } : {}),
+                },
+                { merge: true }
+              );
+            } catch (errEmp) {
+              console.warn(`Aviso al actualizar empresa ${u.empresaId}:`, errEmp);
+            }
+          }
+        }
       }
-      setMensajeExito("Directorio de usuarios y roles actualizado y guardado.");
-      setTimeout(() => setMensajeExito(null), 4000);
+
+      setMensajeExito(
+        "Directorio de usuarios y roles actualizado: los roles asignados ya están activos para el inicio de sesión."
+      );
+      setTimeout(() => setMensajeExito(null), 5000);
     } catch (err: any) {
       setMensajeError(`Error al guardar usuarios: ${err.message}`);
     } finally {
@@ -306,6 +377,7 @@ export function AuditoriaRolesModule({
       nombre: nuevoNombre.trim(),
       rol: nuevoRol,
       empresaId: nuevaEmpresaId,
+      passwordDefault: nuevaPassword.trim() || "Nomina*2026",
       estado: "ACTIVO",
     };
 
@@ -314,8 +386,9 @@ export function AuditoriaRolesModule({
     setNuevoNombre("");
     setNuevoRol("ANALISTA");
     setNuevaEmpresaId("TODAS");
+    setNuevaPassword("Nomina*2026");
     setMostrarModalNuevo(false);
-    setMensajeExito(`Usuario ${nuevo.email} registrado con rol ${nuevo.rol}.`);
+    setMensajeExito(`Usuario ${nuevo.email} registrado con rol ${nuevo.rol}. Guarda los cambios para sincronizar.`);
     setTimeout(() => setMensajeExito(null), 4000);
   };
 
@@ -338,11 +411,11 @@ export function AuditoriaRolesModule({
               Auditoría y Gestión de Roles (RBAC)
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-              {esAdmin ? "Modo Administrador: Roles Editables" : "Modo Auditoría"}
+              {esAdmin ? "Modo Administrador: Roles y Usuarios Editables" : "Modo Auditoría"}
             </span>
           </div>
           <p className="text-xs text-slate-400">
-            Control de acceso basado en roles, segregación de funciones y gestión de permisos del orquestador.
+            Control de acceso basado en roles, segregación de funciones bancarias y administración de cuentas de usuario de todas las empresas.
           </p>
         </div>
 
@@ -444,7 +517,7 @@ export function AuditoriaRolesModule({
         })}
       </div>
 
-      {/* SECCIÓN 1: Directorio y Edición de Usuarios del Sistema */}
+      {/* SECCIÓN 1: Directorio y Edición de Usuarios del Sistema (Incluye Empresas Creadas) */}
       <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
@@ -452,12 +525,15 @@ export function AuditoriaRolesModule({
               <span className="material-symbols-outlined text-[20px]">group</span>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white font-mono tracking-tight">
-                Directorio de Usuarios y Asignación de Roles
+              <h3 className="text-sm font-bold text-white font-mono tracking-tight flex items-center gap-2">
+                <span>Directorio de Usuarios y Asignación de Roles</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                  {usuarios.length} cuentas
+                </span>
               </h3>
               <span className="text-xs text-slate-400">
                 {esAdmin
-                  ? "Como Administrador puedes editar el rol asignado a cualquier cuenta y guardar los cambios."
+                  ? "Como Administrador puedes cambiar el rol (ADMIN, SUPERVISOR, ANALISTA), clave y empresa de cualquier usuario."
                   : "Lista de usuarios y asignación de perfiles (solo lectura)."}
               </span>
             </div>
@@ -482,7 +558,7 @@ export function AuditoriaRolesModule({
                 <span className={`material-symbols-outlined text-[16px] ${guardando ? "animate-spin" : ""}`}>
                   {guardando ? "sync" : "save"}
                 </span>
-                <span>Guardar Usuarios</span>
+                <span>Guardar Usuarios y Roles</span>
               </button>
             </div>
           )}
@@ -508,7 +584,7 @@ export function AuditoriaRolesModule({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-[11px] font-mono text-slate-400 uppercase">Correo Electrónico</label>
                 <input
@@ -538,7 +614,7 @@ export function AuditoriaRolesModule({
                 <select
                   value={nuevoRol}
                   onChange={(e) => setNuevoRol(e.target.value as RolUsuario)}
-                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs font-mono outline-none focus:border-cyan-400"
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-white text-xs font-mono outline-none focus:border-cyan-400 font-bold"
                 >
                   <option value="ADMIN">ADMINISTRADOR (Nivel 3)</option>
                   <option value="SUPERVISOR">SUPERVISOR (Nivel 2)</option>
@@ -560,6 +636,17 @@ export function AuditoriaRolesModule({
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-mono text-slate-400 uppercase">Clave de Acceso</label>
+                <input
+                  type="text"
+                  required
+                  value={nuevaPassword}
+                  onChange={(e) => setNuevaPassword(e.target.value)}
+                  className="p-2 rounded-lg border border-slate-700 bg-slate-900 text-cyan-300 text-xs font-mono outline-none focus:border-cyan-400"
+                />
               </div>
             </div>
 
@@ -588,15 +675,18 @@ export function AuditoriaRolesModule({
               <tr className="bg-slate-950 text-slate-400 uppercase font-mono text-[11px] tracking-wider border-b border-slate-800">
                 <th className="py-3 px-4">Usuario / Correo</th>
                 <th className="py-3 px-4">Nombre Completo</th>
-                <th className="py-3 px-4">Empresa Asignada</th>
+                <th className="py-3 px-4">Empresa / Origen</th>
                 <th className="py-3 px-4">Rol en Sistema</th>
+                <th className="py-3 px-4">Clave Asignada</th>
                 <th className="py-3 px-4 text-center">Estado</th>
                 {esAdmin && <th className="py-3 px-4 text-right">Acción</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
               {usuarios.map((u) => {
-                const esUsuarioActual = u.rol === rolUsuario;
+                const empresaAsociada = empresas.find((e) => e.id === u.empresaId);
+                const esDeEmpresa = Boolean(empresaAsociada && u.empresaId !== "TODAS");
+
                 return (
                   <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="py-3 px-4 font-mono text-white">
@@ -606,22 +696,31 @@ export function AuditoriaRolesModule({
                       </div>
                     </td>
                     <td className="py-3 px-4 text-slate-300">{u.nombre}</td>
+                    
+                    {/* Empresa / Origen */}
                     <td className="py-3 px-4 font-mono text-slate-400">
                       {esAdmin ? (
-                        <select
-                          value={u.empresaId}
-                          onChange={(e) => actualizarEmpresaUsuario(u.id, e.target.value)}
-                          className="p-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono outline-none focus:border-cyan-400"
-                        >
-                          <option value="TODAS">TODAS (Global)</option>
-                          {empresas.map((emp) => (
-                            <option key={emp.id} value={emp.id}>
-                              {emp.nombre}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex flex-col gap-1">
+                          <select
+                            value={u.empresaId}
+                            onChange={(e) => actualizarEmpresaUsuario(u.id, e.target.value)}
+                            className="p-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono outline-none focus:border-cyan-400"
+                          >
+                            <option value="TODAS">TODAS (Corporativo)</option>
+                            {empresas.map((emp) => (
+                              <option key={emp.id} value={emp.id}>
+                                {emp.nombre}
+                              </option>
+                            ))}
+                          </select>
+                          {esDeEmpresa && (
+                            <span className="text-[10px] text-cyan-400 font-mono">
+                              Empresa: {empresaAsociada?.codigo}
+                            </span>
+                          )}
+                        </div>
                       ) : (
-                        <span>{u.empresaId.toUpperCase()}</span>
+                        <span>{empresaAsociada ? empresaAsociada.nombre : u.empresaId.toUpperCase()}</span>
                       )}
                     </td>
 
@@ -650,6 +749,20 @@ export function AuditoriaRolesModule({
                       )}
                     </td>
 
+                    {/* Clave Asignada (Transparente para el Administrador) */}
+                    <td className="py-3 px-4 font-mono text-cyan-300">
+                      {esAdmin ? (
+                        <input
+                          type="text"
+                          value={u.passwordDefault || "Nomina*2026"}
+                          onChange={(e) => actualizarPasswordUsuario(u.id, e.target.value)}
+                          className="w-28 p-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300 outline-none focus:border-cyan-400"
+                        />
+                      ) : (
+                        <span className="text-slate-500">••••••••</span>
+                      )}
+                    </td>
+
                     <td className="py-3 px-4 text-center font-mono">
                       {esAdmin ? (
                         <button
@@ -670,7 +783,7 @@ export function AuditoriaRolesModule({
 
                     {esAdmin && (
                       <td className="py-3 px-4 text-right">
-                        {u.email !== "admin.rpa@blacksmith.com.co" && u.email !== "admin@rpa.com" && (
+                        {u.email !== "admin@rpa.com" && (
                           <button
                             type="button"
                             aria-label={`Eliminar usuario ${u.email}`}
@@ -837,7 +950,7 @@ export function AuditoriaRolesModule({
               Arquitectura Fullstack TypeScript Puro (Cero Python)
             </span>
             <span className="text-xs text-slate-400 font-sans mt-0.5">
-              Control RBAC desacoplado, parsing client-side en tiempo real y sincronización en la nube vía Firestore.
+              Control RBAC desacoplado, integración automática de usuarios de empresas y sincronización multi-tenant en Firestore.
             </span>
           </div>
         </div>

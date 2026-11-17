@@ -96,7 +96,7 @@ export default function HomePage() {
 
     const unsubUsrs = onSnapshot(
       doc(db, "config", "usuarios_roles"),
-      (snap) => {
+      (snap: any) => {
         if (snap.exists() && Array.isArray(snap.data()?.usuarios)) {
           const usrs = snap.data().usuarios;
           setUsuariosConfig(usrs);

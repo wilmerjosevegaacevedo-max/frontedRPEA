@@ -89,6 +89,10 @@ export default function HomePage() {
   useEffect(() => {
     if (!auth) return;
     return onAuthStateChanged(auth, (firebaseUser) => {
+      // No sobrescribir una sesión de sistema/demo activa en sessionStorage
+      if (typeof window !== "undefined" && window.sessionStorage.getItem(DEMO_SESSION_KEY)) {
+        return;
+      }
       if (firebaseUser) {
         setUser(firebaseUser);
         const perfil = resolverPerfilUsuario(firebaseUser.email, empresas);
@@ -96,7 +100,7 @@ export default function HomePage() {
         setEmpresaAsignadaActiva(perfil.empresaId);
       }
     });
-  }, [empresas]);
+  }, []);
 
   // Cargar email recordado y restaurar sesión activa si se recarga la página (F5)
   useEffect(() => {
@@ -167,8 +171,10 @@ export default function HomePage() {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       setRolUsuarioActivo(perfil.rol);
       setEmpresaAsignadaActiva(perfil.empresaId);
+      setModoDemo(false);
 
       if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem(DEMO_SESSION_KEY);
         if (rememberDevice) {
           window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
         } else {
@@ -176,7 +182,46 @@ export default function HomePage() {
         }
       }
     } catch (err: any) {
-      // 1. Si el email es una credencial predefinida del sistema
+      // Limpiar cualquier sesión previa en Firebase Auth para evitar colisiones
+      if (auth?.currentUser) {
+        try {
+          await auth.signOut();
+        } catch {}
+      }
+
+      // 1. Verificar primero contra el perfil resuelto (que respeta los cambios del Administrador)
+      if (perfil && perfil.passwordDefault && password === perfil.passwordDefault) {
+        const mockUid = `usr-${perfil.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`;
+        setUser({
+          uid: mockUid,
+          email: email.trim(),
+          displayName: perfil.nombre,
+        } as User);
+        setRolUsuarioActivo(perfil.rol);
+        setEmpresaAsignadaActiva(perfil.empresaId);
+        if (perfil.empresaId !== "TODAS") {
+          setCliente(perfil.empresaId as ClienteId);
+        }
+        setModoDemo(true);
+        if (typeof window !== "undefined") {
+          if (rememberDevice) {
+            window.localStorage.setItem(REMEMBER_EMAIL_KEY, email);
+          }
+          window.sessionStorage.setItem(
+            DEMO_SESSION_KEY,
+            JSON.stringify({
+              uid: mockUid,
+              email: email.trim(),
+              displayName: perfil.nombre,
+              rol: perfil.rol,
+              empresaId: perfil.empresaId,
+            })
+          );
+        }
+        return;
+      }
+
+      // 1.1 Si el email es una credencial predefinida del sistema
       const credEncontrada = CREDENCIALES_SISTEMA.find(
         (c) => c.email.toLowerCase() === email.trim().toLowerCase()
       );

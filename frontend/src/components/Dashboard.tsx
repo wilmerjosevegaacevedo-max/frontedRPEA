@@ -42,7 +42,9 @@ export function Dashboard({
   const rolUsuario: RolUsuario = rolOverride || rolInicial || perfil.rol;
   const esAdminReal = perfil.rol === "ADMIN" || rolInicial === "ADMIN";
   const empresaAsignada: string =
-    empresaAsignadaInicial && empresaAsignadaInicial !== "TODAS"
+    rolUsuario === "ADMIN" || rolUsuario === "SUPERVISOR"
+      ? "TODAS"
+      : empresaAsignadaInicial && empresaAsignadaInicial !== "TODAS"
       ? empresaAsignadaInicial
       : perfil.empresaId;
 

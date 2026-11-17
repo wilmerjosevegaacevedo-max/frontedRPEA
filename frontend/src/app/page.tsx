@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, User } from "firebase/auth";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, doc, onSnapshot, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { ClienteId, CREDENCIALES_SISTEMA, CredencialEmpresa, Empresa, EMPRESAS_PREDETERMINADAS, Job, resolverPerfilUsuario, RolUsuario } from "../types";
 import { LoginScreen } from "../components/LoginScreen";
@@ -66,9 +66,20 @@ export default function HomePage() {
   const [rolUsuarioActivo, setRolUsuarioActivo] = useState<RolUsuario>("ADMIN");
   const [empresaAsignadaActiva, setEmpresaAsignadaActiva] = useState<string>("TODAS");
   const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS_PREDETERMINADAS);
+  const [usuariosConfig, setUsuariosConfig] = useState<any[]>([]);
 
-  // Sincronizar empresas dinámicas desde Firestore
+  // Sincronizar empresas dinámicas desde Firestore y localStorage
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const localUsrs = window.localStorage.getItem("rpa_usuarios_roles");
+        if (localUsrs) {
+          const parsed = JSON.parse(localUsrs);
+          if (Array.isArray(parsed)) setUsuariosConfig(parsed);
+        }
+      } catch {}
+    }
+
     if (!db) return;
     const unsub = onSnapshot(
       collection(db, "empresas"),
@@ -82,8 +93,72 @@ export default function HomePage() {
         console.warn("Aviso al sincronizar empresas en auth:", error.message);
       }
     );
-    return () => unsub();
+
+    const unsubUsrs = onSnapshot(
+      doc(db, "config", "usuarios_roles"),
+      (snap) => {
+        if (snap.exists() && Array.isArray(snap.data()?.usuarios)) {
+          const usrs = snap.data().usuarios;
+          setUsuariosConfig(usrs);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem("rpa_usuarios_roles", JSON.stringify(usrs));
+          }
+        }
+      },
+      () => {}
+    );
+
+    return () => {
+      unsub();
+      unsubUsrs();
+    };
   }, []);
+
+  // Lista dinámica unificada de credenciales (Sistema + Empresas Creadas + Usuarios RBAC)
+  const credencialesDinamicas = useMemo<CredencialEmpresa[]>(() => {
+    const mapa = new Map<string, CredencialEmpresa>();
+
+    // 1. Credenciales principales base (sin duplicar alias)
+    CREDENCIALES_SISTEMA.slice(0, 6).forEach((c) => {
+      mapa.set(c.email.toLowerCase(), c);
+    });
+
+    // 2. Todas las empresas registradas (dinámicas de Firestore o predeterminadas)
+    empresas.forEach((emp) => {
+      const emailEmp = (emp.emailOperador || `nomina@${emp.codigo.toLowerCase()}.com`).toLowerCase();
+      const passEmp =
+        emp.passwordDefault ||
+        `${emp.codigo.charAt(0).toUpperCase() + emp.codigo.slice(1).toLowerCase()}*2026`;
+      mapa.set(emailEmp, {
+        email: emailEmp,
+        passwordDefault: passEmp,
+        nombre: `Operador ${emp.nombre}`,
+        rol: emp.rolOperador || "ANALISTA",
+        empresaId: emp.id,
+        descripcion: `Cuenta de ${emp.nombre} (${emp.rolOperador || "ANALISTA"}).`,
+      });
+    });
+
+    // 3. Usuarios personalizados o roles editados por el Administrador
+    usuariosConfig.forEach((u) => {
+      if (!u?.email || u.estado === "SUSPENDIDO") return;
+      const emailNorm = u.email.toLowerCase();
+      const existente = mapa.get(emailNorm);
+      mapa.set(emailNorm, {
+        email: emailNorm,
+        passwordDefault:
+          u.passwordDefault ||
+          existente?.passwordDefault ||
+          (u.rol === "ADMIN" ? "Admin*2026" : u.rol === "SUPERVISOR" ? "Audit*2026" : "Nomina*2026"),
+        nombre: u.nombre || existente?.nombre || emailNorm,
+        rol: u.rol || existente?.rol || "ANALISTA",
+        empresaId: u.empresaId || existente?.empresaId || "TODAS",
+        descripcion: `Perfil asignado por Administrador (${u.rol}).`,
+      });
+    });
+
+    return Array.from(mapa.values());
+  }, [empresas, usuariosConfig]);
 
   // Escuchar estado de autenticación en Firebase y resolver rol estricto
   useEffect(() => {
@@ -221,10 +296,10 @@ export default function HomePage() {
         return;
       }
 
-      // 1.1 Si el email es una credencial predefinida del sistema
-      const credEncontrada = CREDENCIALES_SISTEMA.find(
-        (c) => c.email.toLowerCase() === email.trim().toLowerCase()
-      );
+      // 1.1 Si el email es una credencial del sistema o dinámica (empresa / usuario creado)
+      const credEncontrada =
+        credencialesDinamicas.find((c) => c.email.toLowerCase() === email.trim().toLowerCase()) ||
+        CREDENCIALES_SISTEMA.find((c) => c.email.toLowerCase() === email.trim().toLowerCase());
       if (credEncontrada && password === credEncontrada.passwordDefault) {
         const mockUid = `usr-${credEncontrada.rol.toLowerCase()}-${Date.now().toString().slice(-4)}`;
         setUser({
@@ -390,6 +465,7 @@ export default function HomePage() {
           rememberDevice={rememberDevice}
           isSigningIn={isSigningIn}
           error={authError}
+          credencialesDisponibles={credencialesDinamicas}
           onEmailChange={setEmail}
           onPasswordChange={setPassword}
           onToggleShowPassword={() => setShowPassword((v) => !v)}

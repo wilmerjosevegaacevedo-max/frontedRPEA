@@ -10,6 +10,7 @@ type LoginScreenProps = {
   rememberDevice: boolean;
   isSigningIn: boolean;
   error: string;
+  credencialesDisponibles?: CredencialEmpresa[];
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onToggleShowPassword: () => void;
@@ -25,6 +26,7 @@ export function LoginScreen({
   rememberDevice,
   isSigningIn,
   error,
+  credencialesDisponibles,
   onEmailChange,
   onPasswordChange,
   onToggleShowPassword,
@@ -33,6 +35,9 @@ export function LoginScreen({
   onSeleccionarCredencialRapida,
 }: LoginScreenProps) {
   const [mostrarAyudaEvaluacion, setMostrarAyudaEvaluacion] = useState(false);
+  const listaCredenciales = credencialesDisponibles && credencialesDisponibles.length > 0
+    ? credencialesDisponibles
+    : CREDENCIALES_SISTEMA.slice(0, 5);
 
   return (
     <main className="w-full min-h-screen bg-[#030712] cyber-grid flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
@@ -220,14 +225,16 @@ export function LoginScreen({
                 </button>
 
                 {mostrarAyudaEvaluacion && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-2 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs animate-fadeIn">
-                    {CREDENCIALES_SISTEMA.map((c) => {
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-2 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs animate-fadeIn max-h-48 overflow-y-auto">
+                    {listaCredenciales.map((c) => {
                       const etiqueta =
                         c.rol === "ADMIN"
                           ? "Admin Master"
                           : c.rol === "SUPERVISOR"
-                          ? "Auditor Central"
-                          : c.empresaId.toUpperCase();
+                          ? "Supervisor"
+                          : c.empresaId !== "TODAS"
+                          ? c.empresaId.toUpperCase()
+                          : c.nombre.split(" ")[0];
 
                       return (
                         <button
@@ -247,16 +254,16 @@ export function LoginScreen({
                               : "bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-300"
                           }`}
                         >
-                          <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center justify-between w-full gap-1">
                             <span className="font-bold text-[11px] text-white truncate">
                               {etiqueta}
                             </span>
-                            <span className="text-[9px] font-bold px-1 rounded bg-slate-800 text-slate-300">
+                            <span className="text-[9px] font-bold px-1 rounded bg-slate-800 text-slate-300 shrink-0">
                               {c.rol}
                             </span>
                           </div>
                           <span className="text-[10px] text-cyan-400/80 truncate font-mono mt-0.5">
-                            {c.email.split("@")[0]}
+                            {c.email}
                           </span>
                         </button>
                       );

@@ -83,7 +83,7 @@ export function AccessibilityWidget() {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 no-print">
+    <div className="fixed bottom-4 right-4 z-50 no-print flex flex-col items-end">
       {/* Región aria-live para anunciar cambios a lectores de pantalla */}
       <div className="sr-only" aria-live="polite" role="status">
         {anuncio}

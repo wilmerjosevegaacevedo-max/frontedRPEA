@@ -475,7 +475,7 @@ export default function HomePage() {
         />
 
         {/* Botón flotante para Acceso Directo de Demostración para Presentación del Profesor */}
-        <div className="fixed bottom-4 right-4 z-50">
+        <div className="fixed bottom-4 left-4 z-50">
           <button
             type="button"
             onClick={entrarModoDemo}

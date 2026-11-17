@@ -938,34 +938,6 @@ export function AuditoriaRolesModule({
           </table>
         </div>
       </div>
-
-      {/* Tarjeta de Arquitectura Técnica */}
-      <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-cyan-400 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-[22px]">code</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-xs text-white font-mono">
-              Arquitectura Fullstack TypeScript Puro (Cero Python)
-            </span>
-            <span className="text-xs text-slate-400 font-sans mt-0.5">
-              Control RBAC desacoplado, integración automática de usuarios de empresas y sincronización multi-tenant en Firestore.
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0 text-xs font-mono">
-          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-cyan-400">
-            RBAC Dinámico
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-emerald-400">
-            Next.js 14
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 font-bold text-amber-400">
-            Firebase Firestore
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

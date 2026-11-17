@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 
 type FontScale = 100 | 115 | 130;
+type ThemeMode = "dark" | "light";
 
 type A11yPrefs = {
+  theme: ThemeMode;
   fontScale: FontScale;
   highContrast: boolean;
   readableSpacing: boolean;
@@ -13,6 +15,7 @@ type A11yPrefs = {
 };
 
 const DEFAULT_PREFS: A11yPrefs = {
+  theme: "dark",
   fontScale: 100,
   highContrast: false,
   readableSpacing: false,
@@ -26,6 +29,7 @@ function aplicarPreferenciasDOM(prefs: A11yPrefs) {
   if (typeof document === "undefined") return;
   const html = document.documentElement;
   html.style.fontSize = `${prefs.fontScale}%`;
+  html.classList.toggle("theme-light", prefs.theme === "light");
   html.classList.toggle("a11y-high-contrast", prefs.highContrast);
   html.classList.toggle("a11y-readable-spacing", prefs.readableSpacing);
   html.classList.toggle("a11y-reduce-motion", prefs.reduceMotion);
@@ -111,6 +115,45 @@ export function AccessibilityWidget() {
                 close
               </span>
             </button>
+          </div>
+
+          {/* Apariencia: Tema Claro / Oscuro */}
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[11px] font-mono text-slate-400 uppercase font-semibold">
+              Apariencia (Tema)
+            </span>
+            <div className="grid grid-cols-2 gap-1.5" role="group" aria-label="Seleccionar tema visual">
+              <button
+                type="button"
+                aria-pressed={prefs.theme === "dark"}
+                onClick={() => actualizar({ theme: "dark" }, "Tema oscuro activado.")}
+                className={`py-1.5 px-2.5 rounded-lg text-xs font-mono font-bold border flex items-center justify-center gap-1.5 transition-colors ${
+                  prefs.theme === "dark"
+                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-400"
+                    : "bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                  dark_mode
+                </span>
+                Oscuro
+              </button>
+              <button
+                type="button"
+                aria-pressed={prefs.theme === "light"}
+                onClick={() => actualizar({ theme: "light" }, "Tema claro activado.")}
+                className={`py-1.5 px-2.5 rounded-lg text-xs font-mono font-bold border flex items-center justify-center gap-1.5 transition-colors ${
+                  prefs.theme === "light"
+                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-400"
+                    : "bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                  light_mode
+                </span>
+                Claro
+              </button>
+            </div>
           </div>
 
           {/* Tamaño de Texto */}
@@ -271,19 +314,39 @@ export function AccessibilityWidget() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setAbierto((v) => !v)}
-        aria-expanded={abierto}
-        aria-controls="panel-accesibilidad"
-        aria-label="Configurar accesibilidad"
-        title="Opciones de Accesibilidad (WCAG 2.1)"
-        className="w-11 h-11 rounded-full bg-slate-900/95 hover:bg-slate-800 text-cyan-400 border border-cyan-500/40 shadow-[0_4px_20px_rgba(6,182,212,0.25)] flex items-center justify-center transition-all hover:scale-105"
-      >
-        <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
-          accessibility_new
-        </span>
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setAbierto((v) => !v)}
+          aria-expanded={abierto}
+          aria-controls="panel-accesibilidad"
+          aria-label="Configurar accesibilidad"
+          title="Opciones de Accesibilidad (WCAG 2.1)"
+          className="w-11 h-11 rounded-full bg-slate-900/95 hover:bg-slate-800 text-cyan-400 border border-cyan-500/40 shadow-[0_4px_20px_rgba(6,182,212,0.25)] flex items-center justify-center transition-all hover:scale-105"
+        >
+          <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+            accessibility_new
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            actualizar(
+              { theme: prefs.theme === "dark" ? "light" : "dark" },
+              prefs.theme === "dark" ? "Tema claro activado." : "Tema oscuro activado."
+            )
+          }
+          aria-label={prefs.theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+          title={prefs.theme === "dark" ? "Cambiar a Tema Claro" : "Cambiar a Tema Oscuro"}
+          className="h-11 px-3 rounded-full bg-slate-900/95 hover:bg-slate-800 text-slate-200 border border-slate-700/80 shadow-lg flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-105"
+        >
+          <span className="material-symbols-outlined text-[18px] text-amber-400" aria-hidden="true">
+            {prefs.theme === "dark" ? "light_mode" : "dark_mode"}
+          </span>
+          <span>{prefs.theme === "dark" ? "Claro" : "Oscuro"}</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -198,3 +198,158 @@ html.a11y-reduce-motion *::after {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================
+   TEMA CLARO (DAYLIGHT ENTERPRISE)
+   ========================================== */
+html.theme-light body {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .cyber-grid {
+  background-color: #f1f5f9 !important;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px) !important;
+}
+
+html.theme-light .bg-\[\#030712\],
+html.theme-light .bg-\[\#050814\]\/85 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .bg-slate-950\/95,
+html.theme-light .bg-slate-950\/90,
+html.theme-light .bg-slate-950\/85,
+html.theme-light .bg-slate-950\/80,
+html.theme-light .bg-slate-950\/60,
+html.theme-light .bg-slate-950,
+html.theme-light .bg-slate-900\/95,
+html.theme-light .bg-slate-900\/90,
+html.theme-light .bg-slate-900\/80,
+html.theme-light .bg-slate-900\/60,
+html.theme-light .bg-slate-900\/40,
+html.theme-light .bg-slate-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .bg-slate-800,
+html.theme-light .bg-slate-800\/50 {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.theme-light .border-slate-800,
+html.theme-light .border-slate-800\/80,
+html.theme-light .border-slate-800\/70,
+html.theme-light .border-slate-800\/60,
+html.theme-light .border-slate-700,
+html.theme-light .border-slate-700\/80 {
+  border-color: #cbd5e1 !important;
+}
+
+html.theme-light .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e2e8f0 !important;
+}
+
+html.theme-light .text-white,
+html.theme-light .text-slate-100,
+html.theme-light .text-slate-200,
+html.theme-light .text-slate-300 {
+  color: #0f172a !important;
+}
+
+/* Mantener texto blanco dentro de botones con fondo sólido/degradado de color */
+html.theme-light button[class*="from-"].text-white,
+html.theme-light button[class*="bg-cyan-600"].text-white,
+html.theme-light button[class*="bg-blue-600"].text-white,
+html.theme-light button[class*="bg-emerald-600"].text-white,
+html.theme-light [class*="bg-gradient-to-"].text-white {
+  color: #ffffff !important;
+}
+
+html.theme-light .text-slate-400,
+html.theme-light .text-slate-500 {
+  color: #475569 !important;
+}
+
+html.theme-light .text-cyan-400,
+html.theme-light .text-cyan-300,
+html.theme-light .text-cyan-200 {
+  color: #0e7490 !important;
+}
+
+html.theme-light .text-emerald-400,
+html.theme-light .text-emerald-300 {
+  color: #047857 !important;
+}
+
+html.theme-light .text-amber-400,
+html.theme-light .text-amber-300 {
+  color: #b45309 !important;
+}
+
+html.theme-light .text-blue-400,
+html.theme-light .text-blue-300 {
+  color: #1d4ed8 !important;
+}
+
+html.theme-light .text-rose-400,
+html.theme-light .text-rose-300,
+html.theme-light .text-red-400,
+html.theme-light .text-red-300 {
+  color: #be123c !important;
+}
+
+html.theme-light .bg-cyan-950\/60,
+html.theme-light .bg-cyan-950\/50,
+html.theme-light .bg-cyan-950\/30,
+html.theme-light .bg-cyan-950\/20,
+html.theme-light .bg-cyan-950 {
+  background-color: #ecfeff !important;
+}
+
+html.theme-light .bg-emerald-950\/80,
+html.theme-light .bg-emerald-950\/60,
+html.theme-light .bg-emerald-950\/40,
+html.theme-light .bg-emerald-950\/30,
+html.theme-light .bg-emerald-950 {
+  background-color: #ecfdf5 !important;
+}
+
+html.theme-light .bg-blue-950\/80,
+html.theme-light .bg-blue-950\/40,
+html.theme-light .bg-blue-950\/30 {
+  background-color: #eff6ff !important;
+}
+
+html.theme-light .bg-amber-950\/60,
+html.theme-light .bg-amber-950\/30 {
+  background-color: #fffbeb !important;
+}
+
+html.theme-light .bg-rose-950\/60,
+html.theme-light .bg-rose-950\/40,
+html.theme-light .bg-red-950\/70,
+html.theme-light .bg-red-950\/60,
+html.theme-light .bg-red-950\/40 {
+  background-color: #fff1f2 !important;
+}
+
+html.theme-light input,
+html.theme-light select,
+html.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.theme-light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+html.theme-light ::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}

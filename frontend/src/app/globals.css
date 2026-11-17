@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
 @tailwind base;
@@ -200,57 +200,75 @@ html.a11y-reduce-motion *::after {
 }
 
 /* ==========================================
-   TEMA CLARO (DAYLIGHT ENTERPRISE)
+   TEMA CLARO (AQUA TECHNICAL LAB - MEDUSA SPEC)
    ========================================== */
+:root {
+  --lab-bg: #f1fbfa;
+  --lab-bg2: #e3f4f3;
+  --lab-ink: #0e3a3d;
+  --lab-mid: #5d8284;
+  --lab-faint: #9dbcbc;
+  --lab-line: #d3e8e7;
+  --lab-coral: #ff5a3c;
+  --lab-teal: #0f9d8a;
+  --lab-aqua: #46c9bf;
+}
+
 html.theme-light body {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background: radial-gradient(90% 80% at 50% 42%, #fafefd 0%, var(--lab-bg) 55%, var(--lab-bg2) 100%) !important;
+  color: var(--lab-ink) !important;
+}
+
+html.theme-light .font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
 }
 
 html.theme-light .cyber-grid {
-  background-color: #f8fafc !important;
+  background: radial-gradient(90% 80% at 50% 42%, #fafefd 0%, var(--lab-bg) 55%, var(--lab-bg2) 100%) !important;
   background-image:
-    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px) !important;
+    linear-gradient(to right, rgba(14, 58, 61, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 58, 61, 0.04) 1px, transparent 1px) !important;
 }
 
 html.theme-light .bg-\[\#030712\],
 html.theme-light .bg-\[\#050814\]\/85 {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background: transparent !important;
+  color: var(--lab-ink) !important;
 }
 
 html.theme-light [class*="bg-slate-900"],
 html.theme-light [class*="bg-slate-950"] {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  color: var(--lab-ink) !important;
+  box-shadow: 0 6px 24px rgba(40, 110, 110, 0.08) !important;
 }
 
 html.theme-light [class*="bg-slate-800"] {
-  background-color: #f1f5f9 !important;
-  color: #0f172a !important;
+  background-color: #eaf6f5 !important;
+  color: var(--lab-ink) !important;
 }
 
 html.theme-light [class*="border-slate-800"],
 html.theme-light [class*="border-slate-700"] {
-  border-color: #e2e8f0 !important;
+  border-color: var(--lab-line) !important;
 }
 
 html.theme-light [class*="border-cyan-700"],
 html.theme-light [class*="border-cyan-800"] {
-  border-color: #67e8f9 !important;
+  border-color: var(--lab-aqua) !important;
 }
 
 html.theme-light .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) {
-  border-color: #e2e8f0 !important;
+  border-color: var(--lab-line) !important;
 }
 
 html.theme-light .text-white,
 html.theme-light .text-slate-100,
 html.theme-light .text-slate-200,
 html.theme-light .text-slate-300 {
-  color: #0f172a !important;
+  color: var(--lab-ink) !important;
 }
 
 /* Mantener texto blanco dentro de botones con fondo sólido/degradado de color */
@@ -264,69 +282,66 @@ html.theme-light [class*="bg-gradient-to-"].text-white {
 
 html.theme-light .text-slate-400,
 html.theme-light .text-slate-500 {
-  color: #475569 !important;
+  color: var(--lab-mid) !important;
 }
 
 html.theme-light .text-cyan-400,
 html.theme-light .text-cyan-300,
 html.theme-light .text-cyan-200 {
-  color: #0e7490 !important;
+  color: var(--lab-teal) !important;
 }
 
 html.theme-light .text-emerald-400,
 html.theme-light .text-emerald-300 {
-  color: #047857 !important;
+  color: var(--lab-teal) !important;
 }
 
 html.theme-light .text-amber-400,
 html.theme-light .text-amber-300 {
-  color: #b45309 !important;
+  color: var(--lab-coral) !important;
 }
 
 html.theme-light .text-blue-400,
 html.theme-light .text-blue-300 {
-  color: #1d4ed8 !important;
+  color: var(--lab-ink) !important;
 }
 
 html.theme-light .text-rose-400,
 html.theme-light .text-rose-300,
 html.theme-light .text-red-400,
 html.theme-light .text-red-300 {
-  color: #be123c !important;
+  color: var(--lab-coral) !important;
 }
 
 html.theme-light [class*="bg-cyan-950"] {
-  background-color: #ecfeff !important;
+  background-color: #e6f7f6 !important;
 }
 
 html.theme-light [class*="bg-emerald-950"] {
-  background-color: #ecfdf5 !important;
+  background-color: #e4f7f3 !important;
 }
 
 html.theme-light [class*="bg-blue-950"] {
-  background-color: #eff6ff !important;
+  background-color: #edf7f7 !important;
 }
 
-html.theme-light [class*="bg-amber-950"] {
-  background-color: #fffbeb !important;
-}
-
+html.theme-light [class*="bg-amber-950"],
 html.theme-light [class*="bg-rose-950"],
 html.theme-light [class*="bg-red-950"] {
-  background-color: #fff1f2 !important;
+  background-color: #fff1ee !important;
 }
 
 html.theme-light input,
 html.theme-light select,
 html.theme-light textarea {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  color: var(--lab-ink) !important;
+  border-color: var(--lab-line) !important;
 }
 
 html.theme-light ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: var(--lab-bg2);
 }
 html.theme-light ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: var(--lab-faint);
 }
